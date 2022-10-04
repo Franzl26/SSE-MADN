@@ -15,18 +15,15 @@ import static Board.FieldState.FIELD_NONE;
 public class GamePane extends BorderPane {
     private boolean highlighted = false;
     private int highlightedField = -1;
+
     public GamePane() {
         Canvas boardCanvas = new Canvas(500, 500);
 
         BoardState board = new BoardState();
         board.reset();
-        board.setField(0, FIELD_NONE);
-        board.setField(4, FIELD_NONE);
-        board.setField(8, FIELD_NONE);
-        board.setField(12, FIELD_NONE);
         drawBoard(boardCanvas, board);
 
-        GraphicsContext gc = boardCanvas.getGraphicsContext2D();
+        GraphicsContext gcBoard = boardCanvas.getGraphicsContext2D();
         boardCanvas.setOnMouseClicked(e -> {
             for (int i = 0; i < 72; i++) {
                 if (Math.hypot(e.getX() - pointCoordinates[i][0], e.getY() - pointCoordinates[i][1]) < circleRadius - 2) {
@@ -35,17 +32,17 @@ public class GamePane extends BorderPane {
                     if (!highlighted) {
                         highlighted = true;
                         highlightedField = i;
-                        drawBoardSingleField(gc, board.getField(i), i, true);
+                        drawBoardSingleField(gcBoard, board.getField(i), i, true);
                     } else {
                         if (highlightedField == i) {
                             highlighted = false;
                             highlightedField = -1;
-                            drawBoardSingleField(gc, board.getField(i), i, false);
+                            drawBoardSingleField(gcBoard, board.getField(i), i, false);
                         } else {
                             board.setField(i, board.getField(highlightedField));
                             board.setField(highlightedField, FIELD_NONE);
-                            drawBoardSingleField(gc, board.getField(i), i, false);
-                            drawBoardSingleField(gc, board.getField(highlightedField), highlightedField, false);
+                            drawBoardSingleField(gcBoard, board.getField(i), i, false);
+                            drawBoardSingleField(gcBoard, board.getField(highlightedField), highlightedField, false);
                             highlighted = false;
                             highlightedField = -1;
                         }
@@ -56,8 +53,39 @@ public class GamePane extends BorderPane {
             System.out.println("no Field hit");
         });
 
+        Canvas diceCanvas = new Canvas(100, 100);
+        GraphicsContext gcDice = diceCanvas.getGraphicsContext2D();
+        drawDice(gcDice, 0);
+        diceCanvas.setOnMouseClicked(e -> {
+            drawDice(gcDice, (int) (Math.random() * 6 + 1));
+        });
+
         // Fenster Zusammenstellen
         setCenter(boardCanvas);
+        setLeft(diceCanvas);
+    }
+
+    private void drawDice(GraphicsContext gc, int number) {
+        //int[][] points = new int[][]{{15, 15}, {35, 15}, {15, 25}, {25, 25}, {35, 25}, {15, 35}, {35, 35}};
+        int[][] points = new int[][]{{20, 20}, {80, 20}, {20, 50}, {50, 50}, {80, 50}, {20, 80}, {80, 80}};
+        int[][] toDraw = new int[][]{{}, {3}, {1, 5}, {1, 3, 5}, {0, 1, 5, 6}, {0, 1, 3, 5, 6}, {0, 1, 2, 4, 5, 6}};
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, 100, 100);
+        gc.setFill(Color.WHITE);
+        gc.fillRect(3,3,94,94);
+
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        gc.setFill(Color.BLACK);
+        for (int i = 0; i < toDraw[number].length; i++) {
+            //gc.fillOval(points[toDraw[number][i]][0] - 5, points[toDraw[number][i]][1] - 5, 10, 10);
+            gc.fillOval(points[toDraw[number][i]][0] - 10, points[toDraw[number][i]][1] - 10, 20, 20);
+        }
+        System.out.println(number);
     }
 
     private void drawBoard(Canvas canvas, BoardState board) {
@@ -144,6 +172,7 @@ public class GamePane extends BorderPane {
 
         stage.setTitle("GamePane");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 }
