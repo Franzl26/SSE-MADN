@@ -1,8 +1,8 @@
-package Board;
+package App;
 
 import java.util.Arrays;
 
-import static Board.FieldState.*;
+import static App.FieldState.*;
 
 public class BoardState {
     public static final int[][] pointCoordinates = new int[][]{ // Center of Circles

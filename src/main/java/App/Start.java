@@ -1,41 +1,36 @@
 package App;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Locale;
 
 public class Start extends Application {
     @Override
     public void start(Stage stage) {
         Locale.setDefault(Locale.ENGLISH);
-        //RootPane root = new RootPane();
-        GridPane root = new GridPane();
-        Scene scene = new Scene(root, 1300, 400);
-
-        stage.setTitle("Questionnaire");
-        stage.setScene(scene);
-        stage.show();
-        stage.hide();
 
         GamePane.GamePaneStart();
+        //LoginPane.LoginPaneStart();
+        //RegisterPane.RegisterPaneStart();
+        //LobbyPane.LobbyPaneStart();
+        //RoomSelectPane.RoomSelectPaneStart();
+
     }
 
     public static void main(String[] args) {
-        //launch();
         hash();
+        launch();
     }
 
     public static void hash() {
         String password = "ILoveJava";
 
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
