@@ -11,8 +11,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class RoomSelectPane extends AnchorPane {
-    private ListView<HBox> rooms;
+    private ListView<HBox> roomsList;
 
     public RoomSelectPane(String name) {
         Canvas nameCanvas = new Canvas(300,40);
@@ -20,7 +22,7 @@ public class RoomSelectPane extends AnchorPane {
         gcName.setFont(Font.font(30));
         gcName.fillText(name, 5, 30, 300);
 
-        rooms = new ListView<>();
+        roomsList = new ListView<>();
 
         Button newGameButton = new Button("Neues Spiel erstellen");
         newGameButton.addEventHandler(ActionEvent.ACTION, e -> {
@@ -32,6 +34,27 @@ public class RoomSelectPane extends AnchorPane {
         });
 
 
+    }
+
+    public void displayRooms(Rooms roomsTogether) {
+        ArrayList<Room> rooms = roomsTogether.getRooms();
+        for (Room r : rooms) {
+            HBox box = new HBox();
+            Canvas canvas = new Canvas(800, 20);
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            Button button = new Button("Beitreten");
+            button.addEventHandler(ActionEvent.ACTION, e -> {
+
+            });
+
+            Players players = r.getPlayers();
+            StringBuilder build = new StringBuilder();
+            build.append(players.getCount()).append("/4    ");
+
+
+
+            roomsList.getItems().add(box);
+        }
     }
 
     public static void RoomSelectPaneStart(String name) {

@@ -14,7 +14,7 @@ public class Start extends Application {
     public void start(Stage stage) {
         Locale.setDefault(Locale.ENGLISH);
 
-        GamePane.GamePaneStart();
+        //GamePane.GamePaneStart();
         //LoginPane.LoginPaneStart();
         //RegisterPane.RegisterPaneStart();
         //LobbyPane.LobbyPaneStart();
