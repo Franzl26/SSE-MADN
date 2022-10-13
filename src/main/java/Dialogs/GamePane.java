@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -24,7 +27,10 @@ public class GamePane extends AnchorPane {
     private final GraphicsContext gcDice;
     private final GraphicsContext gcName;
     private final GraphicsContext gcGif;
-    private File[] filesArray = null;
+    private final Canvas gifCanvas;
+    private final MediaView gifView;
+    private File[] picturesArray = null;
+    private File[] gifsArray = null;
 
     public GamePane(GameLogic logic) {
         this.logic = logic;
@@ -42,10 +48,17 @@ public class GamePane extends AnchorPane {
         gcBoard = boardCanvas.getGraphicsContext2D();
         boardCanvas.setOnMouseClicked(e -> logic.onMouseClickedField(e.getX(), e.getY()));
 
-        Canvas gifCanvas = new Canvas(360, 360);
+        gifCanvas = new Canvas(360, 360);
         gcGif = gifCanvas.getGraphicsContext2D();
         gcGif.setFill(Color.LIGHTSLATEGRAY);
         gcGif.fillRect(0, 0, 360, 360);
+        gifCanvas.setOnMouseClicked(e -> showGif());
+
+        gifView = new MediaView();
+        gifView.setFitWidth(360);
+        gifView.setFitHeight(360);
+        gifView.setOnMouseClicked(e -> showGif());
+
 
         Button spielVerlassenButton = new Button("Spiel verlassen");
         spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> {
@@ -60,15 +73,19 @@ public class GamePane extends AnchorPane {
         AnchorPane.setBottomAnchor(boardCanvas, 10.0);
         AnchorPane.setRightAnchor(gifCanvas, 10.0);
         AnchorPane.setTopAnchor(gifCanvas, 90.0);
+        AnchorPane.setRightAnchor(gifView, 10.0);
+        AnchorPane.setTopAnchor(gifView, 90.0);
         AnchorPane.setRightAnchor(spielVerlassenButton, 10.0);
         AnchorPane.setBottomAnchor(spielVerlassenButton, 10.0);
 
-        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, spielVerlassenButton);
+        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton);
 
         // init Gifs
         try {
-            File f = new File("./resources/waiting/");
-            filesArray = f.listFiles();
+            File f = new File("./resources/waiting/pictures/");
+            picturesArray = f.listFiles();
+            f = new File("./resources/waiting/gifs/");
+            gifsArray = f.listFiles();
         } catch (NullPointerException e) {
             System.out.println("no gifs found");
         }
@@ -124,7 +141,7 @@ public class GamePane extends AnchorPane {
         gcName.setFill(Color.BLACK);
 
         for (int i = 0; i < players.getCount(); i++) {
-            gcName.drawImage(config.figure[i],5+245*i,5,40,40);
+            gcName.drawImage(config.figure[i], 5 + 245 * i, 5, 40, 40);
             String p = players.getPlayer(i);
             gcName.fillText(p, i * 245 + 50, 40, 190);
             if (i == turn) gcName.fillRect(i * 245 + 5, 46, 235, 47);
@@ -132,13 +149,28 @@ public class GamePane extends AnchorPane {
     }
 
     public void showGif() {
-        if (filesArray == null) {
-            System.out.println("couldn't print gif");
-            return;
+        gcGif.setFill(Color.LIGHTSLATEGRAY);
+        gcGif.fillRect(0, 0, 360, 360);
+
+        double rand = Math.random();
+        if (picturesArray == null) {
+            System.out.println("couldn't print pic");
+            rand = 0.1;
         }
-        File f = filesArray[(int) (Math.random() * filesArray.length)];
-        Image image = new Image(f.getAbsolutePath(), 360, 360, true, false);
-        gcGif.drawImage(image, 0, 0);
+        if (rand > (1.0 * gifsArray.length / (gifsArray.length + picturesArray.length))) {
+            gifCanvas.toFront();
+            File f = picturesArray[(int) (Math.random() * picturesArray.length)];
+            Image image = new Image(f.getAbsolutePath(), 360, 360, true, false);
+            gcGif.drawImage(image, 0, 0);
+        } else {
+            gifView.toFront();
+            File f = gifsArray[(int) (Math.random() * gifsArray.length)];
+            Media media = new Media(f.toURI().toString());
+            MediaPlayer player = new MediaPlayer(media);
+            gifView.setMediaPlayer(player);
+            player.setAutoPlay(true);
+            player.setCycleCount(10);
+        }
     }
 
     public static GamePane GamePaneStart(GameLogic logic) {

@@ -17,8 +17,8 @@ public class Start extends Application {
 
         //GameStatisticsPane.GameStatisticsPaneStart();
         //DesignPane.DesignPaneStart();
-        VideoTestPane.VideoTestPaneStart();
-        //GameLogic.testBoardLogic();
+        //VideoTestPane.VideoTestPaneStart();
+        GameLogic.testBoardLogic();
         //LoginPane.LoginPaneStart();
         //RegisterPane.RegisterPaneStart();
         //LobbyPane.LobbyPaneStart();

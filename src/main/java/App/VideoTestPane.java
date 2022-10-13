@@ -12,19 +12,20 @@ import java.io.File;
 
 public class VideoTestPane extends AnchorPane {
     public VideoTestPane() {
-        File f = new File("C:/Users/f-luc/Downloads/WhatsApp Video 2022-10-13 at 17.29.22.mp4");
+        File f = new File("./resources/waiting/spinningSeal.mp4");
         Media media = new Media(f.toURI().toString());
         MediaPlayer player = new MediaPlayer(media);
         MediaView view = new MediaView(player);
-        view.setFitHeight(500);
-        view.setFitWidth(500);
+        view.setFitHeight(300);
+        view.setFitWidth(300);
+
+        view.setX(100);
+        view.setY(50);
         Group group = new Group(view);
 
         getChildren().addAll(group);
         player.play();
 
-
-        // todo
     }
 
     public static void VideoTestPaneStart() {
