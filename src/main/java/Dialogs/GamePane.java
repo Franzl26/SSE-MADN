@@ -17,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.nio.file.Paths;
 
 import static App.BoardConfiguration.clickRadius;
 
@@ -160,7 +161,7 @@ public class GamePane extends AnchorPane {
         if (rand > (1.0 * gifsArray.length / (gifsArray.length + picturesArray.length))) {
             gifCanvas.toFront();
             File f = picturesArray[(int) (Math.random() * picturesArray.length)];
-            Image image = new Image(f.getAbsolutePath(), 360, 360, true, false);
+            Image image = new Image(Paths.get(f.getAbsolutePath()).toUri().toString(), 360, 360, true, false);
             gcGif.drawImage(image, 0, 0);
         } else {
             gifView.toFront();
