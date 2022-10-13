@@ -1,7 +1,8 @@
 package App;
 
 import Dialogs.GamePane;
-import static App.BoardState.*;
+
+import static App.BoardConfiguration.clickRadius;
 import static App.FieldState.*;
 
 public class GameLogic {
@@ -10,10 +11,11 @@ public class GameLogic {
 
     private boolean highlighted = false;
     private int highlightedField = -1;
+    public final BoardConfiguration boardConfig;
 
-    public GameLogic(GamePane pane) {
-        if (pane == null) throw new IllegalArgumentException("pane must not be null");
-        this.pane = pane;
+    public GameLogic(BoardConfiguration boardConfig) {
+        this.boardConfig = boardConfig;
+        pane = GamePane.GamePaneStart(this);
 
         board = new BoardState();
         board.reset();
@@ -22,7 +24,7 @@ public class GameLogic {
 
     public void onMouseClickedField(double x, double y) {
         for (int i = 0; i < 72; i++) {
-            if (Math.hypot(x - pointCoordinates[i][0], y - pointCoordinates[i][1]) < circleRadius - 2) {
+            if (Math.hypot(x - boardConfig.pointCoordinates[i][0], y - boardConfig.pointCoordinates[i][1]) < clickRadius - 2) {
                 System.out.println("Field clicked: " + i);
                 if (!highlighted && board.getField(i) == FIELD_NONE) return;
                 if (!highlighted) {
@@ -51,5 +53,9 @@ public class GameLogic {
 
     public void onMouseClickedDice() {
         pane.drawDice((int) (Math.random()*6+1));
+    }
+
+    public static void testBoardLogic() {
+        new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/"));
     }
 }

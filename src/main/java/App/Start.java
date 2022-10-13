@@ -18,7 +18,7 @@ public class Start extends Application {
 
         //GameStatisticsPane.GameStatisticsPaneStart();
         //DesignPane.DesignPaneStart();
-        GamePane.GamePaneStart();
+        GameLogic.testBoardLogic();
         //LoginPane.LoginPaneStart();
         //RegisterPane.RegisterPaneStart();
         //LobbyPane.LobbyPaneStart();
@@ -32,8 +32,8 @@ public class Start extends Application {
     public static void main(String[] args) {
         //hash();
         //pathTest();
-        //launch();
-        boardKonfigTest();
+        //boardKonfigTest();
+        launch();
     }
 
     public static void hash() {
@@ -71,7 +71,7 @@ public class Start extends Application {
     }
 
     public static void boardKonfigTest() {
-        BoardKonfiguration konfig = new BoardKonfiguration("./resources/designs/Standard");
+        BoardConfiguration konfig = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard");
         System.out.println(konfig);
     }
 }
