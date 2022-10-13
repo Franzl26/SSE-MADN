@@ -2,14 +2,15 @@ package App;
 
 public class Room {
     private static int id_counter = 0;
-    private int id;
-    private Players players;
+    private final int id;
+    private final Players players;
 
     public Room() {
+        players = new Players();
         id = id_counter++;
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(String player) {
         players.addPlayer(player);
     }
 

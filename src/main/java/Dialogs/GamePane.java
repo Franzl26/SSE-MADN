@@ -1,25 +1,30 @@
-package App;
+package Dialogs;
 
+import App.*;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.*;
+
 import static App.BoardState.*;
 import static App.FieldState.FIELD_NONE;
 
 public class GamePane extends AnchorPane {
-
     private GameLogic logic;
     private final GraphicsContext gcBoard;
     private final GraphicsContext gcDice;
     private final GraphicsContext gcName;
+    private final GraphicsContext gcGif;
+    private File[] filesArray = null;
 
     public GamePane() {
         setBackground(Background.fill(Color.LIGHTSLATEGRAY));
@@ -34,6 +39,11 @@ public class GamePane extends AnchorPane {
         gcBoard = boardCanvas.getGraphicsContext2D();
         boardCanvas.setOnMouseClicked(e -> logic.onMouseClickedField(e.getX(), e.getY()));
 
+        Canvas gifCanvas = new Canvas(360, 360);
+        gcGif = gifCanvas.getGraphicsContext2D();
+        gcGif.setFill(Color.LIGHTSLATEGRAY);
+        gcGif.fillRect(0, 0, 360, 360);
+
         Button spielVerlassenButton = new Button("Spiel verlassen");
         spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> {
 
@@ -45,11 +55,23 @@ public class GamePane extends AnchorPane {
         AnchorPane.setBottomAnchor(diceCanvas, 210.0);
         AnchorPane.setLeftAnchor(boardCanvas, 120.0);
         AnchorPane.setBottomAnchor(boardCanvas, 10.0);
+        AnchorPane.setRightAnchor(gifCanvas, 10.0);
+        AnchorPane.setTopAnchor(gifCanvas, 90.0);
         AnchorPane.setRightAnchor(spielVerlassenButton, 10.0);
         AnchorPane.setBottomAnchor(spielVerlassenButton, 10.0);
 
-        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, spielVerlassenButton);
+        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, spielVerlassenButton);
         logic = new GameLogic(this);
+
+        // init Gifs
+        try {
+            File f = new File("./resources/waiting/");
+            filesArray = f.listFiles();
+        } catch (NullPointerException e) {
+            System.out.println("no gifs found");
+        }
+
+        testGameInit(this);
     }
 
     public void drawDice(int number) {
@@ -83,6 +105,16 @@ public class GamePane extends AnchorPane {
 
         FieldState[] state = board.getBoardState();
 
+
+        File circle = new File("./resources/designs/Standard/figure2.png");
+        System.out.println(circle.getAbsolutePath()+"\n"+circle.isFile());
+        Image image2 = new Image(circle.getAbsolutePath());//,34,34,true,true);
+        Image image3 = new Image(circle.getAbsolutePath(),34,34,true,true);
+        gcBoard.drawImage(image2,433,355,34,34);
+        gcBoard.drawImage(image3,393,355,34,34);
+
+
+
         // Draw Fields
         for (int i = 0; i < 72; i++) {
             drawBoardSingleField(state[i], i, false);
@@ -113,11 +145,11 @@ public class GamePane extends AnchorPane {
         else if (i < 28) gcBoard.setFill(Color.RED);
         else gcBoard.setFill(Color.BLUE);
 
-        r = circleRadius - 4;
+        r = circleRadius - 0;
         gcBoard.fillOval(pointCoordinates[i][0] - r, pointCoordinates[i][1] - r, r * 2, r * 2);
         if (state != FIELD_NONE) return;
         gcBoard.setFill(Color.LIGHTGRAY);
-        r = circleRadius - 8;
+        r = circleRadius - 4;
         gcBoard.fillOval(pointCoordinates[i][0] - r, pointCoordinates[i][1] - r, r * 2, r * 2);
     }
 
@@ -140,10 +172,10 @@ public class GamePane extends AnchorPane {
 
         switch (state) {
             case FIELD_NONE -> gcBoard.setFill(Color.WHITE);
-            case FIELD_GREEN -> gcBoard.setFill(Color.GREEN);
-            case FIELD_YELLOW -> gcBoard.setFill(Color.YELLOW);
-            case FIELD_BLUE -> gcBoard.setFill(Color.BLUE);
-            case FIELD_RED -> gcBoard.setFill(Color.RED);
+            case FIELD_FIGURE1 -> gcBoard.setFill(Color.GREEN);
+            case FIELD_FIGURE0 -> gcBoard.setFill(Color.YELLOW);
+            case FIELD_FIGURE3 -> gcBoard.setFill(Color.BLUE);
+            case FIELD_FIGURE2 -> gcBoard.setFill(Color.RED);
         }
         r = circleRadius - 2;
         gcBoard.fillOval(pointCoordinates[i][0] - r, pointCoordinates[i][1] - r, r * 2, r * 2);
@@ -152,25 +184,46 @@ public class GamePane extends AnchorPane {
     public void drawNames(Players players, int turn) {
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(40));
-        //gcName.setFill(Color.GRAY);
-        //gcName.fillRect(0,0,780,50);
+        gcName.setFill(Color.BLACK);
 
         for (int i = 0; i < players.getCount(); i++) {
-            Player p = players.getPlayer(i);
-            gcName.setFill(p.getColor());
-            gcName.fillText(p.getName(), i * 195 + 5, 40, 185);
-            if (i == turn) gcName.fillRect(i * 195+5, 46, 185, 47);
+            String p = players.getPlayer(i);
+            gcName.fillText(p, i * 195 + 5, 40, 185);
+            if (i == turn) gcName.fillRect(i * 195 + 5, 46, 185, 47);
         }
+    }
+
+    public void showGif() {
+        if (filesArray == null) {
+            System.out.println("couldn't print gif");
+            return;
+        }
+        File f = filesArray[(int) (Math.random() * filesArray.length)];
+        Image image = new Image(f.getAbsolutePath(), 360, 360, true, false);
+        gcGif.drawImage(image, 0, 0);
     }
 
     public static void GamePaneStart() {
         GamePane root = new GamePane();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1000, 600);
         Stage stage = new Stage();
 
         stage.setTitle("Mensch Ärgere dich nicht");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+
+
+    private void testGameInit(GamePane pane) {
+        pane.drawDice(7);
+
+        Players players = new Players();
+        players.addPlayer("5char");
+        players.addPlayer("10 Zeichen");
+        players.addPlayer("15 Zeichen abcd");
+        players.addPlayer("20 Zeichen abcdefghi");
+        pane.drawNames(players, 2);
+        showGif();
     }
 }

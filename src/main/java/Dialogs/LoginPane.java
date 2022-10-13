@@ -1,4 +1,4 @@
-package App;
+package Dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -10,6 +10,10 @@ import javafx.stage.Stage;
 
 public class LoginPane extends AnchorPane {
     public LoginPane() {
+        TextField serverTextField = new TextField("localhost");
+        serverTextField.setPromptText("Server");
+        serverTextField.setPrefWidth(280);
+
         TextField usernameTextField = new TextField();
         usernameTextField.setPromptText("Benutzername");
         usernameTextField.setPrefWidth(280);
@@ -31,10 +35,12 @@ public class LoginPane extends AnchorPane {
 
         });
 
+        AnchorPane.setLeftAnchor(serverTextField, 10.0);
+        AnchorPane.setTopAnchor(serverTextField, 10.0);
         AnchorPane.setLeftAnchor(usernameTextField, 10.0);
-        AnchorPane.setTopAnchor(usernameTextField, 10.0);
+        AnchorPane.setTopAnchor(usernameTextField, 40.0);
         AnchorPane.setLeftAnchor(passwordField, 10.0);
-        AnchorPane.setTopAnchor(passwordField, 40.0);
+        AnchorPane.setTopAnchor(passwordField, 70.0);
         AnchorPane.setLeftAnchor(registrierenButton, 10.0);
         AnchorPane.setBottomAnchor(registrierenButton, 10.0);
         AnchorPane.setRightAnchor(abbrechenButton, 90.0);
@@ -42,13 +48,13 @@ public class LoginPane extends AnchorPane {
         AnchorPane.setRightAnchor(anmeldenButton, 10.0);
         AnchorPane.setBottomAnchor(anmeldenButton, 10.0);
 
-        getChildren().addAll(abbrechenButton, usernameTextField, passwordField,
+        getChildren().addAll(abbrechenButton, serverTextField, usernameTextField, passwordField,
                 registrierenButton, anmeldenButton);
     }
 
     public static void LoginPaneStart() {
         LoginPane root = new LoginPane();
-        Scene scene = new Scene(root, 300, 120);
+        Scene scene = new Scene(root, 300, 150);
         Stage stage = new Stage();
 
         stage.setTitle("Anmelden");

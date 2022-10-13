@@ -3,7 +3,7 @@ package App;
 import java.util.ArrayList;
 
 public class Rooms {
-    private ArrayList<Room> rooms;
+    private final ArrayList<Room> rooms;
 
     public Rooms() {
         rooms = new ArrayList<>();

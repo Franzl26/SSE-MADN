@@ -1,9 +1,10 @@
 package App;
 
+import Dialogs.*;
 import javafx.application.Application;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,17 +15,25 @@ public class Start extends Application {
     public void start(Stage stage) {
         Locale.setDefault(Locale.ENGLISH);
 
-        //GamePane.GamePaneStart();
+
+        //GameStatisticsPane.GameStatisticsPaneStart();
+        //DesignPane.DesignPaneStart();
+        GamePane.GamePaneStart();
         //LoginPane.LoginPaneStart();
         //RegisterPane.RegisterPaneStart();
         //LobbyPane.LobbyPaneStart();
-        //RoomSelectPane.RoomSelectPaneStart();
+        //RoomSelectPane.RoomSelectPaneStart("Username");
+
+        //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
+        //new Alert(Alert.AlertType.CONFIRMATION, "<Text>").show();
 
     }
 
     public static void main(String[] args) {
-        hash();
-        launch();
+        //hash();
+        //pathTest();
+        //launch();
+        boardKonfigTest();
     }
 
     public static void hash() {
@@ -42,6 +51,7 @@ public class Start extends Application {
     }
 
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+
     public static String bytesToHex(byte[] bytes) {
         byte[] hexChars = new byte[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -50,5 +60,18 @@ public class Start extends Application {
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         return new String(hexChars, StandardCharsets.UTF_8);
+    }
+
+    public static void pathTest() {
+        File f = new File("./resources/waiting/");
+        System.out.println(f.getAbsoluteFile());
+        File[] arr = f.listFiles();
+        f = arr[(int) (Math.random() * arr.length)];
+        System.out.println(f.getAbsolutePath());
+    }
+
+    public static void boardKonfigTest() {
+        BoardKonfiguration konfig = new BoardKonfiguration("./resources/designs/Standard");
+        System.out.println(konfig);
     }
 }
