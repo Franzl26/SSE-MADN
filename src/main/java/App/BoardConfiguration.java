@@ -70,8 +70,6 @@ public class BoardConfiguration {
             try {
                 File f = new File(dir);
                 if (!f.isDirectory()) return false;
-                System.out.println(f.getAbsolutePath());
-
                 board = new Image(Paths.get(f.getAbsolutePath()+"/board.png").toUri().toString());
                 pathNormal = new Image(Paths.get(f.getAbsolutePath() + "/pathNormal.png").toUri().toString());
                 dice = readImages(f.getAbsolutePath(), "/dice", 8);
