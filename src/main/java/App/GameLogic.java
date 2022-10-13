@@ -56,6 +56,8 @@ public class GameLogic {
     }
 
     public static void testBoardLogic() {
-        new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/"));
+        //Stil auswählen
+        //new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/"));
+        new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/"));
     }
 }
