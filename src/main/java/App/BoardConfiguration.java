@@ -1,7 +1,6 @@
 package App;
 
 import javafx.scene.image.Image;
-import javafx.scene.shape.Path;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -74,7 +73,7 @@ public class BoardConfiguration {
                 System.out.println(f.getAbsolutePath());
 
                 board = new Image(Paths.get(f.getAbsolutePath()+"/board.png").toUri().toString());
-                pathNormal = new Image(f.getAbsolutePath() + "/pathNormal.png");
+                pathNormal = new Image(Paths.get(f.getAbsolutePath() + "/pathNormal.png").toUri().toString());
                 dice = readImages(f.getAbsolutePath(), "/dice", 8);
                 path = readImages(f.getAbsolutePath(), "/path", 4);
                 personal = readImages(f.getAbsolutePath(), "/personal", 4);
@@ -117,7 +116,7 @@ public class BoardConfiguration {
         private static Image[] readImages(String dir, String name, int count) {
             Image[] temp = new Image[count];
             for (int i = 0; i < count; i++) {
-                temp[i] = new Image(dir + name + i + ".png");
+                temp[i] = new Image(Paths.get(dir + name + i + ".png").toUri().toString());
             }
             return temp;
         }
