@@ -1,8 +1,10 @@
 package App;
 
 import javafx.scene.image.Image;
+import javafx.scene.shape.Path;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,7 +71,9 @@ public class BoardConfiguration {
             try {
                 File f = new File(dir);
                 if (!f.isDirectory()) return false;
-                board = new Image(f.getAbsolutePath() + "/board.png");
+                System.out.println(f.getAbsolutePath());
+
+                board = new Image(Paths.get(f.getAbsolutePath()+"/board.png").toUri().toString());
                 pathNormal = new Image(f.getAbsolutePath() + "/pathNormal.png");
                 dice = readImages(f.getAbsolutePath(), "/dice", 8);
                 path = readImages(f.getAbsolutePath(), "/path", 4);
