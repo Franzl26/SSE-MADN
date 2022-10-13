@@ -5,8 +5,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class DesignPane extends AnchorPane {
-    public DesignPane() {
 
+    public DesignPane() {
 
 
         // todo
@@ -14,7 +14,7 @@ public class DesignPane extends AnchorPane {
 
     public static void DesignPaneStart() {
         DesignPane root = new DesignPane();
-        Scene scene = new Scene(root, 400, 200);
+        Scene scene = new Scene(root, 500, 500);
         Stage stage = new Stage();
 
         stage.setTitle("Design Auswählen");

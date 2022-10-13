@@ -28,7 +28,6 @@ public class GameStatisticsPane extends AnchorPane {
         AnchorPane.setBottomAnchor(okayButton, 10.0);
 
         getChildren().addAll(canvas, okayButton);
-        // todo
 
         drawStatisticsTest();
     }
