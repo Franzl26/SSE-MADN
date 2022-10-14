@@ -26,6 +26,7 @@ public class GameLogic {
         for (int i = 0; i < 72; i++) {
             if (Math.hypot(x - boardConfig.pointCoordinates[i][0], y - boardConfig.pointCoordinates[i][1]) < clickRadius - 2) {
                 System.out.println("Field clicked: " + i);
+                System.out.println(System.currentTimeMillis());
                 if (!highlighted && board.getField(i) == FIELD_NONE) return;
                 if (!highlighted) {
                     highlighted = true;
@@ -45,6 +46,7 @@ public class GameLogic {
                         highlightedField = -1;
                     }
                 }
+                System.out.println(System.currentTimeMillis());
                 return;
             }
         }

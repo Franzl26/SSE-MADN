@@ -3,10 +3,12 @@ package Dialogs;
 import App.*;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.media.Media;
@@ -63,7 +65,7 @@ public class GamePane extends AnchorPane {
 
         Button spielVerlassenButton = new Button("Spiel verlassen");
         spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            System.exit(0);
         });
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
@@ -99,11 +101,13 @@ public class GamePane extends AnchorPane {
     }
 
     public void drawBoard(BoardState board) {
+        System.out.println(System.currentTimeMillis());
         gcBoard.drawImage(config.board, 0, 0, 500, 500);
         FieldState[] state = board.getBoardState();
         for (int i = 0; i < 72; i++) {
             drawBoardSingleField(state[i], i, false);
         }
+        System.out.println(System.currentTimeMillis());
     }
 
     public void drawBoardSingleField(FieldState state, int i, boolean highlight) {
@@ -133,6 +137,15 @@ public class GamePane extends AnchorPane {
                 case FIELD_FIGURE3 -> image = config.figure[3];
             }
         }
+
+        ImageView iv = new ImageView(image);
+        //iv.setRotate(90);
+        //iv.setScaleY(-1);
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        Image rotatedImage = iv.snapshot(params,null);
+
+        gcBoard.drawImage(config.board, (config.pointCoordinates[i][0] - clickRadius) * config.board.getWidth() / 500, (config.pointCoordinates[i][1] - clickRadius) * config.board.getHeight() / 500, 34 * config.board.getWidth() / 500, 34. * config.board.getHeight() / 500, config.pointCoordinates[i][0] - clickRadius, config.pointCoordinates[i][1] - clickRadius, 34, 34);
         gcBoard.drawImage(image, config.pointCoordinates[i][0] - clickRadius, config.pointCoordinates[i][1] - clickRadius, 34, 34);
     }
 

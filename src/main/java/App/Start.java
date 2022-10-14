@@ -32,7 +32,7 @@ public class Start extends Application {
     public static void main(String[] args) {
         //hash();
         //pathTest();
-        //boardKonfigTest();
+        //boardConfigTest();
         launch();
     }
 
@@ -70,7 +70,7 @@ public class Start extends Application {
         System.out.println(f.getAbsolutePath());
     }
 
-    public static void boardKonfigTest() {
+    public static void boardConfigTest() {
         BoardConfiguration konfig = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard");
         System.out.println(konfig);
     }
