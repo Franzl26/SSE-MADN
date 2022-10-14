@@ -90,20 +90,17 @@ public class RoomSelectPane extends AnchorPane {
         stage.show();
     }
 
-
-
     private void testRoomsInit() {
         Rooms rooms = new Rooms();
         Room room;
 
         for (int i = 0; i < 20; i++) {
             room = new Room();
-            for (int j = 0; j <= i%4; j++) {
-                room.addPlayer("Player"+j);
+            for (int j = 0; j <= i % 4; j++) {
+                room.addPlayer("Player" + j);
             }
             rooms.addRoom(room);
         }
-
         displayRooms(rooms);
     }
 }

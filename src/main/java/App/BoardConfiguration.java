@@ -8,15 +8,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BoardConfiguration {
-    public int[][] pointCoordinates;
-    public int[][] orientation;
-    public Image board;
-    public Image pathNormal;
-    public Image[] dice;
-    public Image[] path;
-    public Image[] personal;
-    public Image[] figure;
-    public Image[] figureHigh;
+    public final int[][] pointCoordinates;
+    public final int[][] orientation;
+    public final Image board;
+    public final Image pathNormal;
+    public final Image[] dice;
+    public final Image[] path;
+    public final Image[] personal;
+    public final Image[] figure;
+    public final Image[] figureHigh;
     public static final int clickRadius = 17;
 
     private BoardConfiguration(Builder builder) {
@@ -42,7 +42,6 @@ public class BoardConfiguration {
         System.arraycopy(builder.personal, 0, personal, 0, 4);
         System.arraycopy(builder.figure, 0, figure, 0, 4);
         System.arraycopy(builder.figureHigh, 0, figureHigh, 0, 4);
-
     }
 
     public static BoardConfiguration loadBoardKonfiguration(String dir) {

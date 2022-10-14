@@ -1,5 +1,6 @@
 package App;
 
+import Dialogs.DesignPane;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -16,7 +17,7 @@ public class Start extends Application {
 
 
         //GameStatisticsPane.GameStatisticsPaneStart();
-        //DesignPane.DesignPaneStart();
+        //DesignPane.designsTest();
         //VideoTestPane.VideoTestPaneStart();
         GameLogic.testBoardLogic();
         //LoginPane.LoginPaneStart();
