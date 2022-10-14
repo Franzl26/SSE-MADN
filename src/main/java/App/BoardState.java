@@ -28,4 +28,8 @@ public class BoardState {
     public FieldState getField(int i) {
         return board[i];
     }
+
+    public void fillWithOneTest() {
+        Arrays.fill(board,0,72,FIELD_FIGURE0);
+    }
 }

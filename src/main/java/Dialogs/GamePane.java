@@ -16,6 +16,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -64,9 +65,7 @@ public class GamePane extends AnchorPane {
 
 
         Button spielVerlassenButton = new Button("Spiel verlassen");
-        spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> {
-            System.exit(0);
-        });
+        spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> System.exit(0));
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
@@ -139,14 +138,19 @@ public class GamePane extends AnchorPane {
         }
 
         ImageView iv = new ImageView(image);
-        //iv.setRotate(90);
-        //iv.setScaleY(-1);
+        if (config.orientation[i][1] == 1) iv.setScaleX(-1);
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
-        Image rotatedImage = iv.snapshot(params,null);
+        image = iv.snapshot(params, null);
 
         gcBoard.drawImage(config.board, (config.pointCoordinates[i][0] - clickRadius) * config.board.getWidth() / 500, (config.pointCoordinates[i][1] - clickRadius) * config.board.getHeight() / 500, 34 * config.board.getWidth() / 500, 34. * config.board.getHeight() / 500, config.pointCoordinates[i][0] - clickRadius, config.pointCoordinates[i][1] - clickRadius, 34, 34);
-        gcBoard.drawImage(image, config.pointCoordinates[i][0] - clickRadius, config.pointCoordinates[i][1] - clickRadius, 34, 34);
+        gcBoard.save();
+        gcBoard.translate(config.pointCoordinates[i][0], config.pointCoordinates[i][1]);
+        gcBoard.rotate(config.orientation[i][0]);
+        gcBoard.drawImage(image, -clickRadius, -clickRadius, 34, 34);
+        gcBoard.restore();
+
+
     }
 
     public void drawNames(Players players, int turn) {
@@ -158,6 +162,8 @@ public class GamePane extends AnchorPane {
             gcName.drawImage(config.figure[i], 5 + 245 * i, 5, 40, 40);
             String p = players.getPlayer(i);
             gcName.fillText(p, i * 245 + 50, 40, 190);
+            //gcName.drawImage(config.personal[i], 200 + 245 * i, 5, 40, 40);
+
             if (i == turn) gcName.fillRect(i * 245 + 5, 46, 235, 47);
         }
     }

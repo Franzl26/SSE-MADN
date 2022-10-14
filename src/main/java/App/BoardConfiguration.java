@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 public class BoardConfiguration {
     public int[][] pointCoordinates;
+    public int[][] orientation;
     public Image board;
     public Image pathNormal;
     public Image[] dice;
@@ -20,6 +21,7 @@ public class BoardConfiguration {
 
     private BoardConfiguration(Builder builder) {
         pointCoordinates = new int[72][2];
+        orientation = new int[72][2];
         dice = new Image[8];
         path = new Image[4];
         personal = new Image[4];
@@ -29,6 +31,9 @@ public class BoardConfiguration {
         int len = builder.pointCoordinates.length;
         for (int i = 0; i < len; i++) {
             System.arraycopy(builder.pointCoordinates[i], 0, pointCoordinates[i], 0, 2);
+        }
+        for (int i = 0; i < len; i++) {
+            System.arraycopy(builder.orientation[i], 0, orientation[i], 0, 2);
         }
         board = builder.board;
         pathNormal = builder.pathNormal;
@@ -48,6 +53,7 @@ public class BoardConfiguration {
 
     private static class Builder {
         private final int[][] pointCoordinates;
+        private final int[][] orientation;
         private Image board;
         private Image pathNormal;
         private Image[] dice;
@@ -58,6 +64,7 @@ public class BoardConfiguration {
 
         private Builder() {
             pointCoordinates = new int[72][2];
+            orientation = new int[72][2];
             dice = new Image[8];
             path = new Image[4];
             personal = new Image[4];
@@ -85,15 +92,24 @@ public class BoardConfiguration {
             // Koordinaten einlesen
             File positions = new File(dir + "/positions.txt");
             try (BufferedReader buf = new BufferedReader(new FileReader(positions))) {
-                Pattern pattern = Pattern.compile("[ \t]*(\\d+)[ \t]+(\\d+)[ \t]*");
+                //Pattern pattern = Pattern.compile("[ \t]*(\\d+)[ \t]+(\\d+)[ \t]*");
+                Pattern pattern = Pattern.compile("[ \t]*(\\d+)[ \t]+(\\d+)[ \t]*([ \t]+(-?\\d+)([ \t]+([01])[ \t]*)?)?");
                 String in = buf.readLine();
+                int line = 0;
                 int count = 0;
                 while (in != null) {
+                    line++;
                     if (!in.contains("//")) {
                         Matcher matcher = pattern.matcher(in);
-                        if (!matcher.matches()) throw new IOException("position file has errors, count=" + count);
+                        if (!matcher.matches()) throw new IOException("position file has error on line:" + line);
                         pointCoordinates[count][0] = Integer.parseInt(matcher.group(1));
                         pointCoordinates[count][1] = Integer.parseInt(matcher.group(2));
+                        if (matcher.group(4) != null) {
+                            orientation[count][0] = Integer.parseInt(matcher.group(4));
+                        }
+                        if (matcher.group(6) != null) {
+                            orientation[count][1] = Integer.parseInt(matcher.group(6));
+                        }
                         count++;
                     }
                     in = buf.readLine();
