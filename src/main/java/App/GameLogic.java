@@ -58,6 +58,6 @@ public class GameLogic {
     public static void testBoardLogic() {
         //Stil auswählen
         //new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/"));
-        new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/"));
+        new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/StarWars"));
     }
 }
