@@ -4,10 +4,12 @@ import Dialogs.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import javax.crypto.*;
 import java.io.File;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.Locale;
 
 public class Start extends Application {
@@ -33,7 +35,8 @@ public class Start extends Application {
         //hash();
         //pathTest();
         //boardConfigTest();
-        launch();
+        kryptoTest();
+        //launch();
     }
 
     public static void hash() {
@@ -73,5 +76,55 @@ public class Start extends Application {
     public static void boardConfigTest() {
         BoardConfiguration config = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard");
         System.out.println(config);
+    }
+
+    public static void kryptoTest() {
+        try {
+            // Schlüssel erzeugen
+            SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();
+            // Verfahren wählen
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            // Umwandlung des Strings nach Bytes basierend auf UTF-8
+            byte[] utf8Bytes = "Zu verschlüsselnder String".getBytes();
+            // Verschlüsselung
+            byte[] encryptedBytes = cipher.doFinal(utf8Bytes);
+            // Base64 encoding um wieder einen String zu bekommen
+            String encryptedString = java.util.Base64.getEncoder().encodeToString(encryptedBytes);
+            // Cipher für Entschlüsselung vorbereiten
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            // Rückumwandlung in Byte-Array
+            encryptedBytes = java.util.Base64.getDecoder().decode(encryptedString);
+            // Entschlüsselung
+            utf8Bytes = cipher.doFinal(encryptedBytes);
+            // Rückumwandlung in einen String
+            System.out.println(encryptedString);
+            System.out.println(new String(utf8Bytes));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException |
+                 BadPaddingException e) {
+            e.printStackTrace(System.out);
+        }
+        try {
+            long start = System.currentTimeMillis();
+            // Private/Public Pair erzeugen
+            KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+            // Verschlüsseln
+            Cipher versch = Cipher.getInstance("RSA");
+            versch.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
+            byte[] klartext = "Ein ganz tolles und sicheres Passwort#./0123456789-+,;:".getBytes();
+            byte[] chiffrebytes = versch.doFinal(klartext);
+            String chiffreText = new String(chiffrebytes);
+            // Entschlüsseln
+            Cipher entsch = Cipher.getInstance("RSA");
+            entsch.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
+            byte[] entschBytes = entsch.doFinal(chiffrebytes);
+            String entschText = new String(entschBytes);
+            System.out.println(chiffreText);
+            System.out.println(entschText);
+            System.out.println("dauer (ms): " + (System.currentTimeMillis() - start));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException e) {
+            e.printStackTrace(System.out);
+        }
     }
 }
