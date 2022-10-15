@@ -10,7 +10,8 @@ import static App.BoardConfiguration.clickRadius;
 
 public class BoardDrawer {
     public static void drawBoardAll(GraphicsContext gc, BoardConfiguration config, BoardState board) {
-        gc.setFill(Color.LIGHTSLATEGRAY);
+        //gc.setFill(Color.LIGHTSLATEGRAY);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0,0,500,500);
         gc.drawImage(config.board, 0, 0, 500, 500);
         FieldState[] state = board.getBoardState();
