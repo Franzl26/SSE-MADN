@@ -61,9 +61,17 @@ public class GamePane extends AnchorPane {
         gifView.setFitHeight(360);
         gifView.setOnMouseClicked(e -> showGif());
 
-
         Button spielVerlassenButton = new Button("Spiel verlassen");
         spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> System.exit(0));
+
+        // todo remove
+        Button test = new Button("TestPrio");
+        test.setPrefWidth(100);
+        test.setPrefHeight(70);
+        test.addEventHandler(ActionEvent.ACTION, e -> logic.testButton());
+        AnchorPane.setRightAnchor(test, 30.0);
+        AnchorPane.setBottomAnchor(test, 70.0);
+
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
@@ -78,7 +86,7 @@ public class GamePane extends AnchorPane {
         AnchorPane.setRightAnchor(spielVerlassenButton, 10.0);
         AnchorPane.setBottomAnchor(spielVerlassenButton, 10.0);
 
-        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton);
+        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton, test);
 
         // init Gifs
         try {

@@ -7,6 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 import static App.BoardConfiguration.clickRadius;
+import static App.FieldState.FIELD_NONE;
 
 public class BoardDrawer {
     public static void drawBoardAll(GraphicsContext gc, BoardConfiguration config, BoardState board) {
@@ -49,15 +50,15 @@ public class BoardDrawer {
         }
 
         ImageView iv = new ImageView(image);
-        if (config.orientation[i][1] == 1) iv.setScaleX(-1);
+        if (config.orientation[i][1] == 1 && state != FIELD_NONE) iv.setScaleX(-1);
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
         image = iv.snapshot(params, null);
 
-        gc.drawImage(config.board, (config.pointCoordinates[i][0] - clickRadius) * config.board.getWidth() / 500, (config.pointCoordinates[i][1] - clickRadius) * config.board.getHeight() / 500, 34 * config.board.getWidth() / 500, 34. * config.board.getHeight() / 500, config.pointCoordinates[i][0] - clickRadius, config.pointCoordinates[i][1] - clickRadius, 34, 34);
+        gc.drawImage(config.board, (config.pointCoordinates[i][0] - 20) * config.board.getWidth() / 500, (config.pointCoordinates[i][1] - 20) * config.board.getHeight() / 500, 40 * config.board.getWidth() / 500, 40 * config.board.getHeight() / 500, config.pointCoordinates[i][0] - 20, config.pointCoordinates[i][1] - 20, 40, 40);
         gc.save();
         gc.translate(config.pointCoordinates[i][0], config.pointCoordinates[i][1]);
-        gc.rotate(config.orientation[i][0]);
+        if (state != FIELD_NONE) gc.rotate(config.orientation[i][0]);
         gc.drawImage(image, -clickRadius, -clickRadius, 34, 34);
         gc.restore();
     }

@@ -1,6 +1,6 @@
 package App;
 
-import Dialogs.DesignPane;
+import Dialogs.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -16,14 +16,13 @@ public class Start extends Application {
         Locale.setDefault(Locale.ENGLISH);
 
 
-        //GameStatisticsPane.GameStatisticsPaneStart();
-        //DesignPane.designsTest();
-        //VideoTestPane.VideoTestPaneStart();
-        GameLogic.testBoardLogic();
         //LoginPane.LoginPaneStart();
         //RegisterPane.RegisterPaneStart();
-        //LobbyPane.LobbyPaneStart();
         //RoomSelectPane.RoomSelectPaneStart("Username");
+        //LobbyPane.LobbyPaneStart();
+        //DesignPane.designsTest();
+        GameLogic.testBoardLogic();
+        //GameStatisticsPane.GameStatisticsPaneStart();
 
         //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
         //new Alert(Alert.AlertType.CONFIRMATION, "<Text>").show();
@@ -72,7 +71,7 @@ public class Start extends Application {
     }
 
     public static void boardConfigTest() {
-        BoardConfiguration konfig = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard");
-        System.out.println(konfig);
+        BoardConfiguration config = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard");
+        System.out.println(config);
     }
 }
