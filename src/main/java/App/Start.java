@@ -11,6 +11,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Start extends Application {
     @Override
@@ -33,9 +35,9 @@ public class Start extends Application {
 
     public static void main(String[] args) {
         //hash();
-        //pathTest();
         //boardConfigTest();
-        kryptoTest();
+        //kryptoTest();
+        //timerTest();
         //launch();
     }
 
@@ -62,15 +64,7 @@ public class Start extends Application {
             hexChars[j * 2] = HEX_ARRAY[v >>> 4];
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-        return new String(hexChars, StandardCharsets.UTF_8);
-    }
-
-    public static void pathTest() {
-        File f = new File("./resources/waiting/");
-        System.out.println(f.getAbsoluteFile());
-        File[] arr = f.listFiles();
-        f = arr[(int) (Math.random() * arr.length)];
-        System.out.println(f.getAbsolutePath());
+        return new String(hexChars);
     }
 
     public static void boardConfigTest() {
@@ -125,6 +119,20 @@ public class Start extends Application {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException |
                  IllegalBlockSizeException e) {
             e.printStackTrace(System.out);
+        }
+    }
+
+    public static void timerTest() {
+        Task task = new Task();
+        Timer timer = new Timer("Zeitausgabe");
+        timer.scheduleAtFixedRate(task,2500,2000);
+        System.out.println(System.currentTimeMillis());
+    }
+
+    public static class Task extends TimerTask {
+        @Override
+        public void run() {
+            System.out.println(System.currentTimeMillis());
         }
     }
 }
