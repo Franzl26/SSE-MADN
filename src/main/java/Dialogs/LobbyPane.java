@@ -1,7 +1,7 @@
 package Dialogs;
 
-import App.Players;
-import App.Room;
+import DataAndMethods.Players;
+import DataAndMethods.Room;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -39,7 +39,7 @@ public class LobbyPane extends AnchorPane {
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
 
         });
-        Button exitButton = new Button("Warteraum Verlassen");
+        Button exitButton = new Button("Warteraum verlassen");
         exitButton.setPrefWidth(140);
         exitButton.addEventHandler(ActionEvent.ACTION, e -> {
 

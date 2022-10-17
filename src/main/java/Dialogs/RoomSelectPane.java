@@ -1,8 +1,8 @@
 package Dialogs;
 
-import App.Players;
-import App.Room;
-import App.Rooms;
+import DataAndMethods.Players;
+import DataAndMethods.Room;
+import DataAndMethods.Rooms;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,11 +20,11 @@ import java.util.ArrayList;
 public class RoomSelectPane extends AnchorPane {
     private final ListView<HBox> roomsList;
 
-    public RoomSelectPane(String name) {
+    public RoomSelectPane(String username) {
         Canvas nameCanvas = new Canvas(300, 40);
         GraphicsContext gcName = nameCanvas.getGraphicsContext2D();
         gcName.setFont(Font.font(30));
-        gcName.fillText(name, 5, 30, 300);
+        gcName.fillText(username, 5, 30, 300);
 
         roomsList = new ListView<>();
         roomsList.setPrefWidth(800);
@@ -79,8 +79,8 @@ public class RoomSelectPane extends AnchorPane {
         }
     }
 
-    public static void RoomSelectPaneStart(String name) {
-        RoomSelectPane root = new RoomSelectPane(name);
+    public static void RoomSelectPaneStart(String username) {
+        RoomSelectPane root = new RoomSelectPane(username);
         Scene scene = new Scene(root, 820, 500);
         Stage stage = new Stage();
 

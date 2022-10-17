@@ -1,8 +1,8 @@
-package App;
+package DataAndMethods;
 
 import java.util.Arrays;
 
-import static App.FieldState.*;
+import static DataAndMethods.FieldState.*;
 
 public class BoardState {
     private FieldState[] board = new FieldState[72];

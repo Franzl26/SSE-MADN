@@ -1,6 +1,6 @@
 package Dialogs;
 
-import App.GameStatistics;
+import DataAndMethods.GameStatistics;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;

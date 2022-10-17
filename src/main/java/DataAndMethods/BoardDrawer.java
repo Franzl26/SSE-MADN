@@ -1,4 +1,4 @@
-package App;
+package DataAndMethods;
 
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-import static App.BoardConfiguration.clickRadius;
-import static App.FieldState.FIELD_NONE;
+import static DataAndMethods.BoardConfiguration.clickRadius;
+import static DataAndMethods.FieldState.FIELD_NONE;
 
 public class BoardDrawer {
     public static void drawBoardAll(GraphicsContext gc, BoardConfiguration config, BoardState board) {

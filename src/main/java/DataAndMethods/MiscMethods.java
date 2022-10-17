@@ -1,8 +1,14 @@
-package App;
+package DataAndMethods;
 
-import static App.FieldState.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static DataAndMethods.FieldState.*;
 
 public class MiscMethods {
+    private static final Pattern pwPattern = Pattern.compile("[^ ]*"); // todo anpassen
+    private static final Pattern namePattern = Pattern.compile("[^ ]*");
+
     public static boolean checkMoveValid(BoardState boardState, FieldState player, int from, int to, int dice) {
         // Prio-Zug durchgeführt
         int prio = checkForPrioMove(boardState, player, dice);
@@ -72,5 +78,15 @@ public class MiscMethods {
             }
         }
         return -1;
+    }
+
+    public static boolean checkPasswordGuidelines(String pw) {
+        Matcher match = pwPattern.matcher(pw);
+        return match.matches();
+    }
+
+    public static boolean checkUsernameGuidelines(String name) {
+        Matcher match = namePattern.matcher(name);
+        return match.matches();
     }
 }

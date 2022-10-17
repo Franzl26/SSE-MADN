@@ -1,4 +1,4 @@
-package App;
+package DataAndMethods;
 
 public class Room {
     private final Players players;

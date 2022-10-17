@@ -1,4 +1,4 @@
-package App;
+package DataAndMethods;
 
 public class GameStatistics {
     private final int[] numbersThrown = new int[6];

@@ -1,4 +1,4 @@
-package App;
+package DataAndMethods;
 
 import java.util.ArrayList;
 

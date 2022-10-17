@@ -1,4 +1,4 @@
-package App;
+package DataAndMethods;
 
 public class LoadBoardConfigurationException extends RuntimeException{
     public LoadBoardConfigurationException(String message) {

@@ -1,9 +1,13 @@
-package App;
+package ClientLogic;
 
+import DataAndMethods.BoardConfiguration;
+import DataAndMethods.BoardState;
+import DataAndMethods.FieldState;
+import DataAndMethods.MiscMethods;
 import Dialogs.GamePane;
 
-import static App.BoardConfiguration.clickRadius;
-import static App.FieldState.*;
+import static DataAndMethods.BoardConfiguration.clickRadius;
+import static DataAndMethods.FieldState.*;
 
 public class GameLogic {
     private final GamePane pane;

@@ -1,7 +1,7 @@
 package Dialogs;
 
-import App.BoardConfiguration;
-import App.BoardState;
+import DataAndMethods.BoardConfiguration;
+import DataAndMethods.BoardState;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-import static App.BoardDrawer.drawBoardAll;
+import static DataAndMethods.BoardDrawer.drawBoardAll;
 
 public class DesignPane extends AnchorPane {
     private boolean last = false;

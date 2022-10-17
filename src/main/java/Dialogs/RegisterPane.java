@@ -2,6 +2,7 @@ package Dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -29,11 +30,25 @@ public class RegisterPane extends AnchorPane {
         Button registrierenButton = new Button("Registrieren");
         registrierenButton.setPrefWidth(90);
         registrierenButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            int ret = ClientLogic.CommunicationWithServer.tryToRegister(serverTextField.getText(),
+                    usernameTextField.getText(), passwordField.getText(), passwordField2.getText());
+            if (ret == -1) {
+                new Alert(Alert.AlertType.INFORMATION,"Passwörter stimmen nicht überein").showAndWait();
+            } else if (ret == -2) {
+                new Alert(Alert.AlertType.INFORMATION,"Passwort entspricht nicht den Richtlinien").showAndWait();
+            } else if (ret == -3) {
+                new Alert(Alert.AlertType.INFORMATION,"Benutzername entspricht nicht den Richtlinien").showAndWait();
+            } else if (ret == -4) {
+                new Alert(Alert.AlertType.INFORMATION,"Server nicht gefunden").showAndWait();
+            } else {
+                new Alert(Alert.AlertType.INFORMATION,"Registrierung erfolgreich!").showAndWait();
+                ((Stage) getScene().getWindow()).close();
+            }
         });
         Button abbrechenButton = new Button("Abbrechen");
         abbrechenButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            LoginPane.LoginPaneStart();
+            ((Stage) getScene().getWindow()).close();
         });
 
         AnchorPane.setLeftAnchor(serverTextField, 10.0);
@@ -49,8 +64,7 @@ public class RegisterPane extends AnchorPane {
         AnchorPane.setRightAnchor(abbrechenButton, 110.0);
         AnchorPane.setBottomAnchor(abbrechenButton, 10.0);
 
-        getChildren().addAll(abbrechenButton, serverTextField, usernameTextField, passwordField, passwordField2,
-                registrierenButton);
+        getChildren().addAll(abbrechenButton, serverTextField, usernameTextField, passwordField, passwordField2, registrierenButton);
     }
 
     public static void RegisterPaneStart() {

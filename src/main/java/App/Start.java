@@ -1,13 +1,11 @@
 package App;
 
-import Dialogs.*;
+import ClientLogic.GameLogic;
+import DataAndMethods.BoardConfiguration;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import javax.crypto.*;
-import java.io.File;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Locale;

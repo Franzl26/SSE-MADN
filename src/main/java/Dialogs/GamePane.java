@@ -1,6 +1,10 @@
 package Dialogs;
 
-import App.*;
+import ClientLogic.GameLogic;
+import DataAndMethods.BoardConfiguration;
+import DataAndMethods.BoardState;
+import DataAndMethods.FieldState;
+import DataAndMethods.Players;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -19,8 +23,8 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.nio.file.Paths;
 
-import static App.BoardDrawer.drawBoardAll;
-import static App.BoardDrawer.drawBoardSingleFieldAll;
+import static DataAndMethods.BoardDrawer.drawBoardAll;
+import static DataAndMethods.BoardDrawer.drawBoardSingleFieldAll;
 
 public class GamePane extends AnchorPane {
     private final GameLogic logic;
