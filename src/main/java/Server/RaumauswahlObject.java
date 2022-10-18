@@ -1,7 +1,8 @@
 package Server;
 
-import ClientLogic.UpdateRoomsObject;
+import DataAndMethods.Room;
 import DataAndMethods.Rooms;
+import RMIInterfaces.LobbyInterface;
 import RMIInterfaces.RaumauswahlInterface;
 import RMIInterfaces.UpdateLobbyInterface;
 import RMIInterfaces.UpdateRoomsInterface;
@@ -9,15 +10,19 @@ import RMIInterfaces.UpdateRoomsInterface;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RaumauswahlObject extends UnicastRemoteObject implements RaumauswahlInterface {
     private final ArrayList<UpdateRoomsInterface> clients = new ArrayList<>();
+    private final Rooms rooms;
+    private final HashMap<Room, LobbyObject> roomLobbyMap;
 
     protected RaumauswahlObject() throws RemoteException {
+        rooms = new Rooms();
+        roomLobbyMap = new HashMap<>();
     }
 
-    @Override
-    public void subscribeToRoomUpdates(UpdateRoomsInterface room) throws RemoteException {
+    public void addClient(UpdateRoomsInterface room) throws RemoteException {
         synchronized (clients) {
             clients.add(room);
         }
@@ -29,8 +34,24 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     }
 
     @Override
-    public void createNewRoom(UpdateLobbyInterface lobby) throws RemoteException {
+    public LobbyInterface createNewRoom(String username, UpdateLobbyInterface uli) throws RemoteException {
+        if (rooms.maxRoomsReached()) return null;
+        Room newRoom = new Room();
+        newRoom.addPlayer(username);
+        rooms.addRoom(newRoom);
+        LobbyObject lobbyObj = new LobbyObject(newRoom);
+        lobbyObj.addUser(username, uli);
+        roomLobbyMap.put(newRoom, lobbyObj);
+        return lobbyObj;
+    }
 
+    @Override
+    public synchronized LobbyInterface enterRoom(String username, Room room, UpdateLobbyInterface uli) throws RemoteException {
+         if (room.getCount()==4) return null;
+         room.addPlayer(username);
+         LobbyObject lobbyObj = roomLobbyMap.get(room);
+         lobbyObj.addUser(username, uli);
+         return lobbyObj;
     }
 
     private void unsubscribeFromRoomUpdatesPrivate(UpdateRoomsInterface room) {

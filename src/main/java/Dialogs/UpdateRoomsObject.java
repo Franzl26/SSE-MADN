@@ -1,4 +1,4 @@
-package ClientLogic;
+package Dialogs;
 
 import DataAndMethods.Rooms;
 import Dialogs.RoomSelectPane;

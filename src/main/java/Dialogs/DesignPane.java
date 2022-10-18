@@ -50,7 +50,6 @@ public class DesignPane extends AnchorPane {
                 return;
             }
             last = true;
-            System.out.println(boardChoice.getValue());
             BoardConfiguration config = getBoardConfig(boardChoice.getValue());
             BoardState state = new BoardState();
             state.reset();

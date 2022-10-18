@@ -2,6 +2,7 @@ package Dialogs;
 
 import DataAndMethods.Players;
 import DataAndMethods.Room;
+import RMIInterfaces.UpdateLobbyInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -12,10 +13,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.rmi.RemoteException;
+
 public class LobbyPane extends AnchorPane {
     private final GraphicsContext gcName;
+    private final UpdateLobbyInterface uli;
 
     public LobbyPane() {
+        try {
+            uli = new UpdateLobbyObject(this);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
         Canvas nameCanvas = new Canvas(200, 150);
         gcName = nameCanvas.getGraphicsContext2D();
 
@@ -60,7 +70,13 @@ public class LobbyPane extends AnchorPane {
 
         getChildren().addAll(nameCanvas, botAddButton, botRemoveButton, designButton, startButton, exitButton);
 
-        testNamesInit();
+
+
+        //testNamesInit();
+    }
+
+    public UpdateLobbyInterface getULI() {
+        return uli;
     }
 
     public void drawNames(Room room) {
@@ -73,7 +89,7 @@ public class LobbyPane extends AnchorPane {
         }
     }
 
-    public static void LobbyPaneStart() {
+    public static LobbyPane LobbyPaneStart() {
         LobbyPane root = new LobbyPane();
         Scene scene = new Scene(root, 400, 200);
         Stage stage = new Stage();
@@ -81,7 +97,8 @@ public class LobbyPane extends AnchorPane {
         stage.setTitle("Warteraum");
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.show();
+        //stage.show();
+        return root;
     }
 
     private void testNamesInit() {

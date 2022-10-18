@@ -2,6 +2,7 @@ package App;
 
 import ClientLogic.GameLogic;
 import DataAndMethods.BoardConfiguration;
+import Dialogs.DesignPane;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -24,7 +25,7 @@ public class Start extends Application {
         //RoomSelectPane.RoomSelectPaneStart("Username");
         //LobbyPane.LobbyPaneStart();
         //DesignPane.designsTest();
-        GameLogic.testBoardLogic();
+        //GameLogic.testBoardLogic();
         //GameStatisticsPane.GameStatisticsPaneStart();
 
         //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
@@ -37,12 +38,7 @@ public class Start extends Application {
         //boardConfigTest();
         //kryptoTest();
         //timerTest();
-        //launch();
-        File file = new File("./resources/Server/credentials");
-        if (file == null) {
-            System.err.println("Keine gespeicherten Benutzer gefunden");
-        }
-        System.out.println(file.isFile());
+        launch();
     }
 
     public static void hash() {

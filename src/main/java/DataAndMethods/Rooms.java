@@ -1,20 +1,36 @@
 package DataAndMethods;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class Rooms implements Serializable {
-    private final ArrayList<Room> rooms;
+    private final Vector<Room> rooms;
+    public static final int MAX_ROOMS = 25;
 
     public Rooms() {
-        rooms = new ArrayList<>();
+        rooms = new Vector<>(MAX_ROOMS); // todo max rooms
     }
 
-    public ArrayList<Room> getRooms() {
+    public Vector<Room> getRooms() {
         return rooms;
     }
 
-    public void addRoom(Room room) {
+    /**
+     * @return -1 maximale Anzahl erreicht, 1 erfolgreich
+     */
+    public synchronized int addRoom(Room room) {
+        if (rooms.size() == MAX_ROOMS) return -1;
         rooms.add(room);
+        return 1;
     }
+
+    public synchronized void removeRoom(Room room) {
+        rooms.remove(room);
+    }
+
+    public boolean maxRoomsReached() {
+        return rooms.size() == MAX_ROOMS;
+    }
+
+
 }
