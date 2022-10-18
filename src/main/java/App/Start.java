@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import javax.crypto.*;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Locale;
@@ -37,6 +38,11 @@ public class Start extends Application {
         //kryptoTest();
         //timerTest();
         //launch();
+        File file = new File("./resources/Server/credentials");
+        if (file == null) {
+            System.err.println("Keine gespeicherten Benutzer gefunden");
+        }
+        System.out.println(file.isFile());
     }
 
     public static void hash() {

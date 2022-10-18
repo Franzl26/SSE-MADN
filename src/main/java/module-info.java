@@ -12,4 +12,6 @@ module SSEProjekt {
     exports ClientLogic;
     exports RMIInterfaces;
     exports Server;
+    exports DataAndMethods;
+    exports Dialogs;
 }

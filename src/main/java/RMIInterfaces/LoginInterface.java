@@ -19,7 +19,7 @@ public interface LoginInterface extends Remote {
 
     /**
      * @return -1 Passwort entspricht nicht den Richtlinien, -2 Benutzername entspricht nicht den Richtlinien,
-     * 1 Registrierung erfolgreich
+     * -3 Benutzername bereits vorhanden, 1 Registrierung erfolgreich
      */
     int register(String username, byte[] password) throws RemoteException;
 }

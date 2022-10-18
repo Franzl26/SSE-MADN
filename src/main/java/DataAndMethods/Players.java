@@ -1,8 +1,9 @@
 package DataAndMethods;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Players {
+public class Players implements Serializable {
     private final ArrayList<String> players;
 
     public Players() {

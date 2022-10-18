@@ -33,15 +33,17 @@ public class RegisterPane extends AnchorPane {
             int ret = ClientLogic.CommunicationWithServer.tryToRegister(serverTextField.getText(),
                     usernameTextField.getText(), passwordField.getText(), passwordField2.getText());
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION,"Passwörter stimmen nicht überein").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Passwörter stimmen nicht überein").showAndWait();
             } else if (ret == -2) {
-                new Alert(Alert.AlertType.INFORMATION,"Passwort entspricht nicht den Richtlinien").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Passwort entspricht nicht den Richtlinien").showAndWait();
             } else if (ret == -3) {
-                new Alert(Alert.AlertType.INFORMATION,"Benutzername entspricht nicht den Richtlinien").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Benutzername entspricht nicht den Richtlinien").showAndWait();
             } else if (ret == -4) {
-                new Alert(Alert.AlertType.INFORMATION,"Server nicht gefunden").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Server nicht gefunden").showAndWait();
+            } else if (ret == -5) {
+                new Alert(Alert.AlertType.INFORMATION, "Benutzername bereits vergeben").showAndWait();
             } else {
-                new Alert(Alert.AlertType.INFORMATION,"Registrierung erfolgreich!").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Registrierung erfolgreich!").showAndWait();
                 ((Stage) getScene().getWindow()).close();
             }
         });

@@ -1,6 +1,8 @@
 package DataAndMethods;
 
-public class Room {
+import java.io.Serializable;
+
+public class Room implements Serializable {
     private final Players players;
 
     public Room() {

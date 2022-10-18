@@ -1,5 +1,6 @@
 package Dialogs;
 
+import ClientLogic.CommunicationWithServer;
 import DataAndMethods.Players;
 import DataAndMethods.Room;
 import DataAndMethods.Rooms;
@@ -31,11 +32,14 @@ public class RoomSelectPane extends AnchorPane {
 
         Button newGameButton = new Button("Neues Spiel erstellen");
         newGameButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            CommunicationWithServer.unsubscribeUpdateRooms();
+            CommunicationWithServer.createNewRoom();
+            ((Stage) getScene().getWindow()).close();
         });
         Button exitButton = new Button("Beenden");
         exitButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            CommunicationWithServer.unsubscribeUpdateRooms();
+            ((Stage) getScene().getWindow()).close();
         });
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
@@ -49,7 +53,8 @@ public class RoomSelectPane extends AnchorPane {
 
         getChildren().addAll(nameCanvas, roomsList, newGameButton, exitButton);
 
-        testRoomsInit();
+        CommunicationWithServer.subscribeUpdateRooms(this);
+        //testRoomsInit();
     }
 
     public void displayRooms(Rooms roomsTogether) {
