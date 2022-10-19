@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -47,9 +48,7 @@ public class LobbyPane extends AnchorPane {
         });
         Button designButton = new Button("Spieldesign auswählen");
         designButton.setPrefWidth(140);
-        designButton.addEventHandler(ActionEvent.ACTION, e -> {
-
-        });
+        designButton.addEventHandler(ActionEvent.ACTION, e -> CommunicationWithServer.designAnpassen(uli));
         Button startButton = new Button("Spiel starten");
         startButton.setPrefWidth(140);
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
@@ -57,10 +56,7 @@ public class LobbyPane extends AnchorPane {
         });
         Button exitButton = new Button("Warteraum verlassen");
         exitButton.setPrefWidth(140);
-        exitButton.addEventHandler(ActionEvent.ACTION, e -> {
-            CommunicationWithServer.raumVerlassen(uli);
-            ((Stage)getScene().getWindow()).close();
-        });
+        exitButton.addEventHandler(ActionEvent.ACTION, e -> verlassen());
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
@@ -86,9 +82,15 @@ public class LobbyPane extends AnchorPane {
     }
 
     private void setOnClose() {
-        getScene().getWindow().setOnCloseRequest(e -> {
-            CommunicationWithServer.raumVerlassen(uli);
-            ((Stage) getScene().getWindow()).close();
+        getScene().getWindow().setOnCloseRequest(e -> verlassen());
+    }
+
+    private void verlassen() {
+        new Alert(Alert.AlertType.CONFIRMATION, "Willst du die Lobby wirklich?").showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                CommunicationWithServer.raumVerlassen(uli);
+                System.exit(0);
+            }
         });
     }
 

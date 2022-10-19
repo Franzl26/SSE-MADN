@@ -1,6 +1,9 @@
 package ClientLogic;
 
+import DataAndMethods.BoardConfiguration;
+import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
+import Dialogs.DesignPane;
 import Dialogs.LobbyPane;
 import Dialogs.LoginPane;
 import Dialogs.RoomSelectPane;
@@ -178,10 +181,6 @@ public class CommunicationWithServer {
         return -1;
     }
 
-    public static int designAnpassen(UpdateLobbyInterface uli) {
-        return -1;
-    }
-
     public static void raumVerlassen(UpdateLobbyInterface uli) {
         RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
         try {
@@ -193,5 +192,51 @@ public class CommunicationWithServer {
         }
         lobbyInterface = null;
         ((Stage) pane.getScene().getWindow()).show();
+    }
+
+    /**
+     * @return -1 Design wird schon angepasst, 1 design kann angepasst werden
+     */
+    public static int designAnpassen(UpdateLobbyInterface uli) {
+        try {
+            int ret = lobbyInterface.designAnpassen(uli);
+            if (ret == -1) return -1;
+            DesignPane pane = DesignPane.DesignPaneStart(lobbyInterface.getDesignsList(uli), uli);
+
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+
+        return 1;
+    }
+
+    public static BoardConfigurationBytes getBoardConfig(UpdateLobbyInterface uli, String design) {
+        try {
+            return lobbyInterface.getBoardConfig(uli,design);
+        } catch (RemoteException e) {
+            e.printStackTrace(System.out);
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+        return null;
+    }
+
+    public static void designBestaetigen(UpdateLobbyInterface uli, String design) {
+        try {
+            lobbyInterface.designBestaetigen(uli,design);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+    }
+
+    public static void designAendernAbbrechen() {
+        try {
+            lobbyInterface.designAendernAbbrechen();
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
     }
 }

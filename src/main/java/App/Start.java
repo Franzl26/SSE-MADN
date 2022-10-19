@@ -7,13 +7,11 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 import javax.crypto.*;
-import java.io.File;
+import java.io.*;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
+import java.util.*;
 
 public class Start extends Application {
     @Override
@@ -40,7 +38,8 @@ public class Start extends Application {
         //kryptoTest();
         //timerTest();
         //vectorTest();
-        configTest();
+        //configTest();
+        folderTest();
         //launch();
     }
 
@@ -148,8 +147,22 @@ public class Start extends Application {
 
     public static void configTest() {
         BoardConfiguration config = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/");
-        config.saveConfiguration("./resources/test/");
         BoardConfiguration config2 = BoardConfiguration.loadBoardKonfiguration("./resources/test/");
         System.out.println("funktioniert");
+    }
+
+    public static void folderTest() {
+        File f = new File("./resources/designs/Standard/pathNormal.png");
+        File f2 = new File("./resources/test/pathOut.png");
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(f)); DataOutputStream dos = new DataOutputStream(new FileOutputStream(f2))) {
+            int length = (int) f.length();
+            System.out.println(length);
+            byte[] pic = new byte[length];
+            dis.readFully(pic);
+            dos.write(pic);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

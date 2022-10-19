@@ -1,9 +1,12 @@
 package Server;
 
+import DataAndMethods.BoardConfiguration;
+import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import RMIInterfaces.LobbyInterface;
 import RMIInterfaces.UpdateLobbyInterface;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
@@ -15,6 +18,9 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private int spieler = 0;
     private final RaumauswahlObject raumauswahl;
     private final Room room;
+    private String boardDesign = "Standard";
+
+    private UpdateLobbyInterface designAnpassenUli;
 
     protected LobbyObject(RaumauswahlObject raumauswahlObject, Room room) throws RemoteException {
         raumauswahl = raumauswahlObject;
@@ -34,7 +40,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         if (bots + spieler == 4) return -1;
         names[bots + spieler] = "Bot" + (bots + 1);
         bots++;
-        System.out.println(Arrays.toString(names));
         update();
         return 1;
     }
@@ -49,19 +54,49 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
             }
         }
         bots--;
-        System.out.println(Arrays.toString(names));
         update();
         return 1;
     }
 
     @Override
-    public synchronized int spielStarten(UpdateLobbyInterface uli) throws RemoteException {
+    public synchronized int spielStarten(UpdateLobbyInterface uli) throws RemoteException { // todo
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int designAnpassen(UpdateLobbyInterface uli) throws RemoteException {
-        return 0;
+    public synchronized int designAnpassen(UpdateLobbyInterface uli) throws RemoteException {
+        if (designAnpassenUli != null) return -1;
+        designAnpassenUli = uli;
+        return 1;
+    }
+
+    @Override
+    public String[] getDesignsList(UpdateLobbyInterface uli) throws RemoteException {
+        File f = new File("./resources/Server/designs/");
+        return f.list();
+    }
+
+    @Override
+    public BoardConfigurationBytes getBoardConfig(UpdateLobbyInterface uli, String design) throws RemoteException {
+        try {
+            return BoardConfigurationBytes.loadBoardKonfiguration("./resources/Server/designs/"+design+"/");
+        } catch (RuntimeException e) {
+            e.printStackTrace(System.out);
+            return null;
+        }
+    }
+
+    @Override
+    public void designBestaetigen(UpdateLobbyInterface uli, String design) throws RemoteException {
+        if (!uli.equals(designAnpassenUli)) return;
+        boardDesign = design;
+        designAnpassenUli = null;
+        System.out.println("neues design gesetzt: " + design);
+    }
+
+    @Override
+    public void designAendernAbbrechen() {
+        designAnpassenUli = null;
     }
 
     @Override
