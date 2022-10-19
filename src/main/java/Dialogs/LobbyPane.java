@@ -1,12 +1,12 @@
 package Dialogs;
 
-import DataAndMethods.Players;
-import DataAndMethods.Room;
+import ClientLogic.CommunicationWithServer;
 import RMIInterfaces.UpdateLobbyInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -32,12 +32,18 @@ public class LobbyPane extends AnchorPane {
         Button botAddButton = new Button("Bot hinzufügen");
         botAddButton.setPrefWidth(100);
         botAddButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            int ret = CommunicationWithServer.addBot(uli);
+            if (ret == -1) {
+                new Alert(Alert.AlertType.INFORMATION,"Der Warteraum ist bereits voll").showAndWait();
+            }
         });
         Button botRemoveButton = new Button("Bot entfernen");
         botRemoveButton.setPrefWidth(100);
         botRemoveButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            int ret = CommunicationWithServer.removeBot(uli);
+            if (ret == -1) {
+                new Alert(Alert.AlertType.INFORMATION,"Kein Bot im Warteraum").showAndWait();
+            }
         });
         Button designButton = new Button("Spieldesign auswählen");
         designButton.setPrefWidth(140);
@@ -52,7 +58,8 @@ public class LobbyPane extends AnchorPane {
         Button exitButton = new Button("Warteraum verlassen");
         exitButton.setPrefWidth(140);
         exitButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            CommunicationWithServer.raumVerlassen(uli);
+            ((Stage)getScene().getWindow()).close();
         });
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
@@ -72,20 +79,26 @@ public class LobbyPane extends AnchorPane {
 
 
 
-        //testNamesInit();
     }
 
     public UpdateLobbyInterface getULI() {
         return uli;
     }
 
-    public void drawNames(Room room) {
-        Players players = room.getPlayers();
+    private void setOnClose() {
+        getScene().getWindow().setOnCloseRequest(e -> {
+            CommunicationWithServer.raumVerlassen(uli);
+            ((Stage) getScene().getWindow()).close();
+        });
+    }
+
+    public void drawNames(String[] names) {
+        gcName.clearRect(0,0,200,150);
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(20));
         gcName.setFill(Color.BLACK);
-        for (int i = 0; i < players.getCount(); i++) {
-            gcName.fillText(players.getPlayer(i), 5, i*30+20,190);
+        for (int i = 0; i < names.length; i++) {
+            gcName.fillText(names[i], 5, i*30+20,190);
         }
     }
 
@@ -97,16 +110,8 @@ public class LobbyPane extends AnchorPane {
         stage.setTitle("Warteraum");
         stage.setScene(scene);
         stage.setResizable(false);
+        root.setOnClose();
         //stage.show();
         return root;
-    }
-
-    private void testNamesInit() {
-        Room room = new Room();
-        room.addPlayer("Player1");
-        room.addPlayer("Player2");
-        room.addPlayer("Player3");
-        room.addPlayer("Player4");
-        drawNames(room);
     }
 }

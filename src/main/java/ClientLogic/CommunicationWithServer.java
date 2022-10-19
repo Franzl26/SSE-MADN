@@ -31,7 +31,6 @@ public class CommunicationWithServer {
      */
     public static int tryToLogin(String server, String username, String password) {
         RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
-        UpdateRoomsInterface uri = pane.getURI();
         try {
 
             LoginInterface login = (LoginInterface) Naming.lookup("//" + server + "/" + "MADNLogin");
@@ -39,22 +38,22 @@ public class CommunicationWithServer {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] chiffrat = cipher.doFinal(password.getBytes());
-            roomSelect = login.login(username, chiffrat, uri);
+            roomSelect = login.login(username, chiffrat, pane.getURI());
             if (roomSelect == null) {
-                ((Stage)pane.getScene().getWindow()).close();
+                ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
 
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace(System.out);
-            ((Stage)pane.getScene().getWindow()).close();
+            ((Stage) pane.getScene().getWindow()).close();
             return -2;
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException |
                  BadPaddingException e) {
             throw new RuntimeException("Verschlüsselung nicht möglich");
         }
-
-        ((Stage)pane.getScene().getWindow()).show();
+        CommunicationWithServer.username = username;
+        ((Stage) pane.getScene().getWindow()).show();
         return 1;
     }
 
@@ -97,7 +96,6 @@ public class CommunicationWithServer {
     public static void unsubscribeUpdateRooms(UpdateRoomsInterface uri) {
         try {
             roomSelect.unsubscribeFromRoomUpdates(uri);
-            roomSelect = null;
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -107,14 +105,13 @@ public class CommunicationWithServer {
     /**
      * @return -1 max Raumanzahl erreicht, 1 erfolgreich
      */
-    public static int createNewRoom() {
+    public static int createNewRoom(UpdateRoomsInterface uri) {
         LobbyPane pane = LobbyPane.LobbyPaneStart();
-        UpdateLobbyInterface uli = pane.getULI();
 
         try {
-            LobbyInterface lobby = roomSelect.createNewRoom(username, uli);
+            LobbyInterface lobby = roomSelect.createNewRoom(uri, pane.getULI());
             if (lobby == null) {
-                ((Stage)pane.getScene().getWindow()).close();
+                ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
             lobbyInterface = lobby;
@@ -122,21 +119,19 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        roomSelect = null;
-        ((Stage)pane.getScene().getWindow()).show();
+        ((Stage) pane.getScene().getWindow()).show();
         return 1;
     }
 
     /**
      * @return -1 Raum voll, 1 erfolgreich
      */
-    public static int enterRoom(Room room) {
+    public static int enterRoom(UpdateRoomsInterface uri, Room room) {
         LobbyPane pane = LobbyPane.LobbyPaneStart();
-        UpdateLobbyInterface uli = pane.getULI();
         try {
-            LobbyInterface lobby = roomSelect.enterRoom(username, room, uli);
+            LobbyInterface lobby = roomSelect.enterRoom(uri, room, pane.getULI());
             if (lobby == null) {
-                ((Stage)pane.getScene().getWindow()).close();
+                ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
             lobbyInterface = lobby;
@@ -144,8 +139,59 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        roomSelect = null;
-        ((Stage)pane.getScene().getWindow()).show();
+        ((Stage) pane.getScene().getWindow()).show();
         return 1;
+    }
+
+    /**
+     * @return -1 schon 4 Bot vorhanden, 1 erfolgreich
+     */
+    public static int addBot(UpdateLobbyInterface uli) {
+        try {
+            return lobbyInterface.addBot(uli);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+        System.err.println("Test"); // todo entfernen
+        return -1;
+    }
+
+    /**
+     * @return -1 kein Bot mehr da, 1 erfolgreich
+     */
+    public static int removeBot(UpdateLobbyInterface uli) {
+        try {
+            return lobbyInterface.removeBot(uli);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+        System.err.println("Test"); // todo entfernen
+        return -1;
+    }
+
+    /**
+     * @return -1 nicht genug Spieler, 1 erfolgreich
+     */
+    public static int spielStarten(UpdateLobbyInterface uli) {
+        return -1;
+    }
+
+    public static int designAnpassen(UpdateLobbyInterface uli) {
+        return -1;
+    }
+
+    public static void raumVerlassen(UpdateLobbyInterface uli) {
+        RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
+        try {
+            lobbyInterface.raumVerlassen(uli);
+            roomSelect.subscribeToRoomUpdates(pane.getURI(),username);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+        lobbyInterface = null;
+        ((Stage) pane.getScene().getWindow()).show();
     }
 }

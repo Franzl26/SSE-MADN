@@ -12,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -42,9 +43,9 @@ public class RoomSelectPane extends AnchorPane {
 
         Button newGameButton = new Button("Neues Spiel erstellen");
         newGameButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.createNewRoom();
+            int ret = CommunicationWithServer.createNewRoom(uri);
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION,"Maximale Raumanzahl bereits erreicht").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Maximale Raumanzahl bereits erreicht").showAndWait();
             } else {
                 CommunicationWithServer.unsubscribeUpdateRooms(uri);
                 ((Stage) getScene().getWindow()).close();
@@ -52,8 +53,7 @@ public class RoomSelectPane extends AnchorPane {
         });
         Button exitButton = new Button("Beenden");
         exitButton.addEventHandler(ActionEvent.ACTION, e -> {
-            CommunicationWithServer.unsubscribeUpdateRooms(uri);
-            ((Stage) getScene().getWindow()).close();
+            beenden();
         });
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
@@ -67,7 +67,6 @@ public class RoomSelectPane extends AnchorPane {
 
         getChildren().addAll(nameCanvas, roomsList, newGameButton, exitButton);
 
-        //testRoomsInit();
     }
 
     public void displayRooms(Rooms roomsTogether) {
@@ -78,9 +77,9 @@ public class RoomSelectPane extends AnchorPane {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             Button button = new Button("Beitreten");
             button.addEventHandler(ActionEvent.ACTION, e -> {
-                int ret = CommunicationWithServer.enterRoom(r);
+                int ret = CommunicationWithServer.enterRoom(uri, r);
                 if (ret == -1) {
-                    new Alert(Alert.AlertType.INFORMATION,"Raum bereits voll").showAndWait();
+                    new Alert(Alert.AlertType.INFORMATION, "Raum bereits voll").showAndWait();
                 } else {
                     CommunicationWithServer.unsubscribeUpdateRooms(uri);
                     ((Stage) getScene().getWindow()).close();
@@ -107,6 +106,21 @@ public class RoomSelectPane extends AnchorPane {
         return uri;
     }
 
+    private void setOnClose() {
+        getScene().getWindow().setOnCloseRequest(e -> {
+            beenden();
+        });
+    }
+
+    private void beenden() {
+        new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich beenden?").showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                CommunicationWithServer.unsubscribeUpdateRooms(uri);
+                System.exit(0);
+            }
+        });
+    }
+
     public static RoomSelectPane RoomSelectPaneStart(String username) {
         RoomSelectPane root = new RoomSelectPane(username);
         Scene scene = new Scene(root, 820, 500);
@@ -115,21 +129,8 @@ public class RoomSelectPane extends AnchorPane {
         stage.setTitle("Raum Auswahl");
         stage.setScene(scene);
         stage.setResizable(false);
+        root.setOnClose();
         //stage.show();
         return root;
-    }
-
-    private void testRoomsInit() {
-        Rooms rooms = new Rooms();
-        Room room;
-
-        for (int i = 0; i < 20; i++) {
-            room = new Room();
-            for (int j = 0; j <= i % 4; j++) {
-                room.addPlayer("Player" + j);
-            }
-            rooms.addRoom(room);
-        }
-        displayRooms(rooms);
     }
 }

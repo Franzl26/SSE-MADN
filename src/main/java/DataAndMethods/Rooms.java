@@ -5,10 +5,10 @@ import java.util.Vector;
 
 public class Rooms implements Serializable {
     private final Vector<Room> rooms;
-    public static final int MAX_ROOMS = 25;
+    public static final int MAX_ROOMS = 5; // todo max rooms
 
     public Rooms() {
-        rooms = new Vector<>(MAX_ROOMS); // todo max rooms
+        rooms = new Vector<>(MAX_ROOMS);
     }
 
     public Vector<Room> getRooms() {

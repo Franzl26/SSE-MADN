@@ -69,6 +69,12 @@ public class RegisterPane extends AnchorPane {
         getChildren().addAll(abbrechenButton, serverTextField, usernameTextField, passwordField, passwordField2, registrierenButton);
     }
 
+    private void setOnClose() {
+        getScene().getWindow().setOnCloseRequest(e -> {
+            LoginPane.LoginPaneStart();
+            ((Stage) getScene().getWindow()).close();
+        });
+    }
     public static void RegisterPaneStart() {
         RegisterPane root = new RegisterPane();
         Scene scene = new Scene(root, 300, 180);
@@ -77,6 +83,7 @@ public class RegisterPane extends AnchorPane {
         stage.setTitle("Registrieren");
         stage.setScene(scene);
         stage.setResizable(false);
+        root.setOnClose();
         stage.show();
     }
 }

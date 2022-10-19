@@ -6,9 +6,6 @@ import java.util.regex.Pattern;
 import static DataAndMethods.FieldState.*;
 
 public class MiscMethods {
-    private static final Pattern pwPattern = Pattern.compile("[^ ]*"); // todo anpassen
-    private static final Pattern namePattern = Pattern.compile("[^ ]*");
-
     public static boolean checkMoveValid(BoardState boardState, FieldState player, int from, int to, int dice) {
         // Prio-Zug durchgeführt
         int prio = checkForPrioMove(boardState, player, dice);
@@ -80,13 +77,24 @@ public class MiscMethods {
         return -1;
     }
 
+    private static final Pattern pwPattern1 = Pattern.compile("[!§$%&/()=?#a-zA-Z\\d]{8,15}");
+    private static final Pattern pwPattern2 = Pattern.compile(".*[!§$%&/()=?#]+.*");
+    private static final Pattern pwPattern3 = Pattern.compile(".*[a-zA-Z]+.*");
+    private static final Pattern pwPattern4 = Pattern.compile(".*\\d+.*");
+    private static final Pattern namePattern1 = Pattern.compile("[A-Za-z]{3,8}");
+    private static final Pattern namePattern2 = Pattern.compile("([bB][oO][tT]).*");
+
     public static boolean checkPasswordGuidelines(String pw) {
-        Matcher match = pwPattern.matcher(pw);
-        return match.matches();
+        Matcher match1 = pwPattern1.matcher(pw);
+        Matcher match2 = pwPattern2.matcher(pw);
+        Matcher match3 = pwPattern3.matcher(pw);
+        Matcher match4 = pwPattern4.matcher(pw);
+        return match1.matches() && match2.matches() && match3.matches() && match4.matches();
     }
 
     public static boolean checkUsernameGuidelines(String name) {
-        Matcher match = namePattern.matcher(name);
-        return match.matches();
+        Matcher match1 = namePattern1.matcher(name);
+        Matcher match2 = namePattern2.matcher(name);
+        return match1.matches() && !match2.matches();
     }
 }

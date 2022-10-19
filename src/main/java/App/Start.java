@@ -13,6 +13,7 @@ import java.security.*;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 public class Start extends Application {
     @Override
@@ -38,7 +39,9 @@ public class Start extends Application {
         //boardConfigTest();
         //kryptoTest();
         //timerTest();
-        launch();
+        //vectorTest();
+        configTest();
+        //launch();
     }
 
     public static void hash() {
@@ -134,5 +137,19 @@ public class Start extends Application {
         public void run() {
             System.out.println(System.currentTimeMillis());
         }
+    }
+
+    public static void vectorTest() {
+        Vector<String> vector = new Vector<>(25);
+        System.out.println(vector.size());
+        vector.add("e");
+        System.out.println(vector.size());
+    }
+
+    public static void configTest() {
+        BoardConfiguration config = BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/");
+        config.saveConfiguration("./resources/test/");
+        BoardConfiguration config2 = BoardConfiguration.loadBoardKonfiguration("./resources/test/");
+        System.out.println("funktioniert");
     }
 }

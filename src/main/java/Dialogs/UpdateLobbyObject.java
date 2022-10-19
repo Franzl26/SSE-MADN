@@ -1,7 +1,5 @@
 package Dialogs;
 
-import DataAndMethods.Room;
-import Dialogs.LobbyPane;
 import RMIInterfaces.UpdateLobbyInterface;
 
 import java.rmi.RemoteException;
@@ -15,7 +13,7 @@ public class UpdateLobbyObject extends UnicastRemoteObject implements UpdateLobb
     }
 
     @Override
-    public void updateNames(Room room) throws RemoteException {
-        pane.drawNames(room);
+    public void updateNames(String[] names) throws RemoteException {
+        pane.drawNames(names);
     }
 }

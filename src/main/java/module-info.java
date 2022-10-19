@@ -1,7 +1,9 @@
 module SSEProjekt {
     requires javafx.controls;
     requires javafx.media;
+    requires javafx.swing;
     requires java.rmi;
+    requires java.desktop;
 
     opens App;
     opens Dialogs;

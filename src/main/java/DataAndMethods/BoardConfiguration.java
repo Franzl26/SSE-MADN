@@ -1,11 +1,13 @@
 package DataAndMethods;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.imageio.*;
 
 public class BoardConfiguration {
     public final int[][] pointCoordinates;
@@ -46,7 +48,7 @@ public class BoardConfiguration {
 
     public static BoardConfiguration loadBoardKonfiguration(String dir) {
         Builder builder = new Builder();
-        if (!builder.read(dir)) throw new LoadBoardConfigurationException("Could not load board configuration");
+        if (!builder.read(dir)) throw new RuntimeException("Could not load board configuration");
         return builder.build();
     }
 
@@ -76,14 +78,14 @@ public class BoardConfiguration {
             try {
                 File f = new File(dir);
                 if (!f.isDirectory()) return false;
-                board = new Image(Paths.get(f.getAbsolutePath()+"/board.png").toUri().toString());
+                board = new Image(Paths.get(f.getAbsolutePath() + "/board.png").toUri().toString());
                 pathNormal = new Image(Paths.get(f.getAbsolutePath() + "/pathNormal.png").toUri().toString());
                 dice = readImages(f.getAbsolutePath(), "/dice", 8);
                 path = readImages(f.getAbsolutePath(), "/path", 4);
                 personal = readImages(f.getAbsolutePath(), "/personal", 4);
                 figure = readImages(f.getAbsolutePath(), "/figure", 4);
                 figureHigh = readImages(f.getAbsolutePath(), "/figureHigh", 4);
-            } catch (NullPointerException|IllegalArgumentException e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 e.printStackTrace(System.out);
                 return false;
             }
@@ -134,5 +136,40 @@ public class BoardConfiguration {
             return temp;
         }
 
+    }
+
+    public void saveConfiguration(String dir) {
+        // Bilder speichern
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(board, null), "png", new File(dir + "board.png"));
+            ImageIO.write(SwingFXUtils.fromFXImage(pathNormal, null), "png", new File(dir + "pathNormal.png"));
+            saveImages(dir, "dice", dice);
+            saveImages(dir, "figure", figure);
+            saveImages(dir, "figureHigh", figureHigh);
+            saveImages(dir, "path", path);
+            saveImages(dir, "personal", personal);
+        } catch (IOException e) {
+            throw new RuntimeException("Config konnte nicht gespeichert werden");
+        }
+
+        // Positionen speichern
+        File file = new File(dir + "positions.txt");
+        try (FileWriter writer = new FileWriter(file)) {
+            for (int i = 0; i < 72; i++) {
+                writer.write(pointCoordinates[i][0] + " " + pointCoordinates[i][1] + " " + orientation[i][0] + " " + orientation[i][1]+"\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Fehler beim speichern der Positionen");
+        }
+    }
+
+    private void saveImages(String dir, String name, Image[] pics) {
+        for (int i = 0; i < pics.length; i++) {
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(pics[i], null), "png", new File(dir + name + i + ".png"));
+            } catch (IOException e) {
+                System.err.println("Fehler beim Speichern von: " + name + i);
+            }
+        }
     }
 }

@@ -18,11 +18,12 @@ public class LoginPane extends AnchorPane {
         serverTextField.setPromptText("Server");
         serverTextField.setPrefWidth(280);
 
-        TextField usernameTextField = new TextField();
+        TextField usernameTextField = new TextField("Frank");
         usernameTextField.setPromptText("Benutzername");
         usernameTextField.setPrefWidth(280);
 
         PasswordField passwordField = new PasswordField();
+        passwordField.setText("1234");
         passwordField.setPromptText("Passwort");
         passwordField.setPrefWidth(280);
 

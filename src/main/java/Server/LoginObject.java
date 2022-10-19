@@ -3,7 +3,6 @@ package Server;
 import DataAndMethods.MiscMethods;
 import RMIInterfaces.LoginInterface;
 import RMIInterfaces.RaumauswahlInterface;
-import RMIInterfaces.UpdateLobbyInterface;
 import RMIInterfaces.UpdateRoomsInterface;
 
 import javax.crypto.BadPaddingException;
@@ -41,7 +40,7 @@ public class LoginObject extends UnicastRemoteObject implements LoginInterface {
     public RaumauswahlInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException {
         byte[] pwDecrypted = hashPassword(decryptPassword(password));
         if (users.checkPassword(username, pwDecrypted) != 1) return null;
-        raumauswahl.addClient(uri);
+        raumauswahl.addClient(uri,username);
         users.saveCredentials();
         return raumauswahl;
     }
