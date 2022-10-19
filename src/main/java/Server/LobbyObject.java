@@ -1,6 +1,5 @@
 package Server;
 
-import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import RMIInterfaces.LobbyInterface;
@@ -9,7 +8,6 @@ import RMIInterfaces.UpdateLobbyInterface;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 
 public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private final String[] names = new String[4];
@@ -20,7 +18,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private final Room room;
     private String boardDesign = "Standard";
 
-    private UpdateLobbyInterface designAnpassenUli;
+    private UpdateLobbyInterface designAnpassenUli; // todo ggf entfernen stattdessen synchronised?
 
     protected LobbyObject(RaumauswahlObject raumauswahlObject, Room room) throws RemoteException {
         raumauswahl = raumauswahlObject;

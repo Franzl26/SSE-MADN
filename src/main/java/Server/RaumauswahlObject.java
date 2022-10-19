@@ -9,7 +9,6 @@ import RMIInterfaces.UpdateRoomsInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -70,6 +69,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
 
     protected synchronized void removeRoom(Room room) {
         roomLobbyMap.remove(room);
+        rooms.removeRoom(room);
     }
 
     private void unsubscribeFromRoomUpdatesPrivate(UpdateRoomsInterface uri) {
@@ -83,14 +83,12 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         synchronized (clients) {
             copy =  clients.keySet();
         }
-        copy.forEach(client -> {
-            new Thread(() -> {
-                try {
-                    client.updateRooms(rooms);
-                } catch (RemoteException e) {
-                    unsubscribeFromRoomUpdatesPrivate(client);
-                }
-            }).start();
-        });
+        copy.forEach(client -> new Thread(() -> {
+            try {
+                client.updateRooms(rooms);
+            } catch (RemoteException e) {
+                unsubscribeFromRoomUpdatesPrivate(client);
+            }
+        }).start());
     }
 }

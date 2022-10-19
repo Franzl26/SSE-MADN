@@ -1,6 +1,5 @@
 package ClientLogic;
 
-import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import Dialogs.DesignPane;
@@ -156,7 +155,6 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        System.err.println("Test"); // todo entfernen
         return -1;
     }
 
@@ -170,14 +168,13 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        System.err.println("Test"); // todo entfernen
         return -1;
     }
 
     /**
      * @return -1 nicht genug Spieler, 1 erfolgreich
      */
-    public static int spielStarten(UpdateLobbyInterface uli) {
+    public static int spielStarten(UpdateLobbyInterface uli) { // todo
         return -1;
     }
 
@@ -201,7 +198,7 @@ public class CommunicationWithServer {
         try {
             int ret = lobbyInterface.designAnpassen(uli);
             if (ret == -1) return -1;
-            DesignPane pane = DesignPane.DesignPaneStart(lobbyInterface.getDesignsList(uli), uli);
+            DesignPane.DesignPaneStart(lobbyInterface.getDesignsList(uli), uli);
 
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();

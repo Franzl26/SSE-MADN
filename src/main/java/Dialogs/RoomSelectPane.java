@@ -1,7 +1,6 @@
 package Dialogs;
 
 import ClientLogic.CommunicationWithServer;
-import DataAndMethods.Players;
 import DataAndMethods.Room;
 import DataAndMethods.Rooms;
 import RMIInterfaces.UpdateRoomsInterface;
@@ -20,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class RoomSelectPane extends AnchorPane {
@@ -52,9 +52,7 @@ public class RoomSelectPane extends AnchorPane {
             }
         });
         Button exitButton = new Button("Beenden");
-        exitButton.addEventHandler(ActionEvent.ACTION, e -> {
-            beenden();
-        });
+        exitButton.addEventHandler(ActionEvent.ACTION, e -> beenden());
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
@@ -86,10 +84,10 @@ public class RoomSelectPane extends AnchorPane {
                 }
             });
 
-            Players players = r.getPlayers();
+            ArrayList<String> players = r.getPlayers();
             StringBuilder build = new StringBuilder();
-            build.append(players.getCount()).append("/4    ");
-            for (String p : players.getPlayers()) {
+            build.append(players.size()).append("/4    ");
+            for (String p : players) {
                 build.append(p).append("  ");
             }
             gc.setLineWidth(1.0);
@@ -109,7 +107,9 @@ public class RoomSelectPane extends AnchorPane {
     private void setOnClose() {
         getScene().getWindow().setOnCloseRequest(e -> {
             beenden();
+            e.consume();
         });
+
     }
 
     private void beenden() {

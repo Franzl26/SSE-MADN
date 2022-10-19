@@ -24,7 +24,7 @@ public class Start extends Application {
         //RoomSelectPane.RoomSelectPaneStart("Username");
         //LobbyPane.LobbyPaneStart();
         //DesignPane.designsTest();
-        //GameLogic.testBoardLogic();
+        GameLogic.testBoardLogic();
         //GameStatisticsPane.GameStatisticsPaneStart();
 
         //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
@@ -39,8 +39,8 @@ public class Start extends Application {
         //timerTest();
         //vectorTest();
         //configTest();
-        folderTest();
-        //launch();
+        //folderTest();
+        launch();
     }
 
     public static void hash() {

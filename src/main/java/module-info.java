@@ -7,7 +7,6 @@ module SSEProjekt {
 
     opens App;
     opens Dialogs;
-    opens NoLongerInUse;
     opens ClientLogic;
     opens DataAndMethods;
 

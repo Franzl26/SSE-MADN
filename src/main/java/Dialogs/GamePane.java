@@ -4,7 +4,6 @@ import ClientLogic.GameLogic;
 import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardState;
 import DataAndMethods.FieldState;
-import DataAndMethods.Players;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static DataAndMethods.BoardDrawer.drawBoardAll;
 import static DataAndMethods.BoardDrawer.drawBoardSingleFieldAll;
@@ -117,14 +117,14 @@ public class GamePane extends AnchorPane {
         drawBoardSingleFieldAll(gcBoard, config, state, i, highlight);
     }
 
-    public void drawNames(Players players, int turn) {
+    public void drawNames(ArrayList<String> players, int turn) {
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(40));
         gcName.setFill(Color.BLACK);
 
-        for (int i = 0; i < players.getCount(); i++) {
+        for (int i = 0; i < players.size(); i++) {
             gcName.drawImage(config.figure[i], 5 + 245 * i, 5, 40, 40);
-            String p = players.getPlayer(i);
+            String p = players.get(i);
             gcName.fillText(p, i * 245 + 50, 40, 190);
             //gcName.drawImage(config.personal[i], 200 + 245 * i, 5, 40, 40);
 
@@ -173,11 +173,11 @@ public class GamePane extends AnchorPane {
     private void testGameInit(GamePane pane) {
         pane.drawDice(7);
 
-        Players players = new Players();
-        players.addPlayer("Tom");
-        players.addPlayer("Nico");
-        players.addPlayer("Markus");
-        players.addPlayer("Domenik");
+        ArrayList<String> players = new ArrayList<>();
+        players.add("Tom");
+        players.add("Nico");
+        players.add("Markus");
+        players.add("Domenik");
         pane.drawNames(players, 2);
         showGif();
     }

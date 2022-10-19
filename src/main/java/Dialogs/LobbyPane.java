@@ -48,11 +48,16 @@ public class LobbyPane extends AnchorPane {
         });
         Button designButton = new Button("Spieldesign auswählen");
         designButton.setPrefWidth(140);
-        designButton.addEventHandler(ActionEvent.ACTION, e -> CommunicationWithServer.designAnpassen(uli));
+        designButton.addEventHandler(ActionEvent.ACTION, e -> {
+            int ret = CommunicationWithServer.designAnpassen(uli);
+            if (ret == -1) {
+                new Alert(Alert.AlertType.INFORMATION,"Design wird bereits von einem anderen Spieler angepasst").showAndWait();
+            }
+        });
         Button startButton = new Button("Spiel starten");
         startButton.setPrefWidth(140);
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
-
+            // todo
         });
         Button exitButton = new Button("Warteraum verlassen");
         exitButton.setPrefWidth(140);
@@ -82,14 +87,17 @@ public class LobbyPane extends AnchorPane {
     }
 
     private void setOnClose() {
-        getScene().getWindow().setOnCloseRequest(e -> verlassen());
+        getScene().getWindow().setOnCloseRequest(e -> {
+            verlassen();
+            e.consume();
+        });
     }
 
     private void verlassen() {
-        new Alert(Alert.AlertType.CONFIRMATION, "Willst du die Lobby wirklich?").showAndWait().ifPresent(response -> {
+        new Alert(Alert.AlertType.CONFIRMATION, "Willst du die Lobby wirklich verlassen?").showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 CommunicationWithServer.raumVerlassen(uli);
-                System.exit(0);
+                ((Stage)getScene().getWindow()).close();
             }
         });
     }

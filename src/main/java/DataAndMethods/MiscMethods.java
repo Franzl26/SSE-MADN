@@ -7,12 +7,15 @@ import static DataAndMethods.FieldState.*;
 
 public class MiscMethods {
     public static boolean checkMoveValid(BoardState boardState, FieldState player, int from, int to, int dice) {
+        FieldState[] board = boardState.getBoardState();
+        // richtige Spielfigur/nicht selber schlagen
+        if (board[from] != player || board[to] == player) return false;
+
         // Prio-Zug durchgeführt
         int prio = checkForPrioMove(boardState, player, dice);
         boolean b = ((from - 32 + dice) % 40 + 32) == to;
         if (prio != -1 && prio == from && b) return true;
 
-        FieldState[] board = boardState.getBoardState();
         // Spielzug auf Weg
         if (from >= 32 && to >= 32 && b && board[to] != player) {
             // nicht über Start beachten
@@ -22,7 +25,6 @@ public class MiscMethods {
             if (player == FIELD_FIGURE2 && !((i + dice) >= 20 && i < 20)) return true;
             if (player == FIELD_FIGURE3 && !((i + dice) >= 30 && i < 30)) return true;
         }
-
         // raus rücken
         if (dice == 6) {
             if (player == FIELD_FIGURE0 && from > 0 && from < 4 && to == 32 && board[to] != FIELD_FIGURE0) return true;
@@ -32,16 +34,39 @@ public class MiscMethods {
                 return true;
         }
         // rein rücken
-        if (player == FIELD_FIGURE0 && from >= 66 && from <= 71 && to >= 16 && to <= 19 && from + dice == to + 56)
+        if (player == FIELD_FIGURE0 && from >= 66 && from <= 71 && to >= 16 && to <= 19 && from + dice == to + 56) {
+            for (int i = 16; i < to; i++) if (board[i] == FIELD_FIGURE0) return false;
             return true;
-        if (player == FIELD_FIGURE1 && from >= 36 && from <= 41 && to >= 20 && to <= 23 && from + dice == to + 22)
+        }
+        if (player == FIELD_FIGURE1 && from >= 36 && from <= 41 && to >= 20 && to <= 23 && from + dice == to + 22) {
+            for (int i = 20; i < to; i++) if (board[i] == FIELD_FIGURE1) return false;
             return true;
-        if (player == FIELD_FIGURE2 && from >= 46 && from <= 51 && to >= 24 && to <= 27 && from + dice == to + 28)
+        }
+        if (player == FIELD_FIGURE2 && from >= 46 && from <= 51 && to >= 24 && to <= 27 && from + dice == to + 28) {
+            for (int i = 24; i < to; i++) if (board[i] == FIELD_FIGURE2) return false;
             return true;
-        //noinspection RedundantIfStatement
-        if (player == FIELD_FIGURE3 && from >= 56 && from <= 61 && to >= 28 && to <= 31 && from + dice == to + 34)
+        }
+        if (player == FIELD_FIGURE3 && from >= 56 && from <= 61 && to >= 28 && to <= 31 && from + dice == to + 34) {
+            for (int i = 28; i < to; i++) if (board[i] == FIELD_FIGURE3) return false;
             return true;
-
+        }
+        // in Zielfeldern rücken
+        if (player == FIELD_FIGURE0 && from >= 16 && from <= 19 && to >= 17 && to <= 19 && from + dice == to) {
+            for (int i = from + 1; i < to; i++) if (board[i] == FIELD_FIGURE0) return false;
+            return true;
+        }
+        if (player == FIELD_FIGURE1 && from >= 20 && from <= 23 && to >= 21 && to <= 23 && from + dice == to) {
+            for (int i = from + 1; i < to; i++) if (board[i] == FIELD_FIGURE1) return false;
+            return true;
+        }
+        if (player == FIELD_FIGURE2 && from >= 24 && from <= 27 && to >= 25 && to <= 27 && from + dice == to) {
+            for (int i = from + 1; i < to; i++) if (board[i] == FIELD_FIGURE2) return false;
+            return true;
+        }
+        if (player == FIELD_FIGURE3 && from >= 28 && from <= 31 && to >= 29 && to <= 31 && from + dice == to) {
+            for (int i = from + 1; i < to; i++) if (board[i] == FIELD_FIGURE3) return false;
+            return true;
+        }
         return false;
     }
 

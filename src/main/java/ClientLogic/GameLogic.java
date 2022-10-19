@@ -20,7 +20,6 @@ public class GameLogic {
     public GameLogic(BoardConfiguration boardConfig) {
         this.boardConfig = boardConfig;
         pane = GamePane.GamePaneStart(this);
-
         board = new BoardState();
         board.reset();
         //board.fillWithOneTest();

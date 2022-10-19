@@ -1,7 +1,6 @@
 package ClientLogic;
 
 import Dialogs.LoginPane;
-import RMIInterfaces.LoginInterface;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

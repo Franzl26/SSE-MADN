@@ -13,7 +13,7 @@ public class BoardDrawer {
     public static void drawBoardAll(GraphicsContext gc, BoardConfiguration config, BoardState board) {
         //gc.setFill(Color.LIGHTSLATEGRAY);
         gc.setFill(Color.BLACK);
-        gc.fillRect(0,0,500,500);
+        gc.fillRect(0, 0, 500, 500);
         gc.drawImage(config.board, 0, 0, 500, 500);
         FieldState[] state = board.getBoardState();
         for (int i = 0; i < 72; i++) {
@@ -55,7 +55,10 @@ public class BoardDrawer {
         params.setFill(Color.TRANSPARENT);
         image = iv.snapshot(params, null);
 
-        gc.drawImage(config.board, (config.pointCoordinates[i][0] - 20) * config.board.getWidth() / 500, (config.pointCoordinates[i][1] - 20) * config.board.getHeight() / 500, 40 * config.board.getWidth() / 500, 40 * config.board.getHeight() / 500, config.pointCoordinates[i][0] - 20, config.pointCoordinates[i][1] - 20, 40, 40);
+        gc.drawImage(config.board, (config.pointCoordinates[i][0] - 20) * config.board.getWidth() / 500,
+                (config.pointCoordinates[i][1] - 20) * config.board.getHeight() / 500,
+                40 * config.board.getWidth() / 500, 40 * config.board.getHeight() / 500,
+                config.pointCoordinates[i][0] - 20, config.pointCoordinates[i][1] - 20, 40, 40);
         gc.save();
         gc.translate(config.pointCoordinates[i][0], config.pointCoordinates[i][1]);
         if (state != FIELD_NONE) gc.rotate(config.orientation[i][0]);

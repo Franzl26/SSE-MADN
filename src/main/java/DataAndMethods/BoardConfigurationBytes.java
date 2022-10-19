@@ -24,7 +24,7 @@ public class BoardConfigurationBytes implements Serializable {
     }
 
     public static BoardConfigurationBytes loadBoardKonfiguration(String dir) {
-        System.out.println(dir);
+        if (!dir.endsWith("/")) dir = dir.concat("/");
         Builder builder = new Builder();
         if (!builder.read(dir)) throw new RuntimeException("Could not load board configuration");
         return builder.build();
