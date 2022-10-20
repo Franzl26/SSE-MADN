@@ -23,14 +23,8 @@ import java.util.Vector;
 
 public class RoomSelectPane extends AnchorPane {
     private final ListView<HBox> roomsList;
-    private final UpdateRoomsInterface uri;
 
     public RoomSelectPane(String username) {
-        try {
-            uri = new UpdateRoomsObject(this);
-        } catch (RemoteException e) {
-            throw new RuntimeException("UpdateRoomsObject konnte nicht erstellt werden");
-        }
 
         Canvas nameCanvas = new Canvas(300, 40);
         GraphicsContext gcName = nameCanvas.getGraphicsContext2D();
@@ -97,10 +91,6 @@ public class RoomSelectPane extends AnchorPane {
 
             roomsList.getItems().add(box);
         }
-    }
-
-    public UpdateRoomsInterface getURI() {
-        return uri;
     }
 
     private void setOnClose() {

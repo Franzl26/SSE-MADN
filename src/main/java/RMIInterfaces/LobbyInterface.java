@@ -1,23 +1,27 @@
 package RMIInterfaces;
 
+import Server.GameObject;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface LobbyInterface extends Remote {
     /**
-     * @return -1 schon 4 Bot vorhanden, -2 nicht in Lobby, 1 erfolgreich todo
+     * @return -1 schon 4 Bot vorhanden, 1 erfolgreich
      */
     int addBot(LoggedInInterface lii) throws RemoteException;
 
     /**
-     * @return -1 kein Bot mehr da, -2 nicht in Lobby, 1 erfolgreich todo
+     * @return -1 kein Bot mehr da, 1 erfolgreich
      */
     int removeBot(LoggedInInterface lii) throws RemoteException;
 
     /**
-     * @return -1 nicht genug Spieler, -2 nicht in Lobby, 1 erfolgreich
+     * @return -1 Spiel kann nicht gestartet werden, 1 Spiel wird gestartet
      */
-    int spielStarten(LoggedInInterface lii, UpdateGameInterface ugi) throws RemoteException;
+    int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException;
+
+    GameInterface spielStartet(LoggedInInterface lii, UpdateGameInterface ugi) throws RemoteException;
 
     void designBestaetigen(LoggedInInterface lii, String design) throws RemoteException;
 

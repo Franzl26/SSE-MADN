@@ -1,42 +1,43 @@
 package DataAndMethods;
 
 public class GameStatistics {
-    private final int[] numbersThrown = new int[6];
-    private int peopleKicked = 0;
+    private final int[][] zahlenGewuerfelt = new int[4][6];
+    private final int[] andereGeschlagen = new int[4];
+    private final int[] geschlagenWorden = new int[4];
+    private final String[] finishPlaces = new String[4];
     private long startTime;
     private long endTime;
-    private int finishPlace;
 
-    public int getFinishPlace() {
-        return finishPlace;
+    public void incZahlGewuerfelt(int spieler, int zahl) {
+        zahlenGewuerfelt[spieler][zahl]++;
     }
 
-    public void setFinishPlace(int finishPlace) {
-        this.finishPlace = finishPlace;
+    public void incAndereGeschlagen(int spieler) {
+        andereGeschlagen[spieler]++;
     }
 
-    public void incrementThrows(int zahl) {
-        numbersThrown[zahl - 1]++;
+    public void incGeschlagenWorden(int spieler) {
+        geschlagenWorden[spieler]++;
     }
 
-    public int getTotalThrows() {
-        int temp = 0;
-        for (int i = 0; i < 6; i++) {
-            temp += numbersThrown[i];
-        }
-        return temp;
+    public void setFinish(int platz, String name) {
+        finishPlaces[platz] = name;
     }
 
-    public int getThrows(int zahl) {
-        return numbersThrown[zahl - 1];
+    public int[][] getZahlenGewuerfelt() {
+        return zahlenGewuerfelt;
     }
 
-    public void incrementPeopleKicked() {
-        peopleKicked++;
+    public int[] getAndereGeschlagen() {
+        return andereGeschlagen;
     }
 
-    public int getPeopleKicked() {
-        return peopleKicked;
+    public int[] getGeschlagenWorden() {
+        return geschlagenWorden;
+    }
+
+    public String[] getFinishPlaces() {
+        return finishPlaces;
     }
 
     public void setStartTime() {
@@ -45,14 +46,6 @@ public class GameStatistics {
 
     public void setEndTime() {
         endTime = System.currentTimeMillis();
-    }
-
-    public void setStartTime(long millis) {
-        startTime = millis;
-    }
-
-    public void setEndTime(long millis) {
-        endTime = millis;
     }
 
     public long getGameDurationSeconds() {

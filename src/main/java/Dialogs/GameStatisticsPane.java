@@ -29,11 +29,10 @@ public class GameStatisticsPane extends AnchorPane {
 
         getChildren().addAll(canvas, okayButton);
 
-        drawStatisticsTest();
     }
 
     public void drawStatistics(GameStatistics stats) {
-        gc.setLineWidth(1.0);
+        /*gc.setLineWidth(1.0);
         gc.setFont(Font.font(40));
         gc.fillText("Platz: " + stats.getFinishPlace(), 5, 30);
         gc.setFont(Font.font(30));
@@ -50,7 +49,7 @@ public class GameStatisticsPane extends AnchorPane {
         gc.setFont(Font.font(25));
         gc.fillText("andere Spieler geschlagen: " + stats.getPeopleKicked(), 5, 240);
         long time = stats.getGameDurationSeconds();
-        gc.fillText("Spielzeit: " + (time / 3600) + ":" + ((time % 3600) / 60) + ":" + (time % 60) + " h", 5, 270);
+        gc.fillText("Spielzeit: " + (time / 3600) + ":" + ((time % 3600) / 60) + ":" + (time % 60) + " h", 5, 270);*/
     }
 
     public static void GameStatisticsPaneStart() {
@@ -62,20 +61,5 @@ public class GameStatisticsPane extends AnchorPane {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-    }
-
-    private void drawStatisticsTest() {
-        GameStatistics stats = new GameStatistics();
-        for (int i = 0; i < 100; i++) stats.incrementThrows(1);
-        for (int i = 0; i < 110; i++) stats.incrementThrows(2);
-        for (int i = 0; i < 90; i++) stats.incrementThrows(3);
-        for (int i = 0; i < 97; i++) stats.incrementThrows(4);
-        for (int i = 0; i < 103; i++) stats.incrementThrows(5);
-        for (int i = 0; i < 120; i++) stats.incrementThrows(6);
-        for (int i = 0; i < 45; i++) stats.incrementPeopleKicked();
-        stats.setFinishPlace(2);
-        stats.setStartTime(0);
-        stats.setEndTime(754000);
-        drawStatistics(stats);
     }
 }

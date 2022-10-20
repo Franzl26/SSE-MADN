@@ -16,4 +16,9 @@ public class UpdateLobbyObject extends UnicastRemoteObject implements UpdateLobb
     public void updateNames(String[] names) throws RemoteException {
         pane.drawNames(names);
     }
+
+    @Override
+    public void gameStarts() throws RemoteException {
+        pane.gameStarts();
+    }
 }

@@ -46,8 +46,7 @@ public class DesignPane extends AnchorPane {
             }
             last = true;
             BoardConfiguration config = getBoardConfig(boardChoice.getValue());
-            BoardState state = new BoardState();
-            state.reset();
+            BoardState state = new BoardState(4);
             drawBoardAll(gcBoard, config, state);
             gcDice.setFill(Color.LIGHTSLATEGRAY);
             gcDice.fillRect(0, 0, 100, 100);

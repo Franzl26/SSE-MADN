@@ -1,7 +1,6 @@
 package Dialogs;
 
 import DataAndMethods.BoardState;
-import RMIInterfaces.GameInterface;
 import RMIInterfaces.UpdateGameInterface;
 
 import java.rmi.RemoteException;
@@ -14,10 +13,10 @@ public class UpdateGameObject extends UnicastRemoteObject implements UpdateGameI
         logic = gameLogic;
     }
 
-    @Override
+    /*@Override
     public void welcomeToGame(GameInterface game) throws RemoteException {
         logic.setGameInterface(game);
-    }
+    }*/
 
     @Override
     public void displayNewState(BoardState state, int[] changed, String[] names, int turn) throws RemoteException {
@@ -30,8 +29,8 @@ public class UpdateGameObject extends UnicastRemoteObject implements UpdateGameI
     }
 
     @Override
-    public void rollDiceOver() throws RemoteException {
-        logic.rollDiceOver();
+    public void rollDiceOver(int wurf) throws RemoteException {
+        logic.rollDiceOver(wurf);
     }
 
     @Override

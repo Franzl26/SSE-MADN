@@ -1,6 +1,7 @@
 package Server;
 
 import DataAndMethods.BoardConfigurationBytes;
+import DataAndMethods.GameStatistics;
 import DataAndMethods.Room;
 import RMIInterfaces.*;
 
@@ -12,6 +13,7 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     private final RaumauswahlObject raumauswahlObject;
     private final LoginInterface loginInterface;
     private LobbyInterface lobbyInterface;
+    private GameInterface gameInterface;
 
     protected LoggedInObject(String username, RaumauswahlObject roomSelect, LoginInterface loginInterface) throws RemoteException {
         this.username = username;
@@ -30,7 +32,7 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
 
     @Override
     public void subscribeToRoomUpdates(UpdateRoomsInterface uri) throws RemoteException {
-        raumauswahlObject.subscribeToRoomUpdates(this,uri);
+        raumauswahlObject.subscribeToRoomUpdates(this, uri);
     }
 
     public void unsubscribeFromRoomUpdates() throws RemoteException {
@@ -39,14 +41,14 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
 
     @Override
     public int createNewRoom(UpdateLobbyInterface uli) throws RemoteException {
-        lobbyInterface = raumauswahlObject.createNewRoom(this,uli);
+        lobbyInterface = raumauswahlObject.createNewRoom(this, uli);
         if (lobbyInterface == null) return -1;
         return 1;
     }
 
     @Override
     public int enterRoom(Room room, UpdateLobbyInterface uli) throws RemoteException {
-        lobbyInterface = raumauswahlObject.enterRoom(this, room,uli);
+        lobbyInterface = raumauswahlObject.enterRoom(this, room, uli);
         if (lobbyInterface == null) return -1;
         return 1;
     }
@@ -62,10 +64,16 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     }
 
     @Override
-    public int spielStarten(UpdateGameInterface ugi) throws RemoteException {
-        int ret = lobbyInterface.spielStarten(this,ugi);
-        if (ret == 1) lobbyInterface = null;
-        return ret;
+    public int spielStartenAnfragen() throws RemoteException {
+        return lobbyInterface.spielStartenAnfragen(this);
+    }
+
+    @Override
+    public int spielStartet(UpdateGameInterface ugi) throws RemoteException {
+        gameInterface = lobbyInterface.spielStartet(this,ugi);
+        if (gameInterface == null) return -1;
+        lobbyInterface = null;
+        return 1;
     }
 
     @Override
@@ -81,12 +89,32 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
 
     @Override
     public void designBestaetigen(String design) throws RemoteException {
-        lobbyInterface.designBestaetigen(this,design);
+        lobbyInterface.designBestaetigen(this, design);
     }
 
     @Override
     public BoardConfigurationBytes getBoardConfig(String design) throws RemoteException {
         return raumauswahlObject.getBoardConfig(design);
+    }
+
+    @Override
+    public boolean submitMove(int from, int to) throws RemoteException {
+        return gameInterface.submitMove(this,from,to);
+    }
+
+    @Override
+    public int throwDice() throws RemoteException {
+        return gameInterface.throwDice(this);
+    }
+
+    @Override
+    public void leaveGame() throws RemoteException {
+        gameInterface.leaveGame(this);
+    }
+
+    @Override
+    public GameStatistics getStatistics() throws RemoteException {
+        return gameInterface.getStatistics();
     }
 
     @Override

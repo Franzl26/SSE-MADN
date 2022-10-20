@@ -12,6 +12,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class LobbyPane extends AnchorPane {
     private final GraphicsContext gcName;
@@ -42,7 +45,7 @@ public class LobbyPane extends AnchorPane {
         Button startButton = new Button("Spiel starten");
         startButton.setPrefWidth(140);
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.spielStarten();
+            int ret = CommunicationWithServer.spielStartenAnfragen();
             if(ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION,"Nicht genug Spieler in Lobby").showAndWait();
             } else {
@@ -67,9 +70,6 @@ public class LobbyPane extends AnchorPane {
         AnchorPane.setBottomAnchor(designButton, 100.0);
 
         getChildren().addAll(nameCanvas, botAddButton, botRemoveButton, designButton, startButton, exitButton);
-
-
-
     }
 
     private void setOnClose() {
@@ -96,6 +96,14 @@ public class LobbyPane extends AnchorPane {
         for (int i = 0; i < names.length; i++) {
             gcName.fillText(names[i], 5, i*30+20,190);
         }
+    }
+
+    public void gameStarts() {
+        int ret = CommunicationWithServer.spielStartet();
+        if (ret == 1) {
+            ((Stage) getScene().getWindow()).close();
+        }
+        System.out.println("start");
     }
 
     public static LobbyPane LobbyPaneStart() {

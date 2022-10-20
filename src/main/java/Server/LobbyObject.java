@@ -1,13 +1,12 @@
 package Server;
 
 import DataAndMethods.Room;
-import RMIInterfaces.LobbyInterface;
-import RMIInterfaces.LoggedInInterface;
-import RMIInterfaces.UpdateGameInterface;
-import RMIInterfaces.UpdateLobbyInterface;
+import RMIInterfaces.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private final UpdateLobbyInterface[] clientsUpdate = new UpdateLobbyInterface[4];
@@ -17,6 +16,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private final RaumauswahlObject raumauswahl;
     private final Room room;
     private String boardDesign = "Standard";
+    private GameObject gameObject;
 
     protected LobbyObject(RaumauswahlObject raumauswahlObject, Room room) throws RemoteException {
         raumauswahl = raumauswahlObject;
@@ -25,6 +25,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     public synchronized void addUser(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException {
         if (checkInLobby(lii)) return;
+        if (gameObject != null) return;
         clients[bots + spieler] = lii;
         clientsUpdate[bots + spieler] = uli;
         spieler++;
@@ -56,9 +57,22 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     }
 
     @Override
-    public synchronized int spielStarten(LoggedInInterface lii, UpdateGameInterface ugi) throws RemoteException { // todo
-        if (!checkInLobby(lii)) return -2;
-        throw new UnsupportedOperationException();
+    public synchronized int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException { // todo
+        if ((bots+spieler) == 1) return -1;
+        if (!checkInLobby(lii)) return -1;
+        gameObject = new GameObject(clients,spieler+bots,boardDesign);
+        startGameForAll();
+        Timer timer = new Timer("delete Lobby");
+        timer.schedule(new DeleteLobby(),5000);
+        return 1;
+    }
+
+    @Override
+    public GameInterface spielStartet(LoggedInInterface lii, UpdateGameInterface ugi) throws RemoteException {
+        if (!checkInLobby(lii)) return null;
+        gameObject.checkPlayerIn(lii, ugi);
+        raumVerlassenPrivate(lii);
+        return gameObject;
     }
 
     @Override
@@ -108,6 +122,37 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         raumauswahl.updateAllRooms();
     }
 
+    private void startGameForAll() {
+        if (clientsUpdate[0] != null) new Thread(() -> {
+            try {
+                clientsUpdate[0].gameStarts();
+            } catch (RemoteException e) {
+                raumVerlassenPrivate(clients[0]);
+            }
+        }).start();
+        if (clientsUpdate[1] != null) new Thread(() -> {
+            try {
+                clientsUpdate[1].gameStarts();
+            } catch (RemoteException e) {
+                raumVerlassenPrivate(clients[1]);
+            }
+        }).start();
+        if (clientsUpdate[2] != null) new Thread(() -> {
+            try {
+                clientsUpdate[2].gameStarts();
+            } catch (RemoteException e) {
+                raumVerlassenPrivate(clients[2]);
+            }
+        }).start();
+        if (clientsUpdate[3] != null) new Thread(() -> {
+            try {
+                clientsUpdate[3].gameStarts();
+            } catch (RemoteException e) {
+                raumVerlassenPrivate(clients[3]);
+            }
+        }).start();
+    }
+
     private void updateAllClients() {
         UpdateLobbyInterface[] uliCopy;
         LoggedInInterface[] liiCopy;
@@ -152,5 +197,15 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
                 raumVerlassenPrivate(clients[3]);
             }
         }).start();
+    }
+
+    private class DeleteLobby extends TimerTask {
+
+        @Override
+        public void run() {
+            for (int i=1;i<4;i++) {
+                if (clients[i]!=null) raumVerlassenPrivate(clients[i]);
+            }
+        }
     }
 }

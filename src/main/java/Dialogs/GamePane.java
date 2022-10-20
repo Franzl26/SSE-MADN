@@ -20,7 +20,6 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import static DataAndMethods.BoardDrawer.drawBoardAll;
 import static DataAndMethods.BoardDrawer.drawBoardSingleFieldAll;
@@ -103,12 +102,12 @@ public class GamePane extends AnchorPane {
         drawBoardSingleFieldAll(gcBoard, config, state, i, highlight);
     }
 
-    public void drawNames(String[] players, int turn) {
+    public void drawNames(String[] players, int turn) { // todo anpassen
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(40));
         gcName.setFill(Color.BLACK);
         for (int i = 0; i < players.length; i++) {
-            gcName.drawImage(config.figure[i], 5 + 245 * i, 5, 40, 40);
+            gcName.drawImage(config.figure[(players.length==2?(i==0?0:2):i)], 5 + 245 * i, 5, 40, 40);
             String p = players[i];
             gcName.fillText(p, i * 245 + 50, 40, 190);
             if (i == turn) gcName.fillRect(i * 245 + 5, 46, 235, 47);

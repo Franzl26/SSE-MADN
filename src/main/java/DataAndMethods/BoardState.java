@@ -6,15 +6,24 @@ import java.util.Arrays;
 import static DataAndMethods.FieldState.*;
 
 public class BoardState implements Serializable {
-    private FieldState[] board = new FieldState[72];
+    private FieldState[] board;
 
-    public void reset() {
+    public BoardState(int spielerAnz) {
+        reset(spielerAnz);
+    }
+
+    public void reset(int spielerAnz) {
         board = new FieldState[72];
-        Arrays.fill(board, 0, 4, FIELD_FIGURE0);
-        Arrays.fill(board, 4, 8, FIELD_FIGURE1);
-        Arrays.fill(board, 8, 12, FIELD_FIGURE2);
-        Arrays.fill(board, 12, 16, FIELD_FIGURE3);
         Arrays.fill(board, 16, 72, FIELD_NONE);
+        if (spielerAnz == 2) {
+            Arrays.fill(board, 0, 4, FIELD_FIGURE0);
+            Arrays.fill(board, 8, 12, FIELD_FIGURE2);
+        } else {
+            Arrays.fill(board, 0, 4, FIELD_FIGURE0);
+            Arrays.fill(board, 4, 8, FIELD_FIGURE1);
+            Arrays.fill(board, 8, 12, FIELD_FIGURE2);
+            if (spielerAnz == 4) Arrays.fill(board, 12, 16, FIELD_FIGURE3);
+        }
     }
 
     public void setField(int field, FieldState state) {
