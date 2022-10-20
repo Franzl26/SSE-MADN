@@ -63,12 +63,15 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
 
     @Override
     public int spielStarten(UpdateGameInterface ugi) throws RemoteException {
-        return lobbyInterface.spielStarten(this,ugi);
+        int ret = lobbyInterface.spielStarten(this,ugi);
+        if (ret == 1) lobbyInterface = null;
+        return ret;
     }
 
     @Override
     public void raumVerlassen() throws RemoteException {
         lobbyInterface.raumVerlassen(this);
+        lobbyInterface = null;
     }
 
     @Override
