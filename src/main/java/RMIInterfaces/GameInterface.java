@@ -6,8 +6,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface GameInterface extends Remote {
-    boolean submitMove(UpdateGameInterface ugi, int from, int to) throws RemoteException;
-    int throwDice(UpdateGameInterface ugi) throws RemoteException;
-    void leaveGame(UpdateGameInterface ugi) throws RemoteException;
-    GameStatistics getStatistics(UpdateGameInterface ugi) throws RemoteException;
+    boolean submitMove(LoggedInInterface lii, int from, int to) throws RemoteException;
+    int throwDice(LoggedInInterface lii) throws RemoteException;
+    void leaveGame(LoggedInInterface lii) throws RemoteException;
+    GameStatistics getStatistics() throws RemoteException;
 }

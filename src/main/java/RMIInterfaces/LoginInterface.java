@@ -15,7 +15,7 @@ public interface LoginInterface extends Remote {
      *
      * @return null bei fehlerhaftem Login, sonst Objekt
      */
-    RaumauswahlInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException;
+    LoggedInInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException;
 
     /**
      * @return -1 Passwort entspricht nicht den Richtlinien, -2 Benutzername entspricht nicht den Richtlinien,
@@ -23,5 +23,5 @@ public interface LoginInterface extends Remote {
      */
     int register(String username, byte[] password) throws RemoteException;
 
-    void logout(String username, UpdateRoomsInterface uri) throws RemoteException;
+    void logout(LoggedInInterface lii) throws RemoteException;
 }

@@ -1,6 +1,5 @@
 package Dialogs;
 
-import ClientLogic.CommunicationWithServer;
 import DataAndMethods.Room;
 import DataAndMethods.Rooms;
 import RMIInterfaces.UpdateRoomsInterface;
@@ -43,11 +42,11 @@ public class RoomSelectPane extends AnchorPane {
 
         Button newGameButton = new Button("Neues Spiel erstellen");
         newGameButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.createNewRoom(uri);
+            int ret = CommunicationWithServer.createNewRoom();
             if (ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION, "Maximale Raumanzahl bereits erreicht").showAndWait();
             } else {
-                CommunicationWithServer.unsubscribeUpdateRooms(uri);
+                CommunicationWithServer.unsubscribeUpdateRooms();
                 ((Stage) getScene().getWindow()).close();
             }
         });
@@ -75,11 +74,11 @@ public class RoomSelectPane extends AnchorPane {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             Button button = new Button("Beitreten");
             button.addEventHandler(ActionEvent.ACTION, e -> {
-                int ret = CommunicationWithServer.enterRoom(uri, r);
+                int ret = CommunicationWithServer.enterRoom(r);
                 if (ret == -1) {
                     new Alert(Alert.AlertType.INFORMATION, "Raum bereits voll").showAndWait();
                 } else {
-                    CommunicationWithServer.unsubscribeUpdateRooms(uri);
+                    CommunicationWithServer.unsubscribeUpdateRooms();
                     ((Stage) getScene().getWindow()).close();
                 }
             });
@@ -115,8 +114,8 @@ public class RoomSelectPane extends AnchorPane {
     private void beenden() {
         new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich beenden?").showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                CommunicationWithServer.unsubscribeUpdateRooms(uri);
-                CommunicationWithServer.logout(uri);
+                CommunicationWithServer.unsubscribeUpdateRooms();
+                CommunicationWithServer.logout();
                 System.exit(0);
             }
         });

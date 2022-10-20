@@ -1,8 +1,7 @@
-package ClientLogic;
+package Dialogs;
 
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
-import Dialogs.*;
 import RMIInterfaces.*;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -21,10 +20,7 @@ import java.security.PublicKey;
 import java.util.Objects;
 
 public class CommunicationWithServer {
-    private static String username;
-    private static RaumauswahlInterface roomSelect;
-    private static LobbyInterface lobbyInterface;
-    private static LoginInterface login;
+    private static LoggedInInterface lii;
 
     /**
      * @return -2 Server nicht erreichbar, -1 Login-Daten fehlerhaft, 1 Login erfolgreich
@@ -32,17 +28,16 @@ public class CommunicationWithServer {
     public static int tryToLogin(String server, String username, String password) {
         RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
         try {
-            login = (LoginInterface) Naming.lookup("//" + server + "/" + "MADNLogin");
+            LoginInterface login = (LoginInterface) Naming.lookup("//" + server + "/" + "MADNLogin");
             PublicKey publicKey = login.getPublicKey();
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] chiffrat = cipher.doFinal(password.getBytes());
-            roomSelect = login.login(username, chiffrat, pane.getURI());
-            if (roomSelect == null) {
+            lii = login.login(username, chiffrat, pane.getURI());
+            if (lii == null) {
                 ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
-
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace(System.out);
             ((Stage) pane.getScene().getWindow()).close();
@@ -51,7 +46,6 @@ public class CommunicationWithServer {
                  BadPaddingException e) {
             throw new RuntimeException("Verschlüsselung nicht möglich");
         }
-        CommunicationWithServer.username = username;
         ((Stage) pane.getScene().getWindow()).show();
         return 1;
     }
@@ -92,18 +86,18 @@ public class CommunicationWithServer {
         return 1;
     }
 
-    public static void logout(UpdateRoomsInterface uri) {
+    public static void logout() {
         try {
-            login.logout(username, uri);
+            lii.logOut();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
     }
 
-    public static void unsubscribeUpdateRooms(UpdateRoomsInterface uri) {
+    public static void unsubscribeUpdateRooms() {
         try {
-            roomSelect.unsubscribeFromRoomUpdates(uri);
+            lii.unsubscribeFromRoomUpdates();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -113,16 +107,15 @@ public class CommunicationWithServer {
     /**
      * @return -1 max Raumanzahl erreicht, 1 erfolgreich
      */
-    public static int createNewRoom(UpdateRoomsInterface uri) {
+    public static int createNewRoom() {
         LobbyPane pane = LobbyPane.LobbyPaneStart();
 
         try {
-            LobbyInterface lobby = roomSelect.createNewRoom(uri, pane.getULI());
-            if (lobby == null) {
+            int ret = lii.createNewRoom(new UpdateLobbyObject(pane));
+            if (ret == -1) {
                 ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
-            lobbyInterface = lobby;
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -134,15 +127,14 @@ public class CommunicationWithServer {
     /**
      * @return -1 Raum voll, 1 erfolgreich
      */
-    public static int enterRoom(UpdateRoomsInterface uri, Room room) {
+    public static int enterRoom(Room room) {
         LobbyPane pane = LobbyPane.LobbyPaneStart();
         try {
-            LobbyInterface lobby = roomSelect.enterRoom(uri, room, pane.getULI());
-            if (lobby == null) {
+            int ret = lii.enterRoom(room, new UpdateLobbyObject(pane));
+            if (ret == -1) {
                 ((Stage) pane.getScene().getWindow()).close();
                 return -1;
             }
-            lobbyInterface = lobby;
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -154,9 +146,9 @@ public class CommunicationWithServer {
     /**
      * @return -1 schon 4 Bot vorhanden, 1 erfolgreich
      */
-    public static int addBot(UpdateLobbyInterface uli) {
+    public static int addBot() {
         try {
-            return lobbyInterface.addBot(uli);
+            return lii.addBot();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -167,9 +159,9 @@ public class CommunicationWithServer {
     /**
      * @return -1 kein Bot mehr da, 1 erfolgreich
      */
-    public static int removeBot(UpdateLobbyInterface uli) {
+    public static int removeBot() {
         try {
-            return lobbyInterface.removeBot(uli);
+            return lii.removeBot();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -180,10 +172,10 @@ public class CommunicationWithServer {
     /**
      * @return -1 nicht genug Spieler, 1 erfolgreich
      */
-    public static int spielStarten(UpdateLobbyInterface uli) {
-        GameLogic gameLogic = new GameLogic();
+    public static int spielStarten() {
+        /*GameLogic gameLogic = new GameLogic();
         try {
-            int ret = lobbyInterface.spielStarten(uli, gameLogic.getUGI());
+            int ret = lii.spielStarten(gameLogic.getUGI());
             if (ret == -1) {
                 gameLogic.closePane();
                 return -1;
@@ -192,53 +184,48 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        gameLogic.showPane();
-        return 1;
+        gameLogic.showPane();*/
+        return -1;
     }
 
-    public static void raumVerlassen(UpdateLobbyInterface uli) {
-        RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
+    public static void raumVerlassen() {
         try {
-            lobbyInterface.raumVerlassen(uli);
-            roomSelect.subscribeToRoomUpdates(pane.getURI(),username);
+            RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(lii.getUsername());
+            lii.raumVerlassen();
+            lii.subscribeToRoomUpdates(pane.getURI());
+            ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        lobbyInterface = null;
-        ((Stage) pane.getScene().getWindow()).show();
     }
 
-    /**
-     * @return -1 Design wird schon angepasst, 1 design kann angepasst werden
-     */
-    public static int designAnpassen(UpdateLobbyInterface uli) {
+    public static void designAnpassen() {
         try {
-            DesignPane.DesignPaneStart(lobbyInterface.getDesignsList(uli), uli);
+            DesignPane.DesignPaneStart(lii.getDesignsList());
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        return 1;
     }
 
-    public static BoardConfigurationBytes getBoardConfig(UpdateLobbyInterface uli, String design) {
+    public static void designBestaetigen(String design) {
         try {
-            return lobbyInterface.getBoardConfig(uli,design);
+            lii.designBestaetigen(design);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+    }
+
+    public static BoardConfigurationBytes getBoardConfig(String design) {
+        try {
+            return lii.getBoardConfig(design);
         } catch (RemoteException e) {
             e.printStackTrace(System.out);
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
         return null;
-    }
-
-    public static void designBestaetigen(UpdateLobbyInterface uli, String design) {
-        try {
-            lobbyInterface.designBestaetigen(uli,design);
-        } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
-            System.exit(0);
-        }
     }
 }

@@ -1,6 +1,5 @@
 package Dialogs;
 
-import ClientLogic.CommunicationWithServer;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -10,7 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import static ClientLogic.CommunicationWithServer.tryToLogin;
+import static Dialogs.CommunicationWithServer.tryToLogin;
 
 public class LoginPane extends AnchorPane {
     public LoginPane() {
@@ -33,9 +32,7 @@ public class LoginPane extends AnchorPane {
             ((Stage) getScene().getWindow()).close();
         });
         Button abbrechenButton = new Button("Abbrechen");
-        abbrechenButton.addEventHandler(ActionEvent.ACTION, e -> {
-            System.exit(0);
-        });
+        abbrechenButton.addEventHandler(ActionEvent.ACTION, e -> System.exit(0));
         Button anmeldenButton = new Button("Anmelden");
         anmeldenButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = tryToLogin(serverTextField.getText(),usernameTextField.getText(),passwordField.getText());

@@ -1,19 +1,17 @@
 package Server;
 
+import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import DataAndMethods.Rooms;
-import RMIInterfaces.LobbyInterface;
-import RMIInterfaces.RaumauswahlInterface;
-import RMIInterfaces.UpdateLobbyInterface;
-import RMIInterfaces.UpdateRoomsInterface;
+import RMIInterfaces.*;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-import java.util.Set;
 
 public class RaumauswahlObject extends UnicastRemoteObject implements RaumauswahlInterface {
-    private final HashMap<UpdateRoomsInterface, String> clients = new HashMap<>();
+    private final HashMap<LoggedInInterface, UpdateRoomsInterface> clients = new HashMap<>();
     private final Rooms rooms;
     private final HashMap<Room, LobbyObject> roomLobbyMap;
 
@@ -22,70 +20,94 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         roomLobbyMap = new HashMap<>();
     }
 
-    public void addClient(UpdateRoomsInterface uri, String username) throws RemoteException {
+    public void addClient(LoggedInInterface lii, UpdateRoomsInterface uri) throws RemoteException {
         synchronized (clients) {
-            clients.put(uri, username);
+            clients.put(lii, uri);
         }
     }
 
     @Override
-    public void subscribeToRoomUpdates(UpdateRoomsInterface uri, String username) {
+    public void subscribeToRoomUpdates(LoggedInInterface lii, UpdateRoomsInterface uri) {
         synchronized (clients) {
-            clients.put(uri,username);
+            clients.put(lii, uri);
         }
     }
 
 
     @Override
-    public void unsubscribeFromRoomUpdates(UpdateRoomsInterface uri) throws RemoteException {
-        unsubscribeFromRoomUpdatesPrivate(uri);
+    public void unsubscribeFromRoomUpdates(LoggedInInterface lii) throws RemoteException {
+        unsubscribeFromRoomUpdatesPrivate(lii);
     }
 
     @Override
-    public synchronized LobbyInterface createNewRoom(UpdateRoomsInterface uri, UpdateLobbyInterface uli) throws RemoteException {
-        if (!clients.containsKey(uri)) return null;
+    public synchronized LobbyInterface createNewRoom(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException {
+        if (!clients.containsKey(lii)) return null;
         if (rooms.maxRoomsReached()) return null;
         Room newRoom = new Room();
-        newRoom.addPlayer(clients.get(uri));
-        rooms.addRoom(newRoom);
+        newRoom.addPlayer(lii.getUsername());
+        synchronized (rooms) {
+            rooms.addRoom(newRoom);
+        }
         LobbyObject lobbyObj = new LobbyObject(this, newRoom);
-        lobbyObj.addUser(clients.get(uri), uli);
-        roomLobbyMap.put(newRoom, lobbyObj);
-        unsubscribeFromRoomUpdatesPrivate(uri);
-
+        lobbyObj.addUser(lii, uli);
+        synchronized (roomLobbyMap) {
+            roomLobbyMap.put(newRoom, lobbyObj);
+        }
+        unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
     }
 
     @Override
-    public synchronized LobbyInterface enterRoom(UpdateRoomsInterface uri, Room room, UpdateLobbyInterface uli) throws RemoteException {
-        if (!clients.containsKey(uri)) return null;
+    public synchronized LobbyInterface enterRoom(LoggedInInterface lii, Room room, UpdateLobbyInterface uli) throws RemoteException {
+        if (!clients.containsKey(lii)) return null;
         if (room.getCount() == 4) return null;
-        room.addPlayer(clients.get(uri));
+        room.addPlayer(lii.getUsername());
         LobbyObject lobbyObj = roomLobbyMap.get(room);
-        lobbyObj.addUser(clients.get(uri), uli);
-        unsubscribeFromRoomUpdatesPrivate(uri);
+        lobbyObj.addUser(lii, uli);
+        unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
     }
 
-    protected synchronized void removeRoom(Room room) {
-        roomLobbyMap.remove(room);
-        rooms.removeRoom(room);
+    @Override
+    public BoardConfigurationBytes getBoardConfig(String design) throws RemoteException {
+        try {
+            return BoardConfigurationBytes.loadBoardKonfiguration("./resources/Server/designs/" + design + "/");
+        } catch (RuntimeException e) {
+            e.printStackTrace(System.out);
+            return null;
+        }
     }
 
-    private void unsubscribeFromRoomUpdatesPrivate(UpdateRoomsInterface uri) {
+    @Override
+    public String[] getDesignsList() throws RemoteException {
+        File f = new File("./resources/Server/designs/");
+        return f.list();
+    }
+
+    protected void removeRoom(Room room) {
+        synchronized (roomLobbyMap) {
+            roomLobbyMap.remove(room);
+        }
+        synchronized (rooms) {
+            rooms.removeRoom(room);
+        }
+    }
+
+    private void unsubscribeFromRoomUpdatesPrivate(LoggedInInterface lii) {
         synchronized (clients) {
-            clients.remove(uri);
+            clients.remove(lii);
         }
     }
 
     protected void updateAllRooms() {
-        Set<UpdateRoomsInterface> copy;
+        HashMap<LoggedInInterface, UpdateRoomsInterface> copy;
         synchronized (clients) {
-            copy =  clients.keySet();
+            //noinspection unchecked
+            copy = (HashMap<LoggedInInterface, UpdateRoomsInterface>) clients.clone();
         }
-        copy.forEach(client -> new Thread(() -> {
+        copy.keySet().forEach(client -> new Thread(() -> {
             try {
-                client.updateRooms(rooms);
+                copy.get(client).updateRooms(rooms);
             } catch (RemoteException e) {
                 unsubscribeFromRoomUpdatesPrivate(client);
             }

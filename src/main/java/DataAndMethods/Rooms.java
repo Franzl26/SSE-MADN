@@ -15,13 +15,9 @@ public class Rooms implements Serializable {
         return rooms;
     }
 
-    /**
-     * @return -1 maximale Anzahl erreicht, 1 erfolgreich
-     */
-    public synchronized int addRoom(Room room) {
-        if (rooms.size() == MAX_ROOMS) return -1;
+    public synchronized void addRoom(Room room) {
+        if (rooms.size() == MAX_ROOMS) return;
         rooms.add(room);
-        return 1;
     }
 
     public synchronized void removeRoom(Room room) {

@@ -1,10 +1,8 @@
 package Dialogs;
 
-import ClientLogic.CommunicationWithServer;
 import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.BoardState;
-import RMIInterfaces.UpdateLobbyInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -23,10 +21,8 @@ import static DataAndMethods.BoardDrawer.drawBoardAll;
 
 public class DesignPane extends AnchorPane {
     private boolean last = false;
-    private final UpdateLobbyInterface uli;
 
-    public DesignPane(String[] designs, UpdateLobbyInterface uli) {
-        this.uli = uli;
+    public DesignPane(String[] designs) {
 
         setBackground(Background.fill(Color.LIGHTSLATEGRAY));
         Canvas boardCanvas = new Canvas(500, 500);
@@ -64,7 +60,7 @@ public class DesignPane extends AnchorPane {
         Button selectButton = new Button("Auswählen");
         selectButton.setPrefWidth(80);
         selectButton.addEventHandler(ActionEvent.ACTION, e -> {
-            CommunicationWithServer.designBestaetigen(uli, boardChoice.getValue());
+            CommunicationWithServer.designBestaetigen(boardChoice.getValue());
             ((Stage)getScene().getWindow()).close();
         });
 
@@ -87,8 +83,8 @@ public class DesignPane extends AnchorPane {
         getScene().getWindow().setOnCloseRequest(e -> ((Stage) getScene().getWindow()).close());
     }
 
-    public static void DesignPaneStart(String[] designs, UpdateLobbyInterface uli) {
-        DesignPane root = new DesignPane(designs, uli);
+    public static void DesignPaneStart(String[] designs) {
+        DesignPane root = new DesignPane(designs);
         Scene scene = new Scene(root, 700, 520);
         Stage stage = new Stage();
 
@@ -109,8 +105,9 @@ public class DesignPane extends AnchorPane {
     public BoardConfiguration getBoardConfig(String name) {
         File file = new File("./resources/designs/" + name + "/");
         if (!(file.isDirectory() && Arrays.equals(file.list(), compareList))) {
+            //noinspection ResultOfMethodCallIgnored
             file.mkdir();
-            BoardConfigurationBytes config = CommunicationWithServer.getBoardConfig(uli, name);
+            BoardConfigurationBytes config = CommunicationWithServer.getBoardConfig(name);
             config.saveConfiguration(file.getAbsolutePath());
         }
         return BoardConfiguration.loadBoardKonfiguration(file.getAbsolutePath());

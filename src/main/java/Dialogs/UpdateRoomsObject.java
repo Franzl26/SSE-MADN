@@ -1,7 +1,6 @@
 package Dialogs;
 
 import DataAndMethods.Rooms;
-import Dialogs.RoomSelectPane;
 import RMIInterfaces.UpdateRoomsInterface;
 
 import java.rmi.RemoteException;

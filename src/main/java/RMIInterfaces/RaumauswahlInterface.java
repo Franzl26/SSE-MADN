@@ -1,16 +1,19 @@
 package RMIInterfaces;
 
+import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface RaumauswahlInterface extends Remote {
-    void subscribeToRoomUpdates(UpdateRoomsInterface uri, String username) throws RemoteException;
-    void unsubscribeFromRoomUpdates(UpdateRoomsInterface uri) throws RemoteException;
+    void subscribeToRoomUpdates(LoggedInInterface lii, UpdateRoomsInterface uri) throws RemoteException;
+    void unsubscribeFromRoomUpdates(LoggedInInterface lii) throws RemoteException;
 
-    LobbyInterface createNewRoom(UpdateRoomsInterface uri, UpdateLobbyInterface uli) throws RemoteException;
+    LobbyInterface createNewRoom(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException;
 
-    LobbyInterface enterRoom(UpdateRoomsInterface uri, Room room, UpdateLobbyInterface uli) throws RemoteException;
+    LobbyInterface enterRoom(LoggedInInterface lii, Room room, UpdateLobbyInterface uli) throws RemoteException;
 
+    BoardConfigurationBytes getBoardConfig(String design) throws RemoteException;
+    String[] getDesignsList() throws RemoteException;
 }

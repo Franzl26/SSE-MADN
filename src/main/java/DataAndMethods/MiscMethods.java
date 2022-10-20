@@ -109,6 +109,7 @@ public class MiscMethods {
     private static final Pattern namePattern1 = Pattern.compile("[A-Za-z]{3,8}");
     private static final Pattern namePattern2 = Pattern.compile("([bB][oO][tT]).*");
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkPasswordGuidelines(String pw) {
         Matcher match1 = pwPattern1.matcher(pw);
         Matcher match2 = pwPattern2.matcher(pw);
@@ -117,6 +118,7 @@ public class MiscMethods {
         return match1.matches() && match2.matches() && match3.matches() && match4.matches();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkUsernameGuidelines(String name) {
         Matcher match1 = namePattern1.matcher(name);
         Matcher match2 = namePattern2.matcher(name);

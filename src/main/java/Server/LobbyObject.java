@@ -1,18 +1,17 @@
 package Server;
 
-import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import RMIInterfaces.LobbyInterface;
+import RMIInterfaces.LoggedInInterface;
 import RMIInterfaces.UpdateGameInterface;
 import RMIInterfaces.UpdateLobbyInterface;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
-    private final String[] names = new String[4];
-    private final UpdateLobbyInterface[] clients = new UpdateLobbyInterface[4];
+    private final UpdateLobbyInterface[] clientsUpdate = new UpdateLobbyInterface[4];
+    private final LoggedInInterface[] clients = new LoggedInInterface[4];
     private int bots = 0;
     private int spieler = 0;
     private final RaumauswahlObject raumauswahl;
@@ -24,28 +23,29 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         this.room = room;
     }
 
-    public synchronized void addUser(String username, UpdateLobbyInterface uli) throws RemoteException {
-        if (checkInLobby(uli)) return;
-        clients[bots + spieler] = uli;
-        names[bots + spieler] = username;
+    public synchronized void addUser(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException {
+        if (checkInLobby(lii)) return;
+        clients[bots + spieler] = lii;
+        clientsUpdate[bots + spieler] = uli;
         spieler++;
         update();
     }
 
     @Override
-    public synchronized int addBot(UpdateLobbyInterface uli) throws RemoteException {
+    public synchronized int addBot(LoggedInInterface lii) throws RemoteException {
         if (bots + spieler == 4) return -1;
-        names[bots + spieler] = "Bot" + (bots + 1);
+        if (!checkInLobby(lii)) return -2;
         bots++;
         update();
         return 1;
     }
 
     @Override
-    public synchronized int removeBot(UpdateLobbyInterface uli) throws RemoteException {
+    public synchronized int removeBot(LoggedInInterface lii) throws RemoteException {
         if (bots == 0) return -1;
-        for (int i = 3; i >= 0; i--) {
-            if (names[i] != null && names[i].startsWith("Bot")) {
+        if (!checkInLobby(lii)) return -2;
+        for (int i = (bots + spieler-1); i >= 0; i--) {
+            if (clients[i] == null) {
                 removePlayer(i);
                 break;
             }
@@ -56,57 +56,34 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     }
 
     @Override
-    public synchronized int spielStarten(UpdateLobbyInterface uli, UpdateGameInterface ugi) throws RemoteException { // todo
+    public synchronized int spielStarten(LoggedInInterface lii, UpdateGameInterface ugi) throws RemoteException { // todo
+        if (!checkInLobby(lii)) return -2;
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String[] getDesignsList(UpdateLobbyInterface uli) throws RemoteException {
-        File f = new File("./resources/Server/designs/");
-        return f.list();
-    }
-
-    @Override
-    public BoardConfigurationBytes getBoardConfig(UpdateLobbyInterface uli, String design) throws RemoteException {
-        try {
-            return BoardConfigurationBytes.loadBoardKonfiguration("./resources/Server/designs/"+design+"/");
-        } catch (RuntimeException e) {
-            e.printStackTrace(System.out);
-            return null;
-        }
-    }
-
-    @Override
-    public synchronized void designBestaetigen(UpdateLobbyInterface uli, String design) throws RemoteException {
+    public synchronized void designBestaetigen(LoggedInInterface lii, String design) throws RemoteException {
+        if (!checkInLobby(lii)) return;
         boardDesign = design;
         System.out.println("neues design gesetzt: " + design);
     }
 
     @Override
-    public synchronized void raumVerlassen(UpdateLobbyInterface uli) throws RemoteException {
-        if (!checkInLobby(uli)) return;
-        raumVerlassenPrivate(uli);
+    public synchronized void raumVerlassen(LoggedInInterface lii) throws RemoteException {
+        if (!checkInLobby(lii)) return;
+        raumVerlassenPrivate(lii);
     }
 
-    private void removePlayer(int i) {
-        if (i != 3) {
-            System.arraycopy(names, i + 1, names, i, 3 - i);
-            System.arraycopy(clients, i + 1, clients, i, 3 - i);
-        }
-        names[3] = null;
-        clients[3] = null;
-    }
-
-    private boolean checkInLobby(UpdateLobbyInterface uli) {
+    private boolean checkInLobby(LoggedInInterface lii) {
         for (int i = 0; i < 4; i++) {
-            if (uli.equals(clients[i])) return true;
+            if (lii.equals(clients[i])) return true;
         }
         return false;
     }
 
-    private synchronized void raumVerlassenPrivate(UpdateLobbyInterface uli) {
+    private synchronized void raumVerlassenPrivate(LoggedInInterface lii) {
         for (int i = 3; i >= 0; i--) {
-            if (uli.equals(clients[i])) {
+            if (checkInLobby(lii)) {
                 removePlayer(i);
                 spieler--;
             }
@@ -117,6 +94,15 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         update();
     }
 
+    private void removePlayer(int i) {
+        if (i != 3) {
+            System.arraycopy(clientsUpdate, i + 1, clientsUpdate, i, 3 - i);
+            System.arraycopy(clients, i + 1, clients, i, 3 - i);
+        }
+        clientsUpdate[3] = null;
+        clients[3] = null;
+    }
+
     private void update() {
         updateAllClients();
         raumauswahl.updateAllRooms();
@@ -124,37 +110,46 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     private void updateAllClients() {
         UpdateLobbyInterface[] uliCopy;
-        String[] namesCopy;
-        synchronized (clients) {
-            uliCopy = clients.clone();
-            namesCopy = names.clone();
+        LoggedInInterface[] liiCopy;
+        String[] names = new String[4];
+        synchronized (clientsUpdate) {
+            uliCopy = clientsUpdate.clone();
+            liiCopy = clients.clone();
+        }
+        try {
+            for (int i = 0; i < (spieler+bots); i++) {
+                if (liiCopy[i] == null) names[i] = "Bot" + (i + 1);
+                else names[i] = liiCopy[i].getUsername();
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
         if (uliCopy[0] != null) new Thread(() -> {
             try {
-                uliCopy[0].updateNames(namesCopy);
+                uliCopy[0].updateNames(names);
             } catch (RemoteException e) {
-                raumVerlassenPrivate(uliCopy[0]);
+                raumVerlassenPrivate(clients[0]);
             }
         }).start();
         if (uliCopy[1] != null) new Thread(() -> {
             try {
-                uliCopy[1].updateNames(namesCopy);
+                uliCopy[1].updateNames(names);
             } catch (RemoteException e) {
-                raumVerlassenPrivate(uliCopy[1]);
+                raumVerlassenPrivate(clients[1]);
             }
         }).start();
         if (uliCopy[2] != null) new Thread(() -> {
             try {
-                uliCopy[2].updateNames(namesCopy);
+                uliCopy[2].updateNames(names);
             } catch (RemoteException e) {
-                raumVerlassenPrivate(uliCopy[2]);
+                raumVerlassenPrivate(clients[2]);
             }
         }).start();
         if (uliCopy[3] != null) new Thread(() -> {
             try {
-                uliCopy[3].updateNames(namesCopy);
+                uliCopy[3].updateNames(names);
             } catch (RemoteException e) {
-                raumVerlassenPrivate(uliCopy[3]);
+                raumVerlassenPrivate(clients[3]);
             }
         }).start();
     }

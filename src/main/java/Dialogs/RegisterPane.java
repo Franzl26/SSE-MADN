@@ -30,7 +30,7 @@ public class RegisterPane extends AnchorPane {
         Button registrierenButton = new Button("Registrieren");
         registrierenButton.setPrefWidth(90);
         registrierenButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = ClientLogic.CommunicationWithServer.tryToRegister(serverTextField.getText(),
+            int ret = CommunicationWithServer.tryToRegister(serverTextField.getText(),
                     usernameTextField.getText(), passwordField.getText(), passwordField2.getText());
             if (ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION, "Passwörter stimmen nicht überein").showAndWait();

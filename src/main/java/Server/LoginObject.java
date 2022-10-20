@@ -1,8 +1,8 @@
 package Server;
 
 import DataAndMethods.MiscMethods;
+import RMIInterfaces.LoggedInInterface;
 import RMIInterfaces.LoginInterface;
-import RMIInterfaces.RaumauswahlInterface;
 import RMIInterfaces.UpdateRoomsInterface;
 
 import javax.crypto.BadPaddingException;
@@ -12,7 +12,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.*;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +20,7 @@ public class LoginObject extends UnicastRemoteObject implements LoginInterface {
     private KeyPair keys;
     private final RaumauswahlObject raumauswahl;
     private CredentialsSave users;
-    private HashSet<String> isLoggedIn = new HashSet<>();
+    private final HashMap<String, LoggedInInterface> isLoggedIn = new HashMap<>();
 
     protected LoginObject() throws RemoteException {
         Timer keyTimer = new Timer("keyPairGenTimer");
@@ -39,20 +39,21 @@ public class LoginObject extends UnicastRemoteObject implements LoginInterface {
     }
 
     @Override
-    public RaumauswahlInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException {
+    public LoggedInInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException {
         byte[] pwDecrypted = hashPassword(decryptPassword(password));
         if (users.checkPassword(username, pwDecrypted) != 1) return null;
-        if (isLoggedIn.contains(username)) return null;
-        isLoggedIn.add(username);
-        raumauswahl.addClient(uri,username);
+        if (isLoggedIn.containsKey(username)) return null;
+        LoggedInInterface lii = new LoggedInObject(username,raumauswahl,this);
+        isLoggedIn.put(username,lii);
+        raumauswahl.addClient(lii,uri);
         users.saveCredentials();
-        return raumauswahl;
+        return lii;
     }
 
     @Override
-    public void logout(String username, UpdateRoomsInterface uri) throws RemoteException {
-        isLoggedIn.remove(username);
-        raumauswahl.unsubscribeFromRoomUpdates(uri);
+    public void logout(LoggedInInterface lii) throws RemoteException {
+        isLoggedIn.remove(lii.getUsername());
+        raumauswahl.unsubscribeFromRoomUpdates(lii);
     }
 
     @Override

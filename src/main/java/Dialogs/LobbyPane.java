@@ -1,7 +1,5 @@
 package Dialogs;
 
-import ClientLogic.CommunicationWithServer;
-import RMIInterfaces.UpdateLobbyInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -14,26 +12,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.rmi.RemoteException;
 
 public class LobbyPane extends AnchorPane {
     private final GraphicsContext gcName;
-    private final UpdateLobbyInterface uli;
 
     public LobbyPane() {
-        try {
-            uli = new UpdateLobbyObject(this);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
         Canvas nameCanvas = new Canvas(200, 150);
         gcName = nameCanvas.getGraphicsContext2D();
 
         Button botAddButton = new Button("Bot hinzufügen");
         botAddButton.setPrefWidth(100);
         botAddButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.addBot(uli);
+            int ret = CommunicationWithServer.addBot();
             if (ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION,"Der Warteraum ist bereits voll").showAndWait();
             }
@@ -41,23 +31,18 @@ public class LobbyPane extends AnchorPane {
         Button botRemoveButton = new Button("Bot entfernen");
         botRemoveButton.setPrefWidth(100);
         botRemoveButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.removeBot(uli);
+            int ret = CommunicationWithServer.removeBot();
             if (ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION,"Kein Bot im Warteraum").showAndWait();
             }
         });
         Button designButton = new Button("Spieldesign auswählen");
         designButton.setPrefWidth(140);
-        designButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.designAnpassen(uli);
-            if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION,"Design wird bereits von einem anderen Spieler angepasst").showAndWait();
-            }
-        });
+        designButton.addEventHandler(ActionEvent.ACTION, e -> CommunicationWithServer.designAnpassen());
         Button startButton = new Button("Spiel starten");
         startButton.setPrefWidth(140);
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
-            int ret = CommunicationWithServer.spielStarten(uli);
+            int ret = CommunicationWithServer.spielStarten();
             if(ret == -1) {
                 new Alert(Alert.AlertType.INFORMATION,"Nicht genug Spieler in Lobby").showAndWait();
             } else {
@@ -87,10 +72,6 @@ public class LobbyPane extends AnchorPane {
 
     }
 
-    public UpdateLobbyInterface getULI() {
-        return uli;
-    }
-
     private void setOnClose() {
         getScene().getWindow().setOnCloseRequest(e -> {
             verlassen();
@@ -101,7 +82,7 @@ public class LobbyPane extends AnchorPane {
     private void verlassen() {
         new Alert(Alert.AlertType.CONFIRMATION, "Willst du die Lobby wirklich verlassen?").showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                CommunicationWithServer.raumVerlassen(uli);
+                CommunicationWithServer.raumVerlassen();
                 ((Stage)getScene().getWindow()).close();
             }
         });
