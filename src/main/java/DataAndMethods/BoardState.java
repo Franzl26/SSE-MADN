@@ -1,10 +1,11 @@
 package DataAndMethods;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static DataAndMethods.FieldState.*;
 
-public class BoardState {
+public class BoardState implements Serializable {
     private FieldState[] board = new FieldState[72];
 
     public void reset() {

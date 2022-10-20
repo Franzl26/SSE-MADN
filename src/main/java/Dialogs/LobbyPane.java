@@ -57,7 +57,12 @@ public class LobbyPane extends AnchorPane {
         Button startButton = new Button("Spiel starten");
         startButton.setPrefWidth(140);
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
-            // todo
+            int ret = CommunicationWithServer.spielStarten(uli);
+            if(ret == -1) {
+                new Alert(Alert.AlertType.INFORMATION,"Nicht genug Spieler in Lobby").showAndWait();
+            } else {
+                ((Stage)getScene().getWindow()).close();
+            }
         });
         Button exitButton = new Button("Warteraum verlassen");
         exitButton.setPrefWidth(140);

@@ -41,10 +41,7 @@ public class DesignPane extends AnchorPane {
 
         Button cancelButton = new Button("Abbrechen");
         cancelButton.setPrefWidth(80);
-        cancelButton.addEventHandler(ActionEvent.ACTION, e -> {
-            CommunicationWithServer.designAendernAbbrechen();
-            ((Stage) getScene().getWindow()).close();
-        });
+        cancelButton.addEventHandler(ActionEvent.ACTION, e -> ((Stage) getScene().getWindow()).close());
         ChoiceBox<String> boardChoice = new ChoiceBox<>();
         boardChoice.setOnHiding(e -> {
             if (last) {
@@ -87,13 +84,10 @@ public class DesignPane extends AnchorPane {
     }
 
     private void setOnClose() {
-        getScene().getWindow().setOnCloseRequest(e -> {
-            CommunicationWithServer.designAendernAbbrechen();
-            ((Stage) getScene().getWindow()).close();
-        });
+        getScene().getWindow().setOnCloseRequest(e -> ((Stage) getScene().getWindow()).close());
     }
 
-    public static DesignPane DesignPaneStart(String[] designs, UpdateLobbyInterface uli) {
+    public static void DesignPaneStart(String[] designs, UpdateLobbyInterface uli) {
         DesignPane root = new DesignPane(designs, uli);
         Scene scene = new Scene(root, 700, 520);
         Stage stage = new Stage();
@@ -103,7 +97,6 @@ public class DesignPane extends AnchorPane {
         stage.setResizable(false);
         root.setOnClose();
         stage.show();
-        return root;
     }
 
     private static final String[] compareList = new String[]{"board.png", "dice0.png", "dice1.png", "dice2.png",

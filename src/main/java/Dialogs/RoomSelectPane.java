@@ -116,6 +116,7 @@ public class RoomSelectPane extends AnchorPane {
         new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich beenden?").showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 CommunicationWithServer.unsubscribeUpdateRooms(uri);
+                CommunicationWithServer.logout(uri);
                 System.exit(0);
             }
         });

@@ -1,14 +1,12 @@
 package App;
 
-import ClientLogic.GameLogic;
+import Dialogs.GameLogic;
 import DataAndMethods.BoardConfiguration;
-import Dialogs.DesignPane;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import javax.crypto.*;
 import java.io.*;
-import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.*;

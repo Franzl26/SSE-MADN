@@ -2,10 +2,7 @@ package ClientLogic;
 
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
-import Dialogs.DesignPane;
-import Dialogs.LobbyPane;
-import Dialogs.LoginPane;
-import Dialogs.RoomSelectPane;
+import Dialogs.*;
 import RMIInterfaces.*;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -27,6 +24,7 @@ public class CommunicationWithServer {
     private static String username;
     private static RaumauswahlInterface roomSelect;
     private static LobbyInterface lobbyInterface;
+    private static LoginInterface login;
 
     /**
      * @return -2 Server nicht erreichbar, -1 Login-Daten fehlerhaft, 1 Login erfolgreich
@@ -34,8 +32,7 @@ public class CommunicationWithServer {
     public static int tryToLogin(String server, String username, String password) {
         RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(username);
         try {
-
-            LoginInterface login = (LoginInterface) Naming.lookup("//" + server + "/" + "MADNLogin");
+            login = (LoginInterface) Naming.lookup("//" + server + "/" + "MADNLogin");
             PublicKey publicKey = login.getPublicKey();
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -93,6 +90,15 @@ public class CommunicationWithServer {
 
         LoginPane.LoginPaneStart();
         return 1;
+    }
+
+    public static void logout(UpdateRoomsInterface uri) {
+        try {
+            login.logout(username, uri);
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
     }
 
     public static void unsubscribeUpdateRooms(UpdateRoomsInterface uri) {
@@ -174,8 +180,20 @@ public class CommunicationWithServer {
     /**
      * @return -1 nicht genug Spieler, 1 erfolgreich
      */
-    public static int spielStarten(UpdateLobbyInterface uli) { // todo
-        return -1;
+    public static int spielStarten(UpdateLobbyInterface uli) {
+        GameLogic gameLogic = new GameLogic();
+        try {
+            int ret = lobbyInterface.spielStarten(uli, gameLogic.getUGI());
+            if (ret == -1) {
+                gameLogic.closePane();
+                return -1;
+            }
+        } catch (RemoteException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            System.exit(0);
+        }
+        gameLogic.showPane();
+        return 1;
     }
 
     public static void raumVerlassen(UpdateLobbyInterface uli) {
@@ -196,15 +214,11 @@ public class CommunicationWithServer {
      */
     public static int designAnpassen(UpdateLobbyInterface uli) {
         try {
-            int ret = lobbyInterface.designAnpassen(uli);
-            if (ret == -1) return -1;
             DesignPane.DesignPaneStart(lobbyInterface.getDesignsList(uli), uli);
-
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-
         return 1;
     }
 
@@ -222,15 +236,6 @@ public class CommunicationWithServer {
     public static void designBestaetigen(UpdateLobbyInterface uli, String design) {
         try {
             lobbyInterface.designBestaetigen(uli,design);
-        } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
-            System.exit(0);
-        }
-    }
-
-    public static void designAendernAbbrechen() {
-        try {
-            lobbyInterface.designAendernAbbrechen();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);

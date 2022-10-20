@@ -22,4 +22,6 @@ public interface LoginInterface extends Remote {
      * -3 Benutzername bereits vorhanden, 1 Registrierung erfolgreich
      */
     int register(String username, byte[] password) throws RemoteException;
+
+    void logout(String username, UpdateRoomsInterface uri) throws RemoteException;
 }

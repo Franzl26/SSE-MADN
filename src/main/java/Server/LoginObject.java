@@ -12,6 +12,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.*;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,6 +20,7 @@ public class LoginObject extends UnicastRemoteObject implements LoginInterface {
     private KeyPair keys;
     private final RaumauswahlObject raumauswahl;
     private CredentialsSave users;
+    private HashSet<String> isLoggedIn = new HashSet<>();
 
     protected LoginObject() throws RemoteException {
         Timer keyTimer = new Timer("keyPairGenTimer");
@@ -40,9 +42,17 @@ public class LoginObject extends UnicastRemoteObject implements LoginInterface {
     public RaumauswahlInterface login(String username, byte[] password, UpdateRoomsInterface uri) throws RemoteException {
         byte[] pwDecrypted = hashPassword(decryptPassword(password));
         if (users.checkPassword(username, pwDecrypted) != 1) return null;
+        if (isLoggedIn.contains(username)) return null;
+        isLoggedIn.add(username);
         raumauswahl.addClient(uri,username);
         users.saveCredentials();
         return raumauswahl;
+    }
+
+    @Override
+    public void logout(String username, UpdateRoomsInterface uri) throws RemoteException {
+        isLoggedIn.remove(username);
+        raumauswahl.unsubscribeFromRoomUpdates(uri);
     }
 
     @Override

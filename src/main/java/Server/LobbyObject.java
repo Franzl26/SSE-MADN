@@ -3,6 +3,7 @@ package Server;
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import RMIInterfaces.LobbyInterface;
+import RMIInterfaces.UpdateGameInterface;
 import RMIInterfaces.UpdateLobbyInterface;
 
 import java.io.File;
@@ -17,8 +18,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private final RaumauswahlObject raumauswahl;
     private final Room room;
     private String boardDesign = "Standard";
-
-    private UpdateLobbyInterface designAnpassenUli; // todo ggf entfernen stattdessen synchronised?
 
     protected LobbyObject(RaumauswahlObject raumauswahlObject, Room room) throws RemoteException {
         raumauswahl = raumauswahlObject;
@@ -57,15 +56,8 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     }
 
     @Override
-    public synchronized int spielStarten(UpdateLobbyInterface uli) throws RemoteException { // todo
+    public synchronized int spielStarten(UpdateLobbyInterface uli, UpdateGameInterface ugi) throws RemoteException { // todo
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public synchronized int designAnpassen(UpdateLobbyInterface uli) throws RemoteException {
-        if (designAnpassenUli != null) return -1;
-        designAnpassenUli = uli;
-        return 1;
     }
 
     @Override
@@ -85,16 +77,9 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     }
 
     @Override
-    public void designBestaetigen(UpdateLobbyInterface uli, String design) throws RemoteException {
-        if (!uli.equals(designAnpassenUli)) return;
+    public synchronized void designBestaetigen(UpdateLobbyInterface uli, String design) throws RemoteException {
         boardDesign = design;
-        designAnpassenUli = null;
         System.out.println("neues design gesetzt: " + design);
-    }
-
-    @Override
-    public void designAendernAbbrechen() {
-        designAnpassenUli = null;
     }
 
     @Override

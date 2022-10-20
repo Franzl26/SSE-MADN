@@ -1,6 +1,5 @@
 package Dialogs;
 
-import ClientLogic.GameLogic;
 import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardState;
 import DataAndMethods.FieldState;
@@ -68,15 +67,6 @@ public class GamePane extends AnchorPane {
         Button spielVerlassenButton = new Button("Spiel verlassen");
         spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> System.exit(0));
 
-        // todo remove
-        Button test = new Button("TestPrio");
-        test.setPrefWidth(100);
-        test.setPrefHeight(70);
-        test.addEventHandler(ActionEvent.ACTION, e -> logic.testButton());
-        AnchorPane.setRightAnchor(test, 30.0);
-        AnchorPane.setBottomAnchor(test, 70.0);
-
-
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
         AnchorPane.setLeftAnchor(diceCanvas, 10.0);
@@ -89,9 +79,7 @@ public class GamePane extends AnchorPane {
         AnchorPane.setTopAnchor(gifView, 90.0);
         AnchorPane.setRightAnchor(spielVerlassenButton, 10.0);
         AnchorPane.setBottomAnchor(spielVerlassenButton, 10.0);
-
-        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton, test);
-
+        getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton);
         // init Gifs
         try {
             File f = new File("./resources/waiting/pictures/");
@@ -101,8 +89,6 @@ public class GamePane extends AnchorPane {
         } catch (NullPointerException e) {
             System.out.println("no gifs found");
         }
-
-        testGameInit(this);
     }
 
     public void drawDice(int number) {
@@ -117,17 +103,14 @@ public class GamePane extends AnchorPane {
         drawBoardSingleFieldAll(gcBoard, config, state, i, highlight);
     }
 
-    public void drawNames(ArrayList<String> players, int turn) {
+    public void drawNames(String[] players, int turn) {
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(40));
         gcName.setFill(Color.BLACK);
-
-        for (int i = 0; i < players.size(); i++) {
+        for (int i = 0; i < players.length; i++) {
             gcName.drawImage(config.figure[i], 5 + 245 * i, 5, 40, 40);
-            String p = players.get(i);
+            String p = players[i];
             gcName.fillText(p, i * 245 + 50, 40, 190);
-            //gcName.drawImage(config.personal[i], 200 + 245 * i, 5, 40, 40);
-
             if (i == turn) gcName.fillRect(i * 245 + 5, 46, 235, 47);
         }
     }
@@ -138,8 +121,8 @@ public class GamePane extends AnchorPane {
 
         double rand = Math.random();
         if (picturesArray == null) {
-            System.out.println("couldn't print pic");
-            rand = 0.1;
+            System.err.println("couldn't print gif/picture");
+            rand = Math.random();
         }
         if (rand > (1.0 * gifsArray.length / (gifsArray.length + picturesArray.length))) {
             gifCanvas.toFront();
@@ -153,8 +136,13 @@ public class GamePane extends AnchorPane {
             MediaPlayer player = new MediaPlayer(media);
             gifView.setMediaPlayer(player);
             player.setAutoPlay(true);
-            player.setCycleCount(10);
+            player.setCycleCount(50);
         }
+    }
+
+    public void hideGif() {
+        gcGif.setFill(Color.LIGHTSLATEGRAY);
+        gcGif.fillRect(0, 0, 360, 360);
     }
 
     public static GamePane GamePaneStart(GameLogic logic) {
@@ -165,20 +153,7 @@ public class GamePane extends AnchorPane {
         stage.setTitle("Mensch Ärgere dich nicht");
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.show();
+        //stage.show();
         return root;
-    }
-
-
-    private void testGameInit(GamePane pane) {
-        pane.drawDice(7);
-
-        ArrayList<String> players = new ArrayList<>();
-        players.add("Tom");
-        players.add("Nico");
-        players.add("Markus");
-        players.add("Domenik");
-        pane.drawNames(players, 2);
-        showGif();
     }
 }
