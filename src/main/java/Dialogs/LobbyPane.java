@@ -1,5 +1,6 @@
 package Dialogs;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -12,12 +13,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class LobbyPane extends AnchorPane {
     private final GraphicsContext gcName;
+    private String design = "Standard";
 
     public LobbyPane() {
         Canvas nameCanvas = new Canvas(200, 150);
@@ -99,11 +99,12 @@ public class LobbyPane extends AnchorPane {
     }
 
     public void gameStarts() {
-        int ret = CommunicationWithServer.spielStartet();
-        if (ret == 1) {
-            ((Stage) getScene().getWindow()).close();
-        }
-        System.out.println("start");
+        Platform.runLater(() -> {
+            int ret = CommunicationWithServer.spielStartet(design);
+            if (ret == 1) {
+                ((Stage) getScene().getWindow()).close();
+            }
+        });
     }
 
     public static LobbyPane LobbyPaneStart() {
@@ -117,5 +118,9 @@ public class LobbyPane extends AnchorPane {
         root.setOnClose();
         //stage.show();
         return root;
+    }
+
+    public void setDesign(String design) {
+        this.design = design;
     }
 }

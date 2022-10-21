@@ -1,5 +1,6 @@
 package Dialogs;
 
+import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.Room;
 import RMIInterfaces.*;
@@ -108,7 +109,6 @@ public class CommunicationWithServer {
      * @return -1 max Raumanzahl erreicht, 1 erfolgreich
      */
     public static int createNewRoom() {
-
         try {
             LobbyPane pane = LobbyPane.LobbyPaneStart();
             int ret = lii.createNewRoom(new UpdateLobbyObject(pane));
@@ -185,16 +185,15 @@ public class CommunicationWithServer {
     /**
      * @return -1 Spiel kann nicht gestartet werden, 1 Spiel wird gestartet
      */
-    public static int spielStartet() {
+    public static int spielStartet(String design) {
         try {
-            GameLogic gameLogic = new GameLogic(lii);
+            GameLogic gameLogic = new GameLogic(lii, design);
             int ret = lii.spielStartet(new UpdateGameObject(gameLogic));
             if (ret == -1) {
                 gameLogic.closePane();
                 return -1;
             }
             gameLogic.showPane();
-            System.out.println("show");
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -232,14 +231,18 @@ public class CommunicationWithServer {
         }
     }
 
-    public static BoardConfigurationBytes getBoardConfig(String design) {
+    public static BoardConfiguration getBoardConfig(String design) {
+        return BoardConfiguration.getBoardConfig(lii, design);
+    }
+
+    public static void startNewRoomSelectPane() {
         try {
-            return lii.getBoardConfig(design);
+            RoomSelectPane pane = RoomSelectPane.RoomSelectPaneStart(lii.getUsername());
+            lii.subscribeToRoomUpdates(new UpdateRoomsObject(pane));
+            ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            e.printStackTrace(System.out);
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        return null;
     }
 }

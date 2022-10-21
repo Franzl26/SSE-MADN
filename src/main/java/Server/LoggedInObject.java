@@ -93,7 +93,7 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     }
 
     @Override
-    public BoardConfigurationBytes getBoardConfig(String design) throws RemoteException {
+    public BoardConfigurationBytes getBoardConfigBytes(String design) throws RemoteException {
         return raumauswahlObject.getBoardConfig(design);
     }
 
@@ -110,6 +110,7 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     @Override
     public void leaveGame() throws RemoteException {
         gameInterface.leaveGame(this);
+        gameInterface = null;
     }
 
     @Override

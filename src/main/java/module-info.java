@@ -3,14 +3,11 @@ module SSEProjekt {
     requires javafx.media;
     requires javafx.swing;
     requires java.rmi;
-    requires java.desktop;
 
     opens App;
     opens Dialogs;
-    opens ClientLogic;
     opens DataAndMethods;
 
-    exports ClientLogic;
     exports RMIInterfaces;
     exports Server;
     exports DataAndMethods;

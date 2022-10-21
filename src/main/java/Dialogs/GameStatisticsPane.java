@@ -1,26 +1,25 @@
 package Dialogs;
 
 import DataAndMethods.GameStatistics;
+import RMIInterfaces.LoggedInInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GameStatisticsPane extends AnchorPane {
     private final GraphicsContext gc;
 
-    public GameStatisticsPane() {
+    private GameStatisticsPane() {
         Canvas canvas = new Canvas(400, 300);
         gc = canvas.getGraphicsContext2D();
 
         Button okayButton = new Button("Okay");
-        okayButton.addEventHandler(ActionEvent.ACTION, e -> {
-
-        });
+        okayButton.addEventHandler(ActionEvent.ACTION, e -> verlassen());
 
         AnchorPane.setLeftAnchor(canvas, 10.0);
         AnchorPane.setTopAnchor(canvas, 10.0);
@@ -32,6 +31,7 @@ public class GameStatisticsPane extends AnchorPane {
     }
 
     public void drawStatistics(GameStatistics stats) {
+        gc.setFill(Color.BLACK);
         /*gc.setLineWidth(1.0);
         gc.setFont(Font.font(40));
         gc.fillText("Platz: " + stats.getFinishPlace(), 5, 30);
@@ -52,7 +52,19 @@ public class GameStatisticsPane extends AnchorPane {
         gc.fillText("Spielzeit: " + (time / 3600) + ":" + ((time % 3600) / 60) + ":" + (time % 60) + " h", 5, 270);*/
     }
 
-    public static void GameStatisticsPaneStart() {
+    private void setOnClose() {
+        getScene().getWindow().setOnCloseRequest(e -> {
+            verlassen();
+            e.consume();
+        });
+    }
+
+    private void verlassen() {
+        CommunicationWithServer.startNewRoomSelectPane();
+        ((Stage)getScene().getWindow()).close();
+    }
+
+    public static GameStatisticsPane GameStatisticsPaneStart() {
         GameStatisticsPane root = new GameStatisticsPane();
         Scene scene = new Scene(root, 400, 330);
         Stage stage = new Stage();
@@ -60,6 +72,8 @@ public class GameStatisticsPane extends AnchorPane {
         stage.setTitle("Spielstatistik");
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.show();
+        root.setOnClose();
+        //stage.show();
+        return root;
     }
 }

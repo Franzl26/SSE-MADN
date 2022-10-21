@@ -1,6 +1,8 @@
 package DataAndMethods;
 
-public class GameStatistics {
+import java.io.Serializable;
+
+public class GameStatistics implements Serializable {
     private final int[][] zahlenGewuerfelt = new int[4][6];
     private final int[] andereGeschlagen = new int[4];
     private final int[] geschlagenWorden = new int[4];

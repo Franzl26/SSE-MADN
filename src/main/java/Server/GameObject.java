@@ -3,14 +3,12 @@ package Server;
 import DataAndMethods.BoardState;
 import DataAndMethods.FieldState;
 import DataAndMethods.GameStatistics;
-import DataAndMethods.Player;
 import RMIInterfaces.GameInterface;
 import RMIInterfaces.LoggedInInterface;
 import RMIInterfaces.UpdateGameInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 
 import static DataAndMethods.FieldState.*;
 
@@ -22,8 +20,6 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private final String[] names;
     private final FieldState[] fields;
 
-    //private final HashMap<LoggedInInterface, UpdateGameInterface> clients = new HashMap<>(4, 1);
-    //private final Player[] spieler;
     private final int spielerAnzahl;
     private final String design;
     private final BoardState boardState;
@@ -32,19 +28,19 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     protected GameObject(LoggedInInterface[] lii, int spielerUndBotsAnz, String design) throws RemoteException {
         spielerAnzahl = spielerUndBotsAnz;
         this.design = design;
-        clients = lii;
+        clients = lii.clone();
         clientsUpdate = new UpdateGameInterface[spielerAnzahl];
         names = new String[spielerAnzahl];
         fields = new FieldState[spielerAnzahl];
 
         if (spielerAnzahl == 2) {
-            names[0] = (clients[0]==null?"Bot0":clients[0].getUsername());
-            names[1] = (clients[1]==null?"Bot0":clients[1].getUsername());
+            names[0] = (clients[0] == null ? "Bot0" : clients[0].getUsername());
+            names[1] = (clients[1] == null ? "Bot1" : clients[1].getUsername());
             fields[0] = FIELD_FIGURE0;
             fields[1] = FIELD_FIGURE2;
         } else {
             for (int i = 0; i < spielerAnzahl; i++) {
-                names[i] = (clients[i] == null ? "Bot" + 1 : clients[i].getUsername());
+                names[i] = (clients[i] == null ? "Bot" + i : clients[i].getUsername());
                 fields[i] = switch (i) {
                     case 0 -> FIELD_FIGURE0;
                     case 1 -> FIELD_FIGURE1;
@@ -57,14 +53,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     }
 
     public synchronized void checkPlayerIn(LoggedInInterface lii, UpdateGameInterface ugi) {
-        for (int i = 0; i < spielerAnzahl; i++) {
-            if (clients[i] == lii) {
-                clientsUpdate[i] = ugi;
-                System.out.println("ugi set for player" + i);
-                break;
-            }
-        }
-        displayNewStateIntern(ugi, boardState, null, names, -1);
+        int i = isInGame(lii);
+        if (i == -1) return;
+        clientsUpdate[i] = ugi;
+        System.out.println("ugi set for player " + i);
+        displayNewStateIntern(lii, ugi, boardState, null, names, -1);
     }
 
     @Override
@@ -79,13 +72,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
     @Override
     public synchronized void leaveGame(LoggedInInterface lii) throws RemoteException {
-        for (int i = 0; i < spielerAnzahl; i++) {
-            if (clients[i] == lii) {
-                clients[i] = null;
-                clientsUpdate[i] = null;
-                names[i] = "Bot" + i;
-            }
-        }
+        removePlayerIntern(lii);
     }
 
     @Override
@@ -93,13 +80,30 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         return gameStatistics;
     }
 
-    private void displayNewStateIntern(UpdateGameInterface ugi, BoardState state, int[] changed, String[] names, int turn) {
+    private void removePlayerIntern(LoggedInInterface lii) {
+        int i = isInGame(lii);
+        if (i == -1) return;
+        clients[i] = null;
+        clientsUpdate[i] = null;
+        names[i] = "Bot" + i;
+        System.out.println("removed player " + i);
+    }
+
+    private void displayNewStateIntern(LoggedInInterface lii, UpdateGameInterface ugi, BoardState state, int[] changed, String[] names, int turn) {
         new Thread(() -> {
+            System.out.println("update: " + lii);
             try {
                 ugi.displayNewState(state, changed, names, turn);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                removePlayerIntern(lii);
             }
-        });
+        }).start();
+    }
+
+    private int isInGame(LoggedInInterface lii) {
+        for (int i = 0; i < spielerAnzahl; i++) {
+            if (clients[i] == lii) return i;
+        }
+        return -1;
     }
 }

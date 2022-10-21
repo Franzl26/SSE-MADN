@@ -52,7 +52,7 @@ public interface LoggedInInterface extends Remote {
 
     void designBestaetigen(String design) throws RemoteException;
 
-    BoardConfigurationBytes getBoardConfig(String design) throws RemoteException;
+    BoardConfigurationBytes getBoardConfigBytes(String design) throws RemoteException;
 
     boolean submitMove(int from, int to) throws RemoteException;
 

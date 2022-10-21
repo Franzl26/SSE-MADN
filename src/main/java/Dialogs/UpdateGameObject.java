@@ -13,11 +13,6 @@ public class UpdateGameObject extends UnicastRemoteObject implements UpdateGameI
         logic = gameLogic;
     }
 
-    /*@Override
-    public void welcomeToGame(GameInterface game) throws RemoteException {
-        logic.setGameInterface(game);
-    }*/
-
     @Override
     public void displayNewState(BoardState state, int[] changed, String[] names, int turn) throws RemoteException {
         logic.displayNewState(state, changed,names,turn);

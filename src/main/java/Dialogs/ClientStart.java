@@ -1,4 +1,4 @@
-package ClientLogic;
+package Dialogs;
 
 import Dialogs.LoginPane;
 import javafx.application.Application;
@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 public class ClientStart extends Application {
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         LoginPane.LoginPaneStart();
     }
 

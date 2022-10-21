@@ -1,13 +1,23 @@
 package DataAndMethods;
 
+import RMIInterfaces.LoggedInInterface;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BoardConfiguration {
+    public static final String[] compareList = new String[]{"board.png", "dice0.png", "dice1.png", "dice2.png",
+            "dice3.png", "dice4.png", "dice5.png", "dice6.png", "dice7.png", "figure0.png", "figure1.png", "figure2.png",
+            "figure3.png", "figureHigh0.png", "figureHigh1.png", "figureHigh2.png", "figureHigh3.png", "path0.png",
+            "path1.png", "path2.png", "path3.png", "pathNormal.png", "personal0.png", "personal1.png", "personal2.png",
+            "personal3.png", "positions.txt"};
+
     public final int[][] pointCoordinates;
     public final int[][] orientation;
     public final Image board;
@@ -31,9 +41,29 @@ public class BoardConfiguration {
         figureHigh = builder.figureHigh;
     }
 
+
+
+    public static BoardConfiguration getBoardConfig(LoggedInInterface lii, String name) {
+        File file = new File("./resources/designs/" + name + "/");
+        if (!(file.isDirectory() && Arrays.equals(file.list(), compareList))) {
+            //noinspection ResultOfMethodCallIgnored
+            file.mkdir();
+            BoardConfigurationBytes config = null;
+            try {
+                config = lii.getBoardConfigBytes(name);
+            } catch (RemoteException e) {
+                new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+                System.exit(0);
+            }
+            config.saveConfiguration(file.getAbsolutePath());
+        }
+        return BoardConfiguration.loadBoardKonfiguration(file.getAbsolutePath());
+    }
+
     public static BoardConfiguration loadBoardKonfiguration(String dir) {
+        if (!dir.endsWith("/")) dir = dir.concat("/");
         Builder builder = new Builder();
-        if (!builder.read(dir)) throw new RuntimeException("Could not load board configuration");
+        if (!builder.read(dir)) throw new RuntimeException("Could not load board configuration from dir:\n"+dir);
         return builder.build();
     }
 

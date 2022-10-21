@@ -1,8 +1,8 @@
 package Dialogs;
 
 import DataAndMethods.BoardConfiguration;
-import DataAndMethods.BoardConfigurationBytes;
 import DataAndMethods.BoardState;
+import RMIInterfaces.LoggedInInterface;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -13,9 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.util.Arrays;
 
 import static DataAndMethods.BoardDrawer.drawBoardAll;
 
@@ -45,7 +42,7 @@ public class DesignPane extends AnchorPane {
                 return;
             }
             last = true;
-            BoardConfiguration config = getBoardConfig(boardChoice.getValue());
+            BoardConfiguration config = CommunicationWithServer.getBoardConfig(boardChoice.getValue());
             BoardState state = new BoardState(4);
             drawBoardAll(gcBoard, config, state);
             gcDice.setFill(Color.LIGHTSLATEGRAY);
@@ -92,23 +89,5 @@ public class DesignPane extends AnchorPane {
         stage.setResizable(false);
         root.setOnClose();
         stage.show();
-    }
-
-    private static final String[] compareList = new String[]{"board.png", "dice0.png", "dice1.png", "dice2.png",
-            "dice3.png", "dice4.png", "dice5.png", "dice6.png", "dice7.png", "figure0.png", "figure1.png", "figure2.png",
-            "figure3.png", "figureHigh0.png", "figureHigh1.png", "figureHigh2.png", "figureHigh3.png", "path0.png",
-            "path1.png", "path2.png", "path3.png", "pathNormal.png", "personal0.png", "personal1.png", "personal2.png",
-            "personal3.png", "positions.txt"};
-
-
-    public BoardConfiguration getBoardConfig(String name) {
-        File file = new File("./resources/designs/" + name + "/");
-        if (!(file.isDirectory() && Arrays.equals(file.list(), compareList))) {
-            //noinspection ResultOfMethodCallIgnored
-            file.mkdir();
-            BoardConfigurationBytes config = CommunicationWithServer.getBoardConfig(name);
-            config.saveConfiguration(file.getAbsolutePath());
-        }
-        return BoardConfiguration.loadBoardKonfiguration(file.getAbsolutePath());
     }
 }

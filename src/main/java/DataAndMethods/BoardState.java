@@ -14,7 +14,7 @@ public class BoardState implements Serializable {
 
     public void reset(int spielerAnz) {
         board = new FieldState[72];
-        Arrays.fill(board, 16, 72, FIELD_NONE);
+        Arrays.fill(board, 0, 72, FIELD_NONE);
         if (spielerAnz == 2) {
             Arrays.fill(board, 0, 4, FIELD_FIGURE0);
             Arrays.fill(board, 8, 12, FIELD_FIGURE2);

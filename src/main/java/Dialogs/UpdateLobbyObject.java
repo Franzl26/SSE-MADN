@@ -21,4 +21,9 @@ public class UpdateLobbyObject extends UnicastRemoteObject implements UpdateLobb
     public void gameStarts() throws RemoteException {
         pane.gameStarts();
     }
+
+    @Override
+    public void updateDesign(String design) throws RemoteException {
+        pane.setDesign(design);
+    }
 }

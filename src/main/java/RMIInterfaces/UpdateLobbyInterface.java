@@ -7,4 +7,6 @@ public interface UpdateLobbyInterface extends Remote {
     void updateNames(String[] names) throws RemoteException;
 
     void gameStarts() throws RemoteException;
+
+    void updateDesign(String design) throws RemoteException;
 }

@@ -2,21 +2,18 @@ package Dialogs;
 
 import DataAndMethods.BoardConfiguration;
 import DataAndMethods.BoardState;
-import RMIInterfaces.GameInterface;
+import DataAndMethods.GameStatistics;
 import RMIInterfaces.LoggedInInterface;
-import RMIInterfaces.UpdateGameInterface;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 
-import static DataAndMethods.BoardConfiguration.clickRadius;
-import static DataAndMethods.FieldState.*;
-
 public class GameLogic {
     private final GamePane pane;
     private final LoggedInInterface lii;
-    public BoardConfiguration boardConfig;
+    public final BoardConfiguration boardConfig;
 
     private boolean highlighted = false;
     private int highlightedField = -1;
@@ -27,8 +24,9 @@ public class GameLogic {
      */
     private int gewuerfelt = -1;
 
-    public GameLogic(LoggedInInterface lii) {
+    public GameLogic(LoggedInInterface lii, String design) {
         this.lii = lii;
+        boardConfig = BoardConfiguration.loadBoardKonfiguration("./resources/designs/"+design);
         pane = GamePane.GamePaneStart(this);
     }
 
@@ -75,11 +73,13 @@ public class GameLogic {
 
     // rein kommenden Funktionen
     public void displayNewState(BoardState state, int[] changed, String[] names, int turn) {
-        pane.hideGif();
-        pane.drawDice(0);
-        pane.drawNames(names, turn);
-        if (changed == null) pane.drawBoard(state);
-        else for (int i : changed) pane.drawBoardSingleField(state.getField(i), i, false);
+        Platform.runLater(() -> {
+            pane.hideGif();
+            pane.drawDice(0);
+            pane.drawNames(names, turn);
+            if (changed == null) pane.drawBoard(state);
+            else for (int i : changed) pane.drawBoardSingleField(state.getField(i), i, false);
+        });
     }
 
     public void displayDice(int number) {
@@ -108,10 +108,16 @@ public class GameLogic {
         ((Stage) pane.getScene().getWindow()).close();
     }
 
-    public static void testBoardLogic() { // todo entfernen
-        //Stil auswählen
-        //new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Standard/"));
-        //new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/StarWars"));
-        //new GameLogic(BoardConfiguration.loadBoardKonfiguration("./resources/designs/Formula1"));
+    public void spielVerlassen() {
+        try {
+            GameStatistics stats = lii.getStatistics();
+            lii.leaveGame();
+            GameStatisticsPane pane = GameStatisticsPane.GameStatisticsPaneStart();
+            pane.drawStatistics(stats);
+            ((Stage) pane.getScene().getWindow()).show();
+        } catch (RemoteException e) {
+            e.printStackTrace(System.out);
+            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+        }
     }
 }

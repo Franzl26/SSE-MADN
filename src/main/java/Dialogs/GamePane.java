@@ -7,7 +7,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -56,15 +58,15 @@ public class GamePane extends AnchorPane {
         gcGif = gifCanvas.getGraphicsContext2D();
         gcGif.setFill(Color.LIGHTSLATEGRAY);
         gcGif.fillRect(0, 0, 360, 360);
-        gifCanvas.setOnMouseClicked(e -> showGif());
+        //gifCanvas.setOnMouseClicked(e -> showGif());
 
         gifView = new MediaView();
         gifView.setFitWidth(360);
         gifView.setFitHeight(360);
-        gifView.setOnMouseClicked(e -> showGif());
+        //gifView.setOnMouseClicked(e -> showGif());
 
         Button spielVerlassenButton = new Button("Spiel verlassen");
-        spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> System.exit(0));
+        spielVerlassenButton.addEventHandler(ActionEvent.ACTION, e -> spielVerlassen());
 
         AnchorPane.setLeftAnchor(nameCanvas, 10.0);
         AnchorPane.setTopAnchor(nameCanvas, 10.0);
@@ -91,6 +93,8 @@ public class GamePane extends AnchorPane {
     }
 
     public void drawDice(int number) {
+        System.out.println("gcDice="+gcDice);
+        System.out.println("config="+config);
         gcDice.drawImage(config.dice[number], 0, 0, 100, 100);
     }
 
@@ -102,7 +106,7 @@ public class GamePane extends AnchorPane {
         drawBoardSingleFieldAll(gcBoard, config, state, i, highlight);
     }
 
-    public void drawNames(String[] players, int turn) { // todo anpassen
+    public void drawNames(String[] players, int turn) {
         gcName.setLineWidth(1.0);
         gcName.setFont(Font.font(40));
         gcName.setFill(Color.BLACK);
@@ -144,6 +148,22 @@ public class GamePane extends AnchorPane {
         gcGif.fillRect(0, 0, 360, 360);
     }
 
+    private void spielVerlassen() {
+        new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich verlassen?").showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                logic.spielVerlassen();
+                ((Stage)getScene().getWindow()).close();
+            }
+        });
+    }
+
+    private void setOnClose() {
+        getScene().getWindow().setOnCloseRequest(e -> {
+            spielVerlassen();
+            e.consume();
+        });
+    }
+
     public static GamePane GamePaneStart(GameLogic logic) {
         GamePane root = new GamePane(logic);
         Scene scene = new Scene(root, 1000, 600);
@@ -153,6 +173,7 @@ public class GamePane extends AnchorPane {
         stage.setScene(scene);
         stage.setResizable(false);
         //stage.show();
+        root.setOnClose();
         return root;
     }
 }
