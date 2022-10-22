@@ -54,8 +54,15 @@ public interface LoggedInInterface extends Remote {
 
     BoardConfigurationBytes getBoardConfigBytes(String design) throws RemoteException;
 
-    boolean submitMove(int from, int to) throws RemoteException;
+    /**
+     * @return -1 Zug nicht möglich nochmal setzten, -2 Prio nicht eingehalten Figur geschlagen, -3 nicht dran
+     * 1 Zug durchgeführt
+     */
+    int submitMove(int from, int to) throws RemoteException;
 
+    /**
+     * @return -1 nicht dran, -2 schon gewürfelt, nicht gezogen, 1-6 Zahl
+     */
     int throwDice() throws RemoteException;
 
     void leaveGame() throws RemoteException;

@@ -3,12 +3,18 @@ package DataAndMethods;
 import java.io.Serializable;
 
 public class GameStatistics implements Serializable {
-    private final int[][] zahlenGewuerfelt = new int[4][6];
-    private final int[] andereGeschlagen = new int[4];
-    private final int[] geschlagenWorden = new int[4];
-    private final String[] finishPlaces = new String[4];
+    private final int[][] zahlenGewuerfelt;
+    private final int[] andereGeschlagen;
+    private final int[] geschlagenWorden;
+    private final String[] finishPlaces;
     private long startTime;
-    private long endTime;
+
+    public GameStatistics(int spieler) {
+        zahlenGewuerfelt = new int[spieler][6];
+        andereGeschlagen = new int[spieler];
+        geschlagenWorden = new int[spieler];
+        finishPlaces = new String[spieler];
+    }
 
     public void incZahlGewuerfelt(int spieler, int zahl) {
         zahlenGewuerfelt[spieler][zahl]++;
@@ -44,13 +50,5 @@ public class GameStatistics implements Serializable {
 
     public void setStartTime() {
         startTime = System.currentTimeMillis();
-    }
-
-    public void setEndTime() {
-        endTime = System.currentTimeMillis();
-    }
-
-    public long getGameDurationSeconds() {
-        return (endTime - startTime) / 1000;
     }
 }

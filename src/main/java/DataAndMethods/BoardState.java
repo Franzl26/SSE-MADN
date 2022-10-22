@@ -8,6 +8,10 @@ import static DataAndMethods.FieldState.*;
 public class BoardState implements Serializable {
     private FieldState[] board;
 
+    private BoardState(FieldState[] fieldStates) {
+        board=fieldStates;
+    }
+
     public BoardState(int spielerAnz) {
         reset(spielerAnz);
     }
@@ -32,14 +36,14 @@ public class BoardState implements Serializable {
     }
 
     public FieldState[] getBoardState() {
-        return board;
+        return board.clone();
     }
 
     public FieldState getField(int i) {
         return board[i];
     }
 
-    public void fillWithOneTest() {
-        Arrays.fill(board,0,72,FIELD_FIGURE0);
+    public static BoardState copyOf(BoardState boardState) {
+        return new BoardState(boardState.getBoardState());
     }
 }

@@ -60,7 +60,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     public synchronized int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException {
         if ((bots + spieler) == 1) return -1;
         if (!checkInLobby(lii)) return -1;
-        gameObject = new GameObject(clients, spieler + bots, boardDesign);
+        gameObject = new GameObject(clients, spieler + bots);
         Timer timer = new Timer("delete Lobby");
         raumauswahl.removeRoom(room);
         timer.schedule(new DeleteLobby(), 5000);
@@ -204,28 +204,28 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         }
         if (uliCopy[0] != null) new Thread(() -> {
             try {
-                uliCopy[0].updateNames(names);
+                uliCopy[0].updateNames(names.clone());
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[0]);
             }
         }).start();
         if (uliCopy[1] != null) new Thread(() -> {
             try {
-                uliCopy[1].updateNames(names);
+                uliCopy[1].updateNames(names.clone());
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[1]);
             }
         }).start();
         if (uliCopy[2] != null) new Thread(() -> {
             try {
-                uliCopy[2].updateNames(names);
+                uliCopy[2].updateNames(names.clone());
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[2]);
             }
         }).start();
         if (uliCopy[3] != null) new Thread(() -> {
             try {
-                uliCopy[3].updateNames(names);
+                uliCopy[3].updateNames(names.clone());
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[3]);
             }

@@ -93,8 +93,6 @@ public class GamePane extends AnchorPane {
     }
 
     public void drawDice(int number) {
-        System.out.println("gcDice="+gcDice);
-        System.out.println("config="+config);
         gcDice.drawImage(config.dice[number], 0, 0, 100, 100);
     }
 
@@ -107,7 +105,8 @@ public class GamePane extends AnchorPane {
     }
 
     public void drawNames(String[] players, int turn) {
-        gcName.setLineWidth(1.0);
+        gcName.setFill(Color.LIGHTSLATEGRAY);
+        gcName.fillRect(0,0,980,50);
         gcName.setFont(Font.font(40));
         gcName.setFill(Color.BLACK);
         for (int i = 0; i < players.length; i++) {

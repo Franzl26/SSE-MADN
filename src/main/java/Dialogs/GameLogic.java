@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 
+import static DataAndMethods.BoardConfiguration.clickRadius;
+import static DataAndMethods.FieldState.*;
+
 public class GameLogic {
     private final GamePane pane;
     private final LoggedInInterface lii;
@@ -17,6 +20,7 @@ public class GameLogic {
 
     private boolean highlighted = false;
     private int highlightedField = -1;
+    private BoardState boardState;
 
 
     /**
@@ -32,38 +36,53 @@ public class GameLogic {
 
     // raus gehende Funktionen
     public void onMouseClickedField(double x, double y) { // todo
-        /*for (int i = 0; i < 72; i++) {
+        for (int i = 0; i < 72; i++) {
             if (Math.hypot(x - boardConfig.pointCoordinates[i][0], y - boardConfig.pointCoordinates[i][1]) < clickRadius - 2) {
-                System.out.println("x: " + x + " y: " + y + " Field clicked: " + i);
-                if (!highlighted && board.getField(i) == FIELD_NONE) return;
+                //System.out.println("x: " + x + " y: " + y + " Field clicked: " + i);
+                //System.out.println("Field clicked: " + i);
+                if (!highlighted && boardState.getField(i) == FIELD_NONE) return;
                 if (!highlighted) {
                     highlighted = true;
                     highlightedField = i;
-                    pane.drawBoardSingleField(board.getField(i), i, true);
+                    pane.drawBoardSingleField(boardState.getField(i), i, true);
                 } else {
                     if (highlightedField == i) {
                         highlighted = false;
                         highlightedField = -1;
-                        pane.drawBoardSingleField(board.getField(i), i, false);
+                        pane.drawBoardSingleField(boardState.getField(i), i, false);
                     } else {
+                        try {
+                            pane.drawBoardSingleField(boardState.getField(highlightedField), highlightedField, false);
+                            int ret = lii.submitMove(highlightedField,i);
+                            if (ret == -1) {
+                                new Alert(Alert.AlertType.INFORMATION, "Fehlerhafter Zug, nochmal setzen").showAndWait();
+                            } else if (ret == -2) {
+                                new Alert(Alert.AlertType.INFORMATION, "Du hast einen PrioZug missachtet, die entsprechende Figur wurde geschlagen").showAndWait();
+                            } else if (ret == -3) {
+                                new Alert(Alert.AlertType.INFORMATION, "Du bist nicht dran du Pflaume").showAndWait();
+                            } else {
+                                gewuerfelt = -1;
+                            }
+                        } catch (RemoteException e) {
+                            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+                            System.exit(0);
+                        }
 
-                        board.setField(i, board.getField(highlightedField));
-                        board.setField(highlightedField, FIELD_NONE);
-                        pane.drawBoardSingleField(board.getField(highlightedField), highlightedField, false);
-                        pane.drawBoardSingleField(board.getField(i), i, false);
                         highlighted = false;
                         highlightedField = -1;
                     }
                 }
                 return;
             }
-        }*/
+        }
     }
 
-    public void onMouseClickedDice() { // todo
-        if (gewuerfelt != 0) return;
+    public void onMouseClickedDice() {
+        //if (gewuerfelt != 0) return;
         try {
-            gewuerfelt = lii.throwDice();
+            int ret = lii.throwDice();
+            if (ret > 0) gewuerfelt = ret;
+            if (ret == -2) new Alert(Alert.AlertType.INFORMATION,"Du hast schon gewürfelt, erstmal ziehen").showAndWait();
         } catch (RemoteException e) {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
@@ -73,13 +92,19 @@ public class GameLogic {
 
     // rein kommenden Funktionen
     public void displayNewState(BoardState state, int[] changed, String[] names, int turn) {
+        if (state != null) boardState = state;
         Platform.runLater(() -> {
             pane.hideGif();
             pane.drawDice(0);
             pane.drawNames(names, turn);
+            if (state == null) return;
             if (changed == null) pane.drawBoard(state);
-            else for (int i : changed) pane.drawBoardSingleField(state.getField(i), i, false);
+            else for (int i : changed) if (i != -1) pane.drawBoardSingleField(state.getField(i), i, false);
         });
+    }
+
+    public void setTurn() {
+        //Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, "Du bist dran!").showAndWait());
     }
 
     public void displayDice(int number) {

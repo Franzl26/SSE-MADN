@@ -105,9 +105,10 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
             //noinspection unchecked
             copy = (HashMap<LoggedInInterface, UpdateRoomsInterface>) clients.clone();
         }
+        Rooms copyRooms = Rooms.copyOf(rooms);
         copy.keySet().forEach(client -> new Thread(() -> {
             try {
-                copy.get(client).updateRooms(rooms);
+                copy.get(client).updateRooms(copyRooms);
             } catch (RemoteException e) {
                 unsubscribeFromRoomUpdatesPrivate(client);
             }

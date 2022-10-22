@@ -98,7 +98,7 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     }
 
     @Override
-    public boolean submitMove(int from, int to) throws RemoteException {
+    public int submitMove(int from, int to) throws RemoteException {
         return gameInterface.submitMove(this,from,to);
     }
 

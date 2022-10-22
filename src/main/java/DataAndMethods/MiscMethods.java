@@ -6,15 +6,16 @@ import java.util.regex.Pattern;
 import static DataAndMethods.FieldState.*;
 
 public class MiscMethods {
+    /**
+     * überprüft, ob der Zug gesetzt werden durfte, unabhängig von einem eventuellen Prio Zug
+     */
     public static boolean checkMoveValid(BoardState boardState, FieldState player, int from, int to, int dice) {
         FieldState[] board = boardState.getBoardState();
         // richtige Spielfigur/nicht selber schlagen
         if (board[from] != player || board[to] == player) return false;
 
         // Prio-Zug durchgeführt
-        int prio = checkForPrioMove(boardState, player, dice);
         boolean b = ((from - 32 + dice) % 40 + 32) == to;
-        if (prio != -1 && prio == from && b) return true;
 
         // Spielzug auf Weg
         if (from >= 32 && to >= 32 && b && board[to] != player) {
@@ -70,24 +71,35 @@ public class MiscMethods {
         return false;
     }
 
-    public static int checkForPrioMove(BoardState boardState, FieldState player, int dice) {
+    /**
+     * @return null, falls kein Prio Move vorhanden, sonst [from, to]
+     */
+    public static int[] checkForPrioMove(BoardState boardState, FieldState player, int dice) {
         FieldState[] board = boardState.getBoardState();
         // rausrücken
         if (dice == 6) {
             if (player == FIELD_FIGURE0)
-                for (int i = 0; i < 4; i++) if (board[i] != FIELD_NONE && board[32] != FIELD_FIGURE0) return i;
+                for (int i = 0; i < 4; i++)
+                    if (board[i] != FIELD_NONE && board[32] != FIELD_FIGURE0) return new int[]{i, 32};
             if (player == FIELD_FIGURE1)
-                for (int i = 4; i < 8; i++) if (board[i] != FIELD_NONE && board[42] != FIELD_FIGURE1) return i;
+                for (int i = 4; i < 8; i++)
+                    if (board[i] != FIELD_NONE && board[42] != FIELD_FIGURE1) return new int[]{i, 42};
             if (player == FIELD_FIGURE2)
-                for (int i = 8; i < 12; i++) if (board[i] != FIELD_NONE && board[52] != FIELD_FIGURE2) return i;
+                for (int i = 8; i < 12; i++)
+                    if (board[i] != FIELD_NONE && board[52] != FIELD_FIGURE2) return new int[]{i, 52};
             if (player == FIELD_FIGURE3)
-                for (int i = 12; i < 16; i++) if (board[i] != FIELD_NONE && board[62] != FIELD_FIGURE3) return i;
+                for (int i = 12; i < 16; i++)
+                    if (board[i] != FIELD_NONE && board[62] != FIELD_FIGURE3) return new int[]{i, 62};
         }
         // abrücken
-        if (player == FIELD_FIGURE0 && board[32] == FIELD_FIGURE0 && board[32 + dice] != FIELD_FIGURE0) return 32;
-        if (player == FIELD_FIGURE1 && board[42] == FIELD_FIGURE1 && board[42 + dice] != FIELD_FIGURE1) return 42;
-        if (player == FIELD_FIGURE2 && board[52] == FIELD_FIGURE2 && board[52 + dice] != FIELD_FIGURE2) return 52;
-        if (player == FIELD_FIGURE3 && board[62] == FIELD_FIGURE3 && board[62 + dice] != FIELD_FIGURE3) return 62;
+        if (player == FIELD_FIGURE0 && board[32] == FIELD_FIGURE0 && board[32 + dice] != FIELD_FIGURE0)
+            return new int[]{32, 32 + dice};
+        if (player == FIELD_FIGURE1 && board[42] == FIELD_FIGURE1 && board[42 + dice] != FIELD_FIGURE1)
+            return new int[]{42, 42 + dice};
+        if (player == FIELD_FIGURE2 && board[52] == FIELD_FIGURE2 && board[52 + dice] != FIELD_FIGURE2)
+            return new int[]{52, 52 + dice};
+        if (player == FIELD_FIGURE3 && board[62] == FIELD_FIGURE3 && board[62 + dice] != FIELD_FIGURE3)
+            return new int[]{62, 62 + dice};
         // schlagen
         for (int i = 39; i >= 0; i--) {
             if (board[i + 32] == player && board[(i + dice) % 40 + 32] != player && board[(i + dice) % 40 + 32] != FIELD_NONE) {
@@ -96,10 +108,58 @@ public class MiscMethods {
                 if (player == FIELD_FIGURE1 && (i + dice) >= 10 && i < 10) continue;
                 if (player == FIELD_FIGURE2 && (i + dice) >= 20 && i < 20) continue;
                 if (player == FIELD_FIGURE3 && (i + dice) >= 30 && i < 30) continue;
-                return i + 32;
+                return new int[]{i + 32, (i + dice) % 40 + 32};
             }
         }
-        return -1;
+        return null;
+    }
+
+    /**
+     * @return [-1, -1] falls kein Zug möglich, sonst [from, to] berücksichtigt Prio
+     */
+    public static int[] getValidMove(BoardState boardState, FieldState field, int wurf) {
+        int[] prio = checkForPrioMove(boardState, field, wurf);
+        if (prio != null) return prio;
+        FieldState[] state = boardState.getBoardState();
+        // innerhalb Zielfelder
+        if (field == FIELD_FIGURE0) {
+            if (checkMoveValid(boardState,field,16,16+wurf,wurf)) return new int[]{16,16+wurf};
+            if (checkMoveValid(boardState,field,17,17+wurf,wurf)) return new int[]{17,17+wurf};
+            if (checkMoveValid(boardState,field,18,18+wurf,wurf)) return new int[]{18,18+wurf};
+        }
+        if (field == FIELD_FIGURE1) {
+            if (checkMoveValid(boardState,field,20,20+wurf,wurf)) return new int[]{20,20+wurf};
+            if (checkMoveValid(boardState,field,21,21+wurf,wurf)) return new int[]{21,21+wurf};
+            if (checkMoveValid(boardState,field,22,22+wurf,wurf)) return new int[]{22,22+wurf};
+        }
+        if (field == FIELD_FIGURE2) {
+            if (checkMoveValid(boardState,field,24,24+wurf,wurf)) return new int[]{24,24+wurf};
+            if (checkMoveValid(boardState,field,25,25+wurf,wurf)) return new int[]{25,25+wurf};
+            if (checkMoveValid(boardState,field,26,26+wurf,wurf)) return new int[]{26,26+wurf};
+        }
+        if (field == FIELD_FIGURE3) {
+            if (checkMoveValid(boardState,field,28,28+wurf,wurf)) return new int[]{28,28+wurf};
+            if (checkMoveValid(boardState,field,29,29+wurf,wurf)) return new int[]{29,29+wurf};
+            if (checkMoveValid(boardState,field,30,30+wurf,wurf)) return new int[]{30,30+wurf};
+        }
+        int[] ergebnis = new int[2];
+        // normale Runde + in Zielfelder rein
+        /*for (int i = 71; i >= 32; i--) { // einfach und funktionierend
+            if (state[i] == field) {
+                ergebnis[0] = i;
+                ergebnis[1] = (i - 32 + wurf) % 40 + 32;
+                if (checkMoveValid(boardState, field, ergebnis[0], ergebnis[1], wurf)) return ergebnis;
+                if (field == FIELD_FIGURE0) ergebnis[1] = i + wurf - 56;
+                if (field == FIELD_FIGURE1) ergebnis[1] = i + wurf - 22;
+                if (field == FIELD_FIGURE2) ergebnis[1] = i + wurf - 28;
+                if (field == FIELD_FIGURE3) ergebnis[1] = i + wurf - 34;
+                if (checkMoveValid(boardState, field, ergebnis[0], ergebnis[1], wurf)) return ergebnis;
+            }
+        }*/
+
+
+
+        return new int[]{-1,-1};
     }
 
     private static final Pattern pwPattern1 = Pattern.compile("[!§$%&/()=?#a-zA-Z\\d]{8,15}");

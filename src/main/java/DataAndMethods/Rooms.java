@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.util.Vector;
 
 public class Rooms implements Serializable {
-    private final Vector<Room> rooms;
     public static final int MAX_ROOMS = 5; // todo max rooms
 
+    private final Vector<Room> rooms;
+
+    private Rooms(Vector<Room> rooms) {
+        this.rooms = rooms;
+    }
     public Rooms() {
         rooms = new Vector<>(MAX_ROOMS);
     }
@@ -28,5 +32,7 @@ public class Rooms implements Serializable {
         return rooms.size() == MAX_ROOMS;
     }
 
-
+    public static Rooms copyOf(Rooms rooms) {
+        return new Rooms(rooms.getRooms());
+    }
 }
