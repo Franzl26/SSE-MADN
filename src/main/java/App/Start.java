@@ -1,6 +1,5 @@
 package App;
 
-import Dialogs.GameLogic;
 import DataAndMethods.BoardConfiguration;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -23,10 +22,14 @@ public class Start extends Application {
         //LobbyPane.LobbyPaneStart();
         //DesignPane.designsTest();
         //GameLogic.testBoardLogic();
-        //GameStatisticsPane.GameStatisticsPaneStart();
-
+        //ServerBoardStateDisplay.ServerBoardStateDisplayStart();
         //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
         //new Alert(Alert.AlertType.CONFIRMATION, "<Text>").show();
+        /*GameStatistics stats = new GameStatistics();
+        GameStatisticsPane pane = GameStatisticsPane.GameStatisticsPaneStart();
+        ((Stage)pane.getScene().getWindow()).show();
+        pane.drawStatistics(stats);*/
+        DebugPane.DebugPaneStart();
 
     }
 

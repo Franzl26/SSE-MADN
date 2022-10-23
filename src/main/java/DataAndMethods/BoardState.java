@@ -46,4 +46,17 @@ public class BoardState implements Serializable {
     public static BoardState copyOf(BoardState boardState) {
         return new BoardState(boardState.getBoardState());
     }
+
+    public void setCustom() {
+        board = new FieldState[72];
+        Arrays.fill(board, 0, 72, FIELD_NONE);
+        board[68] = FIELD_FIGURE0;
+        board[17] = FIELD_FIGURE0;
+        board[18] = FIELD_FIGURE0;
+        board[19] = FIELD_FIGURE0;
+        board[49] = FIELD_FIGURE2;
+        board[25] = FIELD_FIGURE2;
+        board[26] = FIELD_FIGURE2;
+        board[27] = FIELD_FIGURE2;
+    }
 }

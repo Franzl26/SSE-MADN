@@ -80,6 +80,7 @@ public class GamePane extends AnchorPane {
         AnchorPane.setTopAnchor(gifView, 90.0);
         AnchorPane.setRightAnchor(spielVerlassenButton, 10.0);
         AnchorPane.setBottomAnchor(spielVerlassenButton, 10.0);
+
         getChildren().addAll(nameCanvas, boardCanvas, diceCanvas, gifCanvas, gifView, spielVerlassenButton);
         // init Gifs
         try {

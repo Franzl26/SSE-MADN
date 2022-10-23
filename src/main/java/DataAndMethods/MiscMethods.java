@@ -14,7 +14,6 @@ public class MiscMethods {
         // richtige Spielfigur/nicht selber schlagen
         if (board[from] != player || board[to] == player) return false;
 
-        // Prio-Zug durchgeführt
         boolean b = ((from - 32 + dice) % 40 + 32) == to;
 
         // Spielzug auf Weg
@@ -28,10 +27,10 @@ public class MiscMethods {
         }
         // raus rücken
         if (dice == 6) {
-            if (player == FIELD_FIGURE0 && from > 0 && from < 4 && to == 32 && board[to] != FIELD_FIGURE0) return true;
-            if (player == FIELD_FIGURE1 && from > 4 && from < 8 && to == 42 && board[to] != FIELD_FIGURE1) return true;
-            if (player == FIELD_FIGURE2 && from > 8 && from < 12 && to == 52 && board[to] != FIELD_FIGURE2) return true;
-            if (player == FIELD_FIGURE3 && from > 12 && from < 16 && to == 62 && board[to] != FIELD_FIGURE3)
+            if (player == FIELD_FIGURE0 && from >= 0 && from < 4 && to == 32 && board[to] != FIELD_FIGURE0) return true;
+            if (player == FIELD_FIGURE1 && from >= 4 && from < 8 && to == 42 && board[to] != FIELD_FIGURE1) return true;
+            if (player == FIELD_FIGURE2 && from >= 8 && from < 12 && to == 52 && board[to] != FIELD_FIGURE2) return true;
+            if (player == FIELD_FIGURE3 && from >= 12 && from < 16 && to == 62 && board[to] != FIELD_FIGURE3)
                 return true;
         }
         // rein rücken
@@ -120,32 +119,31 @@ public class MiscMethods {
     public static int[] getValidMove(BoardState boardState, FieldState field, int wurf) {
         int[] prio = checkForPrioMove(boardState, field, wurf);
         if (prio != null) return prio;
-        FieldState[] state = boardState.getBoardState();
         // innerhalb Zielfelder
         if (field == FIELD_FIGURE0) {
-            if (checkMoveValid(boardState,field,16,16+wurf,wurf)) return new int[]{16,16+wurf};
-            if (checkMoveValid(boardState,field,17,17+wurf,wurf)) return new int[]{17,17+wurf};
-            if (checkMoveValid(boardState,field,18,18+wurf,wurf)) return new int[]{18,18+wurf};
+            if (checkMoveValid(boardState, field, 16, 16 + wurf, wurf)) return new int[]{16, 16 + wurf};
+            if (checkMoveValid(boardState, field, 17, 17 + wurf, wurf)) return new int[]{17, 17 + wurf};
+            if (checkMoveValid(boardState, field, 18, 18 + wurf, wurf)) return new int[]{18, 18 + wurf};
         }
         if (field == FIELD_FIGURE1) {
-            if (checkMoveValid(boardState,field,20,20+wurf,wurf)) return new int[]{20,20+wurf};
-            if (checkMoveValid(boardState,field,21,21+wurf,wurf)) return new int[]{21,21+wurf};
-            if (checkMoveValid(boardState,field,22,22+wurf,wurf)) return new int[]{22,22+wurf};
+            if (checkMoveValid(boardState, field, 20, 20 + wurf, wurf)) return new int[]{20, 20 + wurf};
+            if (checkMoveValid(boardState, field, 21, 21 + wurf, wurf)) return new int[]{21, 21 + wurf};
+            if (checkMoveValid(boardState, field, 22, 22 + wurf, wurf)) return new int[]{22, 22 + wurf};
         }
         if (field == FIELD_FIGURE2) {
-            if (checkMoveValid(boardState,field,24,24+wurf,wurf)) return new int[]{24,24+wurf};
-            if (checkMoveValid(boardState,field,25,25+wurf,wurf)) return new int[]{25,25+wurf};
-            if (checkMoveValid(boardState,field,26,26+wurf,wurf)) return new int[]{26,26+wurf};
+            if (checkMoveValid(boardState, field, 24, 24 + wurf, wurf)) return new int[]{24, 24 + wurf};
+            if (checkMoveValid(boardState, field, 25, 25 + wurf, wurf)) return new int[]{25, 25 + wurf};
+            if (checkMoveValid(boardState, field, 26, 26 + wurf, wurf)) return new int[]{26, 26 + wurf};
         }
         if (field == FIELD_FIGURE3) {
-            if (checkMoveValid(boardState,field,28,28+wurf,wurf)) return new int[]{28,28+wurf};
-            if (checkMoveValid(boardState,field,29,29+wurf,wurf)) return new int[]{29,29+wurf};
-            if (checkMoveValid(boardState,field,30,30+wurf,wurf)) return new int[]{30,30+wurf};
+            if (checkMoveValid(boardState, field, 28, 28 + wurf, wurf)) return new int[]{28, 28 + wurf};
+            if (checkMoveValid(boardState, field, 29, 29 + wurf, wurf)) return new int[]{29, 29 + wurf};
+            if (checkMoveValid(boardState, field, 30, 30 + wurf, wurf)) return new int[]{30, 30 + wurf};
         }
-        int[] ergebnis = new int[2];
+        /*int[] ergebnis = new int[2];
         // normale Runde + in Zielfelder rein
-        /*for (int i = 71; i >= 32; i--) { // einfach und funktionierend
-            if (state[i] == field) {
+        for (int i = 71; i >= 32; i--) { // einfach und funktionierend
+            if (boardState.getField(i) == field) {
                 ergebnis[0] = i;
                 ergebnis[1] = (i - 32 + wurf) % 40 + 32;
                 if (checkMoveValid(boardState, field, ergebnis[0], ergebnis[1], wurf)) return ergebnis;
@@ -156,10 +154,33 @@ public class MiscMethods {
                 if (checkMoveValid(boardState, field, ergebnis[0], ergebnis[1], wurf)) return ergebnis;
             }
         }*/
+        // in Zielfelder
+        if (field == FIELD_FIGURE0) for (int i = 71; i > 71 - wurf; i--)
+            if (boardState.getField(i) == FIELD_FIGURE0 && i + wurf < 76)
+                if (checkMoveValid(boardState,field,i,i+wurf-56,wurf)) return new int[]{i, i + wurf - 56};
+        if (field == FIELD_FIGURE1) for (int i = 41; i > 41 - wurf; i--)
+            if (boardState.getField(i) == FIELD_FIGURE1 && i + wurf < 46)
+                if (checkMoveValid(boardState,field,i,i+wurf-22,wurf)) return new int[]{i, i + wurf - 22};
+        if (field == FIELD_FIGURE2) for (int i = 51; i > 51 - wurf; i--)
+            if (boardState.getField(i) == FIELD_FIGURE2 && i + wurf < 56)
+                if (checkMoveValid(boardState,field,i,i+wurf-28,wurf)) return new int[]{i, i + wurf - 28};
+        if (field == FIELD_FIGURE3) for (int i = 61; i > 61 - wurf; i--)
+            if (boardState.getField(i) == FIELD_FIGURE3 && i + wurf < 66)
+                if (checkMoveValid(boardState,field,i,i+wurf-34,wurf)) return new int[]{i, i + wurf - 34};
+        // sonst zufällig
+        int[] start = new int[4];
+        int count = 0;
+        for (int i = 32; i < 72; i++) {
+            if (boardState.getField(i) == field) {
+                if (checkMoveValid(boardState, field, i, (i - 32 + wurf) % 40 + 32, wurf)) start[count++] = i;
+            }
+        }
+        if (count > 0) {
+            int auswahl = start[(int) (Math.random() * count)];
+            return new int[]{auswahl, (auswahl - 32 + wurf) % 40 + 32};
+        }
 
-
-
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 
     private static final Pattern pwPattern1 = Pattern.compile("[!§$%&/()=?#a-zA-Z\\d]{8,15}");
