@@ -1,5 +1,6 @@
 package dialogs;
 
+import javafx.application.Platform;
 import rmiInterfaces.UpdateLobbyInterface;
 
 import java.rmi.RemoteException;
@@ -14,12 +15,12 @@ public class UpdateLobbyObject extends UnicastRemoteObject implements UpdateLobb
 
     @Override
     public void updateNames(String[] names) throws RemoteException {
-        pane.drawNames(names);
+        Platform.runLater(() -> pane.drawNames(names));
     }
 
     @Override
     public void gameStarts() throws RemoteException {
-        pane.gameStarts();
+        Platform.runLater(pane::gameStarts);
     }
 
     @Override

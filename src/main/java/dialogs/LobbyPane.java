@@ -1,6 +1,5 @@
 package dialogs;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -98,12 +97,10 @@ public class LobbyPane extends AnchorPane {
     }
 
     public void gameStarts() {
-        Platform.runLater(() -> {
-            int ret = CommunicationWithServer.spielStartet(design);
-            if (ret == 1) {
-                ((Stage) getScene().getWindow()).close();
-            }
-        });
+        int ret = CommunicationWithServer.spielStartet(design);
+        if (ret == 1) {
+            ((Stage) getScene().getWindow()).close();
+        }
     }
 
     public static LobbyPane LobbyPaneStart() {

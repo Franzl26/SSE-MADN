@@ -1,6 +1,7 @@
 package dialogs;
 
 import dataAndMethods.Rooms;
+import javafx.application.Platform;
 import rmiInterfaces.UpdateRoomsInterface;
 
 import java.rmi.RemoteException;
@@ -15,6 +16,6 @@ public class UpdateRoomsObject extends UnicastRemoteObject implements UpdateRoom
 
     @Override
     public void updateRooms(Rooms rooms) throws RemoteException {
-        pane.displayRooms(rooms);
+        Platform.runLater(() -> pane.displayRooms(rooms));
     }
 }

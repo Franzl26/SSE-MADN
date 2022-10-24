@@ -6,13 +6,6 @@ import java.util.regex.Pattern;
 import static dataAndMethods.FieldState.*;
 
 public class MiscMethods {
-    private static final Pattern pwPattern1 = Pattern.compile("[!§$%&/()=?#a-zA-Z\\d]{8,15}");
-    private static final Pattern pwPattern2 = Pattern.compile(".*[!§$%&/()=?#]+.*");
-    private static final Pattern pwPattern3 = Pattern.compile(".*[a-zA-Z]+.*");
-    private static final Pattern pwPattern4 = Pattern.compile(".*\\d+.*");
-    private static final Pattern namePattern1 = Pattern.compile("[A-Za-z]{3,8}");
-    private static final Pattern namePattern2 = Pattern.compile("([bB][oO][tT]).*");
-
     /**
      * überprüft, ob der Zug gesetzt werden durfte, unabhängig von einem eventuellen Prio Zug
      */
@@ -173,6 +166,13 @@ public class MiscMethods {
 
         return new int[]{-1, -1};
     }
+
+    private static final Pattern pwPattern1 = Pattern.compile("[!§$%&/()=?#a-zA-Z\\d]{8,15}");
+    private static final Pattern pwPattern2 = Pattern.compile(".*[!§$%&/()=?#]+.*");
+    private static final Pattern pwPattern3 = Pattern.compile(".*[a-zA-Z]+.*");
+    private static final Pattern pwPattern4 = Pattern.compile(".*\\d+.*");
+    private static final Pattern namePattern1 = Pattern.compile("[A-Za-z]{3,8}");
+    private static final Pattern namePattern2 = Pattern.compile("([bB][oO][tT]).*");
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkPasswordGuidelines(String pw) {
