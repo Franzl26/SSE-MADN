@@ -1,15 +1,14 @@
 module SSEProjekt {
     requires javafx.controls;
     requires javafx.media;
-    requires javafx.swing;
     requires java.rmi;
 
-    opens App;
-    opens Dialogs;
-    opens DataAndMethods;
+    opens app;
+    opens dialogs;
+    opens dataAndMethods;
 
-    exports RMIInterfaces;
-    exports Server;
-    exports DataAndMethods;
-    exports Dialogs;
+    exports rmiInterfaces;
+    exports server;
+    exports dataAndMethods;
+    exports dialogs;
 }

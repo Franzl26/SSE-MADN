@@ -1,9 +1,9 @@
-// Left Up Start
+// Left-Up Start
 50 50
 90 50
 50 90
 90 90
-// Right Up Start
+// Right-Up Start
 410 50
 450 50
 410 90

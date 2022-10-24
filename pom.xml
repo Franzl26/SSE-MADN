@@ -16,22 +16,22 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>18.0.1</version>
+            <version>19</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>18.0.1</version>
+            <version>19</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>18.0.1</version>
+            <version>19</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
-            <version>18.0.1</version>
+            <version>19</version>
         </dependency>
     </dependencies>
     <build>
@@ -54,7 +54,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>App.Start</mainClass>
+                            <mainClass>app.Start</mainClass>
                         </configuration>
                     </execution>
                     <execution>
@@ -63,7 +63,7 @@
                             <options>
                                 <option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>
                             </options>
-                            <mainClass>App.Start</mainClass>
+                            <mainClass>app.Start</mainClass>
                         </configuration>
                     </execution>
                 </executions>
