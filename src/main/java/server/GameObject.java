@@ -23,8 +23,8 @@ import static java.lang.Thread.sleep;
 public class GameObject extends UnicastRemoteObject implements GameInterface {
     private static final int BOT_WAIT_WUERFELN = 1000;
     private static final int BOT_WAIT_ZIEHEN = 2000;
-    private static final int DELAY_WUERFELN = 3000;
-    private static final int DELAY_SPIELZUG = 5000;
+    private static final int DELAY_WUERFELN = 10000;
+    private static final int DELAY_SPIELZUG = 30000;
     private static final int DELAY_WAITING = 20000;
 
     private final GameStatistics gameStatistics;
