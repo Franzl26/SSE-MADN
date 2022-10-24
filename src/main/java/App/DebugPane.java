@@ -26,6 +26,8 @@ public class DebugPane extends AnchorPane {
         gc = canvas.getGraphicsContext2D();
 
         boardStates = readBoardState();
+        System.out.println(boardStates.length);
+
         Button vor = new Button("vor");
         vor.addEventHandler(ActionEvent.ACTION, e -> {
             anzeige++;
@@ -38,7 +40,12 @@ public class DebugPane extends AnchorPane {
             if (anzeige < 0) anzeige = 0;
             boardAnzeigen();
         });
+        AnchorPane.setBottomAnchor(vor,10.0);
+        AnchorPane.setBottomAnchor(zurueck,10.0);
+        AnchorPane.setLeftAnchor(zurueck,10.0);
+        AnchorPane.setRightAnchor(vor,10.0);
         getChildren().addAll(canvas,vor,zurueck);
+        boardAnzeigen();
     }
 
     private void boardAnzeigen() {
@@ -61,7 +68,7 @@ public class DebugPane extends AnchorPane {
 
     public static void DebugPaneStart() {
         DebugPane root = new DebugPane();
-        Scene scene = new Scene(root, 1000, 600);
+        Scene scene = new Scene(root, 500, 550);
         Stage stage = new Stage();
 
         stage.setTitle("Mensch Ärgere dich nicht");
