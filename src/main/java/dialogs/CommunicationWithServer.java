@@ -127,10 +127,10 @@ public class CommunicationWithServer {
     /**
      * @return -1 Raum voll, 1 erfolgreich
      */
-    public static int enterRoom(Room room) {
+    public static int enterRoom(long roomId) {
         try {
             LobbyPane pane = LobbyPane.LobbyPaneStart();
-            int ret = lii.enterRoom(room, new UpdateLobbyObject(pane));
+            int ret = lii.enterRoom(roomId, new UpdateLobbyObject(pane));
             if (ret == -1) {
                 ((Stage) pane.getScene().getWindow()).close();
                 return -1;

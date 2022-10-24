@@ -76,7 +76,7 @@ public class BoardConfiguration {
         private Builder() {
             pointCoordinates = new int[72][2];
             orientation = new int[72][2];
-            dice = new Image[8];
+            dice = new Image[7];
             path = new Image[4];
             personal = new Image[4];
             figure = new Image[4];
@@ -90,7 +90,7 @@ public class BoardConfiguration {
                 if (!f.isDirectory()) return false;
                 board = new Image(Paths.get(f.getAbsolutePath() + "/board.png").toUri().toString());
                 pathNormal = new Image(Paths.get(f.getAbsolutePath() + "/pathNormal.png").toUri().toString());
-                dice = readImages(f.getAbsolutePath(), "/dice", 8);
+                dice = readImages(f.getAbsolutePath(), "/dice", 7);
                 path = readImages(f.getAbsolutePath(), "/path", 4);
                 personal = readImages(f.getAbsolutePath(), "/personal", 4);
                 figure = readImages(f.getAbsolutePath(), "/figure", 4);

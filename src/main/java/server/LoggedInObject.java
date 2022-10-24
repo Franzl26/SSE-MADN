@@ -47,8 +47,8 @@ public class LoggedInObject extends UnicastRemoteObject implements LoggedInInter
     }
 
     @Override
-    public int enterRoom(Room room, UpdateLobbyInterface uli) throws RemoteException {
-        lobbyInterface = raumauswahlObject.enterRoom(this, room, uli);
+    public int enterRoom(long roomId, UpdateLobbyInterface uli) throws RemoteException {
+        lobbyInterface = raumauswahlObject.enterRoom(this, roomId, uli);
         if (lobbyInterface == null) return -1;
         return 1;
     }

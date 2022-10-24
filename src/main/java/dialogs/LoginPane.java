@@ -22,7 +22,7 @@ public class LoginPane extends AnchorPane {
         usernameTextField.setPrefWidth(280);
 
         PasswordField passwordField = new PasswordField();
-        passwordField.setText("1234");
+        passwordField.setText("abcdef1!");
         passwordField.setPromptText("Passwort");
         passwordField.setPrefWidth(280);
 

@@ -24,7 +24,7 @@ public interface LoggedInInterface extends Remote {
     /**
      * @return -1 fehlgeschlagen, 1 erfolgreich
      */
-    int enterRoom(Room room, UpdateLobbyInterface uli) throws RemoteException;
+    int enterRoom(long roomId, UpdateLobbyInterface uli) throws RemoteException;
 
     /**
      * @return -1 schon 4 Bot vorhanden, 1 erfolgreich

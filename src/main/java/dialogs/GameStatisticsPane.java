@@ -62,6 +62,7 @@ public class GameStatisticsPane extends AnchorPane {
             gc.fillText(names[i], baseX, baseY);
             gc.setFont(Font.font(20));
             int gesamt = wuerfe[i][0] + wuerfe[i][1] + wuerfe[i][2] + wuerfe[i][3] + wuerfe[i][4] + wuerfe[i][5];
+            if (gesamt == 0) continue;
             for (int j = 1; j < 7; j++) {
                 //noinspection IntegerDivisionInFloatingPointContext
                 double percent = ((wuerfe[i][j - 1] * 10000 / gesamt) / 100.0);

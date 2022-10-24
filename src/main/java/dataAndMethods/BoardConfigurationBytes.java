@@ -41,7 +41,7 @@ public class BoardConfigurationBytes implements Serializable {
         private byte[][] figureHigh;
 
         private Builder() {
-            dice = new byte[8][];
+            dice = new byte[7][];
             path = new byte[4][];
             personal = new byte[4][];
             figure = new byte[4][];
@@ -54,7 +54,7 @@ public class BoardConfigurationBytes implements Serializable {
             if (!f.isDirectory()) return false;
             board = readFile(f.getAbsolutePath() + "/board.png");
             pathNormal = readFile(f.getAbsolutePath() + "/pathNormal.png");
-            dice = readFiles(f.getAbsolutePath(), "/dice", 8);
+            dice = readFiles(f.getAbsolutePath(), "/dice", 7);
             path = readFiles(f.getAbsolutePath(), "/path", 4);
             personal = readFiles(f.getAbsolutePath(), "/personal", 4);
             figure = readFiles(f.getAbsolutePath(), "/figure", 4);

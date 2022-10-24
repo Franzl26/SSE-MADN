@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Room implements Serializable {
-    private final ArrayList<String> players;
+    private static long ID_COUNTER = 0;
 
+    private final ArrayList<String> players;
+    private final long id = ID_COUNTER++;
     public Room() {
         players = new ArrayList<>();
     }
@@ -24,5 +26,9 @@ public class Room implements Serializable {
 
     public int getCount() {
         return players.size();
+    }
+
+    public long getId() {
+        return id;
     }
 }

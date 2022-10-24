@@ -59,6 +59,7 @@ public class RoomSelectPane extends AnchorPane {
     }
 
     public void displayRooms(Rooms roomsTogether) {
+        roomsList.getItems().clear();
         Vector<Room> rooms = roomsTogether.getRooms();
         for (Room r : rooms) {
             HBox box = new HBox();
@@ -66,7 +67,7 @@ public class RoomSelectPane extends AnchorPane {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             Button button = new Button("Beitreten");
             button.addEventHandler(ActionEvent.ACTION, e -> {
-                int ret = CommunicationWithServer.enterRoom(r);
+                int ret = CommunicationWithServer.enterRoom(r.getId());
                 if (ret == -1) {
                     new Alert(Alert.AlertType.INFORMATION, "Raum bereits voll").showAndWait();
                 } else {

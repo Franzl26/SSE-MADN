@@ -13,11 +13,13 @@ import java.util.HashMap;
 public class RaumauswahlObject extends UnicastRemoteObject implements RaumauswahlInterface {
     private final HashMap<LoggedInInterface, UpdateRoomsInterface> clients = new HashMap<>();
     private final Rooms rooms;
-    private final HashMap<Room, LobbyObject> roomLobbyMap;
+    private final HashMap<Long, Room> roomIdRoomMap;
+    private final HashMap<Long, LobbyObject> roomIdLobbyMap;
 
     protected RaumauswahlObject() throws RemoteException {
         rooms = new Rooms();
-        roomLobbyMap = new HashMap<>();
+        roomIdLobbyMap = new HashMap<>();
+        roomIdRoomMap = new HashMap<>();
     }
 
     public void addClient(LoggedInInterface lii, UpdateRoomsInterface uri) throws RemoteException {
@@ -50,19 +52,21 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         }
         LobbyObject lobbyObj = new LobbyObject(this, newRoom);
         lobbyObj.addUser(lii, uli);
-        synchronized (roomLobbyMap) {
-            roomLobbyMap.put(newRoom, lobbyObj);
+        synchronized (roomIdLobbyMap) {
+            roomIdLobbyMap.put(newRoom.getId(), lobbyObj);
+            roomIdRoomMap.put(newRoom.getId(), newRoom);
         }
         unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
     }
 
     @Override
-    public synchronized LobbyInterface enterRoom(LoggedInInterface lii, Room room, UpdateLobbyInterface uli) throws RemoteException {
+    public synchronized LobbyInterface enterRoom(LoggedInInterface lii, long roomId, UpdateLobbyInterface uli) throws RemoteException {
         if (!clients.containsKey(lii)) return null;
+        Room room = roomIdRoomMap.get(roomId);
         if (room.getCount() == 4) return null;
         room.addPlayer(lii.getUsername());
-        LobbyObject lobbyObj = roomLobbyMap.get(room);
+        LobbyObject lobbyObj = roomIdLobbyMap.get(roomId);
         lobbyObj.addUser(lii, uli);
         unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
@@ -85,8 +89,8 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     }
 
     protected void removeRoom(Room room) {
-        synchronized (roomLobbyMap) {
-            roomLobbyMap.remove(room);
+        synchronized (roomIdLobbyMap) {
+            roomIdLobbyMap.remove(room);
         }
         synchronized (rooms) {
             rooms.removeRoom(room);

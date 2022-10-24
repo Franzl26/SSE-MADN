@@ -13,7 +13,7 @@ public interface RaumauswahlInterface extends Remote {
 
     LobbyInterface createNewRoom(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException;
 
-    LobbyInterface enterRoom(LoggedInInterface lii, Room room, UpdateLobbyInterface uli) throws RemoteException;
+    LobbyInterface enterRoom(LoggedInInterface lii, long roomId, UpdateLobbyInterface uli) throws RemoteException;
 
     BoardConfigurationBytes getBoardConfig(String design) throws RemoteException;
 
