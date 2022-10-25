@@ -91,6 +91,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
 
     protected synchronized void removeRoom(Room room) {
         roomIdLobbyMap.remove(room.getId());
+        roomIdRoomMap.remove(room.getId());
         rooms.removeRoom(room);
     }
 

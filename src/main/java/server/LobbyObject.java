@@ -61,7 +61,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException {
         System.out.println("anzahl: "+(bots+spieler));
-        if ((bots + spieler) > 1) return -1;
+        if ((bots + spieler) < 2) return -1;
         if (!checkInLobby(lii)) return -1;
         System.out.println("test");
         gameObject = new GameObject(clients, spieler + bots);
@@ -96,12 +96,13 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     private synchronized void raumVerlassenPrivate(LoggedInInterface lii) {
         for (int i = 3; i >= 0; i--) {
-            if (checkInLobby(lii)) {
+            if (lii.equals(clients[i])) {
                 removePlayer(i);
                 spieler--;
             }
         }
-        if (spieler == 0) {
+        if (spieler < 1) {
+            System.out.println("Lobby raum entfernen");
             raumauswahl.removeRoom(room);
         }
         System.out.println("Spieler hat Lobby verlassen: " + lii);
