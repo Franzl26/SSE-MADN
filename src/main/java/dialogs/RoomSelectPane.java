@@ -76,9 +76,9 @@ public class RoomSelectPane extends AnchorPane {
                 }
             });
 
-            ArrayList<String> players = r.getPlayers();
+            String[] players = r.getPlayers();
             StringBuilder build = new StringBuilder();
-            build.append(players.size()).append("/4    ");
+            build.append(players.length).append("/4    ");
             for (String p : players) {
                 build.append(p).append("  ");
             }

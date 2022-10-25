@@ -23,52 +23,54 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     }
 
     public void addClient(LoggedInInterface lii, UpdateRoomsInterface uri) throws RemoteException {
-        synchronized (clients) {
-            clients.put(lii, uri);
-        }
+        if (lii == null || uri == null) return;
+        System.out.println("Spieler in Raumauswahl: " + lii);
+        clients.put(lii, uri);
     }
 
     @Override
     public void subscribeToRoomUpdates(LoggedInInterface lii, UpdateRoomsInterface uri) {
-        synchronized (clients) {
-            clients.put(lii, uri);
-        }
+        if (lii == null || uri == null) return;
+        System.out.println("Spieler in Raumauswahl: " + lii);
+        clients.put(lii, uri);
     }
 
 
     @Override
     public void unsubscribeFromRoomUpdates(LoggedInInterface lii) throws RemoteException {
+        if (lii == null) return;
+        System.out.println("Spieler aus Raumauswahl raus: " + lii);
         unsubscribeFromRoomUpdatesPrivate(lii);
     }
 
     @Override
     public synchronized LobbyInterface createNewRoom(LoggedInInterface lii, UpdateLobbyInterface uli) throws RemoteException {
+        if (lii == null || uli == null) return null;
         if (!clients.containsKey(lii)) return null;
         if (rooms.maxRoomsReached()) return null;
+        unsubscribeFromRoomUpdatesPrivate(lii);
         Room newRoom = new Room();
         newRoom.addPlayer(lii.getUsername());
-        synchronized (rooms) {
-            rooms.addRoom(newRoom);
-        }
+        rooms.addRoom(newRoom);
         LobbyObject lobbyObj = new LobbyObject(this, newRoom);
         lobbyObj.addUser(lii, uli);
         synchronized (roomIdLobbyMap) {
             roomIdLobbyMap.put(newRoom.getId(), lobbyObj);
             roomIdRoomMap.put(newRoom.getId(), newRoom);
         }
-        unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
     }
 
     @Override
     public synchronized LobbyInterface enterRoom(LoggedInInterface lii, long roomId, UpdateLobbyInterface uli) throws RemoteException {
+        if (lii == null || uli == null) return null;
         if (!clients.containsKey(lii)) return null;
+        unsubscribeFromRoomUpdatesPrivate(lii);
         Room room = roomIdRoomMap.get(roomId);
         if (room.getCount() == 4) return null;
         room.addPlayer(lii.getUsername());
         LobbyObject lobbyObj = roomIdLobbyMap.get(roomId);
         lobbyObj.addUser(lii, uli);
-        unsubscribeFromRoomUpdatesPrivate(lii);
         return lobbyObj;
     }
 
@@ -88,31 +90,20 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         return f.list();
     }
 
-    protected void removeRoom(Room room) {
-        synchronized (roomIdLobbyMap) {
-            roomIdLobbyMap.remove(room);
-        }
-        synchronized (rooms) {
-            rooms.removeRoom(room);
-        }
+    protected synchronized void removeRoom(Room room) {
+        roomIdLobbyMap.remove(room.getId());
+        rooms.removeRoom(room);
     }
 
-    private void unsubscribeFromRoomUpdatesPrivate(LoggedInInterface lii) {
-        synchronized (clients) {
-            clients.remove(lii);
-        }
+    private synchronized void unsubscribeFromRoomUpdatesPrivate(LoggedInInterface lii) {
+        clients.remove(lii);
     }
 
-    protected void updateAllRooms() {
-        HashMap<LoggedInInterface, UpdateRoomsInterface> copy;
-        synchronized (clients) {
-            //noinspection unchecked
-            copy = (HashMap<LoggedInInterface, UpdateRoomsInterface>) clients.clone();
-        }
-        Rooms copyRooms = Rooms.copyOf(rooms);
-        copy.keySet().forEach(client -> new Thread(() -> {
+    protected synchronized void updateAllRooms() {
+        clients.keySet().forEach(client -> new Thread(() -> {
+            System.out.println("update rooms: " + client);
             try {
-                copy.get(client).updateRooms(copyRooms);
+                clients.get(client).updateRooms(rooms);
             } catch (RemoteException e) {
                 unsubscribeFromRoomUpdatesPrivate(client);
             }

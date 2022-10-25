@@ -50,14 +50,10 @@ public class GameStatisticsPane extends AnchorPane {
             gc.fillText("Platz " + (i + 1) + ": " + (s[i] != null ? s[i] : ""), 5, i * 40 + 30);
         }
 
-        //gc.fillText("gewürfelte Zahlen", 5, 70);
-
         int[][] wuerfe = stats.getZahlenGewuerfelt();
-        System.out.println("anzahl: " + anzahl);
         for (int i = 0; i < anzahl; i++) {
             int baseX = 5 + (i % 2) * 400;
             int baseY = 190 + (i > 1 ? 180 : 0);
-            System.out.println("x: " + baseX + ", y: " + baseY);
             gc.setFont(Font.font(30));
             gc.fillText(names[i], baseX, baseY);
             gc.setFont(Font.font(20));
@@ -67,7 +63,6 @@ public class GameStatisticsPane extends AnchorPane {
                 //noinspection IntegerDivisionInFloatingPointContext
                 double percent = ((wuerfe[i][j - 1] * 10000 / gesamt) / 100.0);
                 gc.fillText(j + ": " + (wuerfe[i][j - 1] < 100 ? "  " : "") + wuerfe[i][j - 1] + " = " + percent, baseX, baseY + j * 20 + 10);
-                //gc.fillRect(baseX + 135, baseY + j * 20 - 7, percent * 10, 18);
                 gc.drawImage(image, baseX + 135, baseY + j * 20 - 7, percent * 3, 18);
             }
         }
@@ -88,7 +83,7 @@ public class GameStatisticsPane extends AnchorPane {
             gc.fillText((prioZug[i] < 10 ? "  " : "") + prioZug[i], 230 + i * 150, 630);
         }
         gc.setFont(Font.font(45));
-        long time = System.currentTimeMillis() - stats.getStartTime();
+        long time = (System.currentTimeMillis() - stats.getStartTime()) / 1000;
         long h = time / 3600;
         long min = (time % 3600) / 60;
         long sek = (time & 60);

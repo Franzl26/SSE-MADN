@@ -1,34 +1,35 @@
 package dataAndMethods;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Room implements Serializable {
     private static long ID_COUNTER = 0;
 
-    private final ArrayList<String> players;
     private final long id = ID_COUNTER++;
-    public Room() {
-        players = new ArrayList<>();
-    }
+    private final String[] players = new String[4];
+    private int count = 0;
 
-    public void addPlayer(String name) {
-        if (players.size() == 4) throw new IllegalArgumentException("array already full");
+    public synchronized void addPlayer(String name) {
+        if (count == 4) throw new IllegalArgumentException("array already full");
         for (String p : players) {
             if (p.equals(name)) throw new IllegalArgumentException("name already in array");
         }
-        players.add(name);
+        players[count++] = name;
     }
 
-    public ArrayList<String> getPlayers() {
+    public synchronized String[] getPlayers() {
         return players;
     }
 
-    public int getCount() {
-        return players.size();
+    public synchronized int getCount() {
+        return count;
     }
 
-    public long getId() {
+    public synchronized long getId() {
         return id;
+    }
+
+    public synchronized void removePlayer(int i) {
+        System.arraycopy(players, i + 1, players, i, 3 - i);
     }
 }
