@@ -68,7 +68,7 @@ public class GameStatisticsPane extends AnchorPane {
                 double percent = ((wuerfe[i][j - 1] * 10000 / gesamt) / 100.0);
                 gc.fillText(j + ": " + (wuerfe[i][j - 1] < 100 ? "  " : "") + wuerfe[i][j - 1] + " = " + percent, baseX, baseY + j * 20 + 10);
                 //gc.fillRect(baseX + 135, baseY + j * 20 - 7, percent * 10, 18);
-                gc.drawImage(image, baseX + 135, baseY + j * 20 - 7, percent * 4, 18);
+                gc.drawImage(image, baseX + 135, baseY + j * 20 - 7, percent * 3, 18);
             }
         }
 

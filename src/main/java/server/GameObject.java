@@ -436,7 +436,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
     @Override
     public GameStatistics getStatistics() throws RemoteException {
-        return gameStatistics;
+        return GameStatistics.copyOf(gameStatistics);
     }
 
     private void displayDiceAll(int wurf) {

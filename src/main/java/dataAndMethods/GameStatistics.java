@@ -22,6 +22,16 @@ public class GameStatistics implements Serializable {
         startTime = System.currentTimeMillis();
     }
 
+    private GameStatistics(GameStatistics gameStatistics) {
+        names = gameStatistics.names.clone();
+        zahlenGewuerfelt = gameStatistics.zahlenGewuerfelt.clone();
+        andereGeschlagen = gameStatistics.andereGeschlagen.clone();
+        geschlagenWorden = gameStatistics.geschlagenWorden.clone();
+        prioZugFalsch = gameStatistics.prioZugFalsch.clone();
+        finishPlaces = gameStatistics.finishPlaces.clone();
+        startTime = gameStatistics.startTime;
+    }
+
     public void incZahlGewuerfelt(int spieler, int zahl) {
         zahlenGewuerfelt[spieler][zahl]++;
     }
@@ -73,6 +83,10 @@ public class GameStatistics implements Serializable {
     @Override
     public String toString() {
         return Arrays.toString(names) + "\nwuerfel\n" + Arrays.toString(zahlenGewuerfelt[0]) + "\n" + Arrays.toString(zahlenGewuerfelt[1]) + "\n" + Arrays.toString(zahlenGewuerfelt[2]) + "\n" + Arrays.toString(zahlenGewuerfelt[3]) + "\nandere geschlagen: " + Arrays.toString(andereGeschlagen) + "\ngeschlagenWorden: " + Arrays.toString(geschlagenWorden) + "\nprio ignoriert: " + Arrays.toString(prioZugFalsch) + "\nstartTime: " + startTime;
+    }
+
+    public static GameStatistics copyOf(GameStatistics gameStatistics) {
+        return new GameStatistics(gameStatistics);
     }
 
     public GameStatistics() { // todo entfernen
