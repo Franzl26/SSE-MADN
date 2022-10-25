@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 public class GameStatisticsPane extends AnchorPane {
     private final GraphicsContext gc;
@@ -40,7 +41,7 @@ public class GameStatisticsPane extends AnchorPane {
         int anzahl = names.length;
 
         File f = new File("./resources/gradient.png");
-        Image image = new Image(f.getAbsolutePath());
+        Image image = new Image(Paths.get(f.getAbsolutePath()).toUri().toString());
 
         gc.setFill(Color.BLACK);
         gc.setLineWidth(1.0);

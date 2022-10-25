@@ -42,8 +42,9 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private int zahlGewuerfelt = 0;
     private int anzahlWuerfeln = -1;
 
-    private Timer timerOver = new Timer("Timer");
-    private Timer timerWaiting = new Timer("Waiting");
+    private Timer timerWuerfelnOver;
+    private Timer timerZiehenOver;
+    private Timer timerWaiting;
 
     // todo entfernen
     //private final int[] wuerfel = new int[]{6, 4, 1, 6, 4, 1, 4, 3, 3};
@@ -93,11 +94,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
 
         // todo entfernen
-        /*Platform.runLater(() -> {
+        Platform.runLater(() -> {
             display = ServerBoardStateDisplay.ServerBoardStateDisplayStart();
             Timer t2 = new Timer("boardZeichen");
             t2.schedule(new UpdateDisplay(), 0, 500);
-        });*/
+        });
         boardWriteInit();
     }
 
@@ -124,7 +125,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
      * move muss erlaubt sein, wird nur noch gesetzt + ggf Punish + Spieler informiert
      */
     private synchronized int submitMoveIntern(int from, int to) {
-        timerOver.cancel();
+        timerZiehenOver.cancel();
         timerWaiting.cancel();
         System.out.println("Submit " + names[aktiverSpieler] + ": " + from + " -> " + to);
         int[] changed = new int[]{from, to, -1, -1, -1}; // from, to, strafe in loch, jmd geschlagen, strafe Figur die weg
@@ -160,8 +161,8 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         if (anzahlWuerfeln == 0) {
             nextPlayer(new int[]{});
         } else {
-            timerOver = new Timer("TimerOverWurf");
-            timerOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
+            timerWuerfelnOver = new Timer("TimerOverWurf");
+            timerWuerfelnOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
         }
         zahlGewuerfelt = -1;
         return (changed[2] == -1 ? 1 : -2);
@@ -249,7 +250,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     }
 
     private synchronized int throwDiceIntern() {
-        timerOver.cancel();
+        timerWuerfelnOver.cancel();
         if (zahlGewuerfelt > 0) {
             if (getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] != -1) return -2;
         }
@@ -270,12 +271,14 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         }
         if (anzahlWuerfeln == 0 && getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] == -1) {
             zahlGewuerfelt = -1;
+            timerZiehenOver.cancel();
+            timerWaiting.cancel();
             nextPlayer(new int[]{});
             //displayNewStateAll(boardState, new int[]{}, names, aktiverSpieler);
         }
         if (clients[aktiverSpieler] != null) {
-            timerOver = new Timer("TimerOverZiehen");
-            timerOver.schedule(new ZiehenEnde(aktiverSpieler), DELAY_SPIELZUG);
+            timerZiehenOver = new Timer("TimerOverZiehen");
+            timerZiehenOver.schedule(new ZiehenEnde(aktiverSpieler), DELAY_SPIELZUG);
             timerWaiting = new Timer("TimerWaiting");
             timerWaiting.schedule(new Waiting(aktiverSpieler), DELAY_WAITING);
         }
@@ -304,8 +307,8 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
                 anzahlWuerfeln = getAnzahlWuerfelnNext(aktiverSpieler);
                 if (changed != null) displayNewStateAll(boardState, changed, names, aktiverSpieler);
                 if (clients[aktiverSpieler] != null) {
-                    timerOver = new Timer("TimerOverWurf");
-                    timerOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
+                    timerWuerfelnOver = new Timer("TimerOverWurf");
+                    timerWuerfelnOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
                     sendYourTurn(aktiverSpieler);
                 } else doBotMove(aktiverSpieler, true);
             } catch (RuntimeException e) {

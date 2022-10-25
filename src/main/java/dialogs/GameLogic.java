@@ -99,7 +99,7 @@ public class GameLogic {
     }
 
     public void displayDice(int number) {
-        pane.drawDice(number);
+        Platform.runLater(()->pane.drawDice(number));
     }
 
     public void rollDiceOver(int wurf) {

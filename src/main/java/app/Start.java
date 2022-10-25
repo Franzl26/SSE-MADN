@@ -34,8 +34,8 @@ public class Start extends Application {
         GameStatisticsPane pane = GameStatisticsPane.GameStatisticsPaneStart();
         ((Stage)pane.getScene().getWindow()).show();
         pane.drawStatistics(stats);*/
-        //DebugPane.DebugPaneStart();
-        Canvas c = new Canvas(100,100);
+        DebugPane.DebugPaneStart();
+        /*Canvas c = new Canvas(100,100);
         GraphicsContext gc = c.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.setFont(Font.font(40));
@@ -47,7 +47,7 @@ public class Start extends Application {
         alert.setContentText("Text");
         alert.setTitle("Titel");
         alert.setGraphic(c);
-        alert.show();
+        alert.show();*/
     }
 
     public static void main(String[] args) {
