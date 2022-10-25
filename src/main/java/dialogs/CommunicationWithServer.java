@@ -198,7 +198,7 @@ public class CommunicationWithServer {
             new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
             System.exit(0);
         }
-        return -1;
+        return 1;
     }
 
     public static void raumVerlassen() {

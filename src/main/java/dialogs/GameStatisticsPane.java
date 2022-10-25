@@ -86,7 +86,7 @@ public class GameStatisticsPane extends AnchorPane {
         long time = (System.currentTimeMillis() - stats.getStartTime()) / 1000;
         long h = time / 3600;
         long min = (time % 3600) / 60;
-        long sek = (time & 60);
+        long sek = (time / 60);
         System.out.println("Zeit: " + time);
         gc.fillText("Spielzeit:    " + (h < 10 ? "0" + h : h) + ":" + (min < 10 ? "0" + min : min) + ":" + (sek < 10 ? "0" + sek : sek) + " h", 5, 690);
     }

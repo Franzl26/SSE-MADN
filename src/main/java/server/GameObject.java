@@ -89,15 +89,15 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         states[boardAnzahl++] = BoardState.copyOf(boardState);
 
         Timer t = new Timer("startGame");
-        t.schedule(new StartGame(), 500);
+        t.schedule(new StartGame(), 5000);
 
 
         // todo entfernen
-        Platform.runLater(() -> {
+        /*Platform.runLater(() -> {
             display = ServerBoardStateDisplay.ServerBoardStateDisplayStart();
             Timer t2 = new Timer("boardZeichen");
             t2.schedule(new UpdateDisplay(), 0, 500);
-        });
+        });*/
         boardWriteInit();
     }
 
@@ -403,6 +403,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
                 break;
             }
         }
+        System.out.println("Spiel verlassen: " + lii);
         if (aktiverSpieler == i) doBotMove(aktiverSpieler, false);
     }
 

@@ -26,6 +26,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         if (lii == null || uri == null) return;
         System.out.println("Spieler in Raumauswahl: " + lii);
         clients.put(lii, uri);
+        updateClientRoom(lii);
     }
 
     @Override
@@ -33,6 +34,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         if (lii == null || uri == null) return;
         System.out.println("Spieler in Raumauswahl: " + lii);
         clients.put(lii, uri);
+        updateClientRoom(lii);
     }
 
 
@@ -101,13 +103,17 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     }
 
     protected synchronized void updateAllRooms() {
-        clients.keySet().forEach(client -> new Thread(() -> {
+        clients.keySet().forEach(client -> new Thread(() -> updateClientRoom(client)).start());
+    }
+
+    private synchronized void updateClientRoom(LoggedInInterface client) {
+        new Thread(() -> {
             System.out.println("update rooms: " + client);
             try {
                 clients.get(client).updateRooms(Rooms.copyOf(rooms));
             } catch (RemoteException e) {
                 unsubscribeFromRoomUpdatesPrivate(client);
             }
-        }).start());
+        }).start();
     }
 }

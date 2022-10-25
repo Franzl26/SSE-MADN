@@ -28,6 +28,6 @@ public class Room implements Serializable {
     public synchronized void removePlayer(int i) {
         if (i != 3) System.arraycopy(players, i + 1, players, i, 3 - i);
         count--;
-        players[i] = null;
+        players[3] = null;
     }
 }
