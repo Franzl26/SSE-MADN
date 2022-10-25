@@ -16,8 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Collection;
 
 public class RoomSelectPane extends AnchorPane {
     private final ListView<HBox> roomsList;
@@ -60,7 +59,7 @@ public class RoomSelectPane extends AnchorPane {
 
     public void displayRooms(Rooms roomsTogether) {
         roomsList.getItems().clear();
-        Vector<Room> rooms = roomsTogether.getRooms();
+        Collection<Room> rooms = roomsTogether.getRooms();
         for (Room r : rooms) {
             HBox box = new HBox();
             Canvas canvas = new Canvas(700, 30);
@@ -78,9 +77,9 @@ public class RoomSelectPane extends AnchorPane {
 
             String[] players = r.getPlayers();
             StringBuilder build = new StringBuilder();
-            build.append(players.length).append("/4    ");
-            for (String p : players) {
-                build.append(p).append("  ");
+            build.append(r.getCount()).append("/4    ");
+            for (int i = 0; i < r.getCount(); i++) {
+                build.append(players[i]).append("  ");
             }
             gc.setLineWidth(1.0);
             gc.setFont(Font.font(20));

@@ -39,7 +39,6 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     @Override
     public void unsubscribeFromRoomUpdates(LoggedInInterface lii) throws RemoteException {
         if (lii == null) return;
-        System.out.println("Spieler aus Raumauswahl raus: " + lii);
         unsubscribeFromRoomUpdatesPrivate(lii);
     }
 
@@ -96,6 +95,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     }
 
     private synchronized void unsubscribeFromRoomUpdatesPrivate(LoggedInInterface lii) {
+        System.out.println("Spieler aus Raumauswahl raus: " + lii);
         clients.remove(lii);
     }
 
@@ -103,7 +103,7 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
         clients.keySet().forEach(client -> new Thread(() -> {
             System.out.println("update rooms: " + client);
             try {
-                clients.get(client).updateRooms(rooms);
+                clients.get(client).updateRooms(Rooms.copyOf(rooms));
             } catch (RemoteException e) {
                 unsubscribeFromRoomUpdatesPrivate(client);
             }

@@ -38,7 +38,7 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         if (bots + spieler == 4) return -1;
         if (!checkInLobby(lii)) return -2;
         bots++;
-        room.addPlayer("Bot"+(spieler+bots));
+        room.addPlayer("Bot" + (spieler + bots));
         update();
         return 1;
     }
@@ -60,8 +60,10 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     @Override
     public synchronized int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException {
+        System.out.println("anzahl: "+(bots+spieler));
         if ((bots + spieler) > 1) return -1;
         if (!checkInLobby(lii)) return -1;
+        System.out.println("test");
         gameObject = new GameObject(clients, spieler + bots);
         Timer timer = new Timer("delete Lobby");
         raumauswahl.removeRoom(room);
@@ -130,13 +132,14 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     private synchronized void sendDesignToEveryone() {
         for (int i = 0; i < spieler + bots; i++) {
-            if (clientsUpdate[0] != null) sendDesignToClient(i);
+            if (clientsUpdate[i] != null) sendDesignToClient(i);
         }
     }
 
     private synchronized void sendDesignToClient(int client) {
         new Thread(() -> {
             try {
+                System.out.println("update design: "+clients[client]);
                 clientsUpdate[client].updateDesign(boardDesign);
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[client]);
@@ -145,32 +148,18 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     }
 
     private synchronized void startGameForAll() {
-        if (clientsUpdate[0] != null) new Thread(() -> {
+        for (int i=0;i<bots+spieler;i++) {
+            if (clientsUpdate[i] != null) startGameClient(i);
+        }
+    }
+
+    private synchronized void startGameClient(int client) {
+        new Thread(() -> {
             try {
-                clientsUpdate[0].gameStarts();
+                System.out.println("start game: "+clients[client]);
+                clientsUpdate[client].gameStarts();
             } catch (RemoteException e) {
-                raumVerlassenPrivate(clients[0]);
-            }
-        }).start();
-        if (clientsUpdate[1] != null) new Thread(() -> {
-            try {
-                clientsUpdate[1].gameStarts();
-            } catch (RemoteException e) {
-                raumVerlassenPrivate(clients[1]);
-            }
-        }).start();
-        if (clientsUpdate[2] != null) new Thread(() -> {
-            try {
-                clientsUpdate[2].gameStarts();
-            } catch (RemoteException e) {
-                raumVerlassenPrivate(clients[2]);
-            }
-        }).start();
-        if (clientsUpdate[3] != null) new Thread(() -> {
-            try {
-                clientsUpdate[3].gameStarts();
-            } catch (RemoteException e) {
-                raumVerlassenPrivate(clients[3]);
+                raumVerlassenPrivate(clients[client]);
             }
         }).start();
     }
@@ -186,14 +175,15 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
             throw new RuntimeException(e);
         }
         for (int i = 0; i < spieler + bots; i++) {
-            if (clientsUpdate[i] != null) updateClient(clientsUpdate[i], names, i);
+            if (clientsUpdate[i] != null) updateClient(names, i);
         }
     }
 
-    private synchronized void updateClient(UpdateLobbyInterface uli, String[] names, int client) {
+    private synchronized void updateClient(String[] names, int client) {
         new Thread(() -> {
             try {
-                uli.updateNames(names);
+                System.out.println("update lobby: "+clients[client]);
+                clientsUpdate[client].updateNames(names);
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[client]);
             }
