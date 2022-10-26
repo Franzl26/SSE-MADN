@@ -4,9 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,7 +24,7 @@ public class LobbyPane extends AnchorPane {
         botAddButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.addBot();
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Der Warteraum ist bereits voll").showAndWait();
+                Meldungen.zeigeInformation("Warteraum voll", "Der Warteraum ist bereits voll, du kannst nicht beitreten");
             }
         });
         Button botRemoveButton = new Button("Bot entfernen");
@@ -34,7 +32,7 @@ public class LobbyPane extends AnchorPane {
         botRemoveButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.removeBot();
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Kein Bot im Warteraum").showAndWait();
+                Meldungen.zeigeInformation("Kein Bot im Warteraum", "Es befindet sich kein Bot im Warteraum, der entfernt werden kann.");
             }
         });
         Button designButton = new Button("Spieldesign auswählen");
@@ -45,7 +43,7 @@ public class LobbyPane extends AnchorPane {
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.spielStartenAnfragen();
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Nicht genug Spieler in Lobby").showAndWait();
+                Meldungen.zeigeInformation("Nicht genug Spieler im Warteraum", "Es sind weniger als 2 Spieler im Warteraum, dass Spiel kann nicht gestartet werden");
             } else {
                 ((Stage) getScene().getWindow()).close();
             }
@@ -78,12 +76,10 @@ public class LobbyPane extends AnchorPane {
     }
 
     private void verlassen() {
-        new Alert(Alert.AlertType.CONFIRMATION, "Willst du die Lobby wirklich verlassen?").showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                CommunicationWithServer.raumVerlassen();
-                ((Stage) getScene().getWindow()).close();
-            }
-        });
+        if (Meldungen.frageBestaetigung("Warteraum verlassen", "Willst du den Warteraum wirklich verlassen und zur Raumauswahl zurückkehren?")) {
+            CommunicationWithServer.raumVerlassen();
+            ((Stage) getScene().getWindow()).close();
+        }
     }
 
     public void drawNames(String[] names) {

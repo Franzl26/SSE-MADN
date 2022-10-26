@@ -7,9 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -150,12 +148,10 @@ public class GamePane extends AnchorPane {
     }
 
     private void spielVerlassen() {
-        new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich verlassen?").showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                logic.spielVerlassen();
-                ((Stage) getScene().getWindow()).close();
-            }
-        });
+        if (Meldungen.frageBestaetigung("Spiel verlassen", "Willst du das Spiel wirklich verlassen?")) {
+            logic.spielVerlassen();
+            ((Stage) getScene().getWindow()).close();
+        }
     }
 
     private void setOnClose() {

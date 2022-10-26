@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public class GameStatistics implements Serializable {
-    private final String[] names;
+    private String[] names;
     private final int[][] zahlenGewuerfelt;
     private final int[] andereGeschlagen;
     private final int[] geschlagenWorden;
@@ -12,8 +12,8 @@ public class GameStatistics implements Serializable {
     private final String[] finishPlaces;
     private final long startTime;
 
-    public GameStatistics(String[] names) {
-        this.names = names;
+    public GameStatistics() {
+        this.names = new String[4];
         zahlenGewuerfelt = new int[4][6];
         andereGeschlagen = new int[4];
         geschlagenWorden = new int[4];
@@ -30,6 +30,10 @@ public class GameStatistics implements Serializable {
         prioZugFalsch = gameStatistics.prioZugFalsch.clone();
         finishPlaces = gameStatistics.finishPlaces.clone();
         startTime = gameStatistics.startTime;
+    }
+
+    public void setNames(String[] names) {
+        this.names = names.clone();
     }
 
     public void incZahlGewuerfelt(int spieler, int zahl) {
@@ -89,7 +93,7 @@ public class GameStatistics implements Serializable {
         return new GameStatistics(gameStatistics);
     }
 
-    public GameStatistics() { // todo entfernen
+    public GameStatistics(boolean start) { // todo entfernen
         names = new String[]{"Domenik", "Tom", "Markus", "Nico"};
         geschlagenWorden = new int[]{12, 23, 2, 6};
         andereGeschlagen = new int[]{4, 23, 9, 10};

@@ -25,7 +25,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private static final int BOT_WAIT_ZIEHEN = 2000;
     private static final int DELAY_WUERFELN = 10000;
     private static final int DELAY_SPIELZUG = 30000;
-    private static final int DELAY_WAITING = 20000;
+    private static final int DELAY_WAITING = 5000;
 
     private final GameStatistics gameStatistics;
 
@@ -42,9 +42,9 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private int zahlGewuerfelt = 0;
     private int anzahlWuerfeln = -1;
 
-    private Timer timerWuerfelnOver;
-    private Timer timerZiehenOver;
-    private Timer timerWaiting;
+    private Timer timerWuerfeln = new Timer();
+    private Timer timerZiehen = new Timer();
+    private Timer timerWaiting = new Timer();
 
     // todo entfernen
     //private final int[] wuerfel = new int[]{6, 4, 1, 6, 4, 1, 4, 3, 3};
@@ -83,14 +83,15 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
                 };
             }
         }
-        gameStatistics = new GameStatistics(names);
+        gameStatistics = new GameStatistics();
+        gameStatistics.setNames(names);
         boardState = new BoardState(spielerAnzahl);
 
         //boardState.setCustom(); // todo entfernen
         states[boardAnzahl++] = BoardState.copyOf(boardState);
 
         Timer t = new Timer("startGame");
-        t.schedule(new StartGame(), 5000);
+        t.schedule(new StartGame(), 3000);
 
 
         // todo entfernen
@@ -125,7 +126,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
      * move muss erlaubt sein, wird nur noch gesetzt + ggf Punish + Spieler informiert
      */
     private synchronized int submitMoveIntern(int from, int to) {
-        timerZiehenOver.cancel();
+        timerZiehen.cancel();
         timerWaiting.cancel();
         System.out.println("Submit " + names[aktiverSpieler] + ": " + from + " -> " + to);
         int[] changed = new int[]{from, to, -1, -1, -1}; // from, to, strafe in loch, jmd geschlagen, strafe Figur die weg
@@ -154,18 +155,13 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         // todo entfernen
         states[boardAnzahl++] = BoardState.copyOf(boardState);
         if (boardAnzahl == states.length) states = Arrays.copyOf(states, states.length * 2);
-        boardWrite("\nthrow diceIntern: " + names[aktiverSpieler] + " : " + zahlGewuerfelt + "\nSubmit " + names[aktiverSpieler] + ": " + from + " -> " + to);
-
+        boardWrite("\nSubmit " + names[aktiverSpieler] + ": " + from + " -> " + to, true);
 
         displayNewStateAll(boardState, changed, names, aktiverSpieler);
-        if (anzahlWuerfeln == 0) {
-            nextPlayer(new int[]{});
-        } else {
-            timerWuerfelnOver = new Timer("TimerOverWurf");
-            timerWuerfelnOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
-        }
-        zahlGewuerfelt = -1;
+        //zahlGewuerfelt = -1;
+        nextPlayer(false);
         return (changed[2] == -1 ? 1 : -2);
+
     }
 
     private void checkFinished(FieldState fieldStateFrom) {
@@ -250,11 +246,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     }
 
     private synchronized int throwDiceIntern() {
-        timerWuerfelnOver.cancel();
+        timerWuerfeln.cancel();
         if (zahlGewuerfelt > 0) {
             if (getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] != -1) return -2;
         }
-        if (anzahlWuerfeln == 0) return -3;
+        if (anzahlWuerfeln == 0) return -1;
 
         if (wuerfelCount < wuerfel.length) {
             zahlGewuerfelt = wuerfel[wuerfelCount++];   // todo entfernen
@@ -269,53 +265,57 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         if (zahlGewuerfelt == 6) {
             anzahlWuerfeln = 1;
         }
-        if (anzahlWuerfeln == 0 && getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] == -1) {
-            zahlGewuerfelt = -1;
-            timerZiehenOver.cancel();
-            timerWaiting.cancel();
-            nextPlayer(new int[]{});
-            //displayNewStateAll(boardState, new int[]{}, names, aktiverSpieler);
+        boardWrite("gewürfelt: " + names[aktiverSpieler] + " : " + zahlGewuerfelt, false);
+
+        if (getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] == -1) { // kein Zug möglich
+            //zahlGewuerfelt = -1;
+            nextPlayer(false);
+            return -3;
         }
         if (clients[aktiverSpieler] != null) {
-            timerZiehenOver = new Timer("TimerOverZiehen");
-            timerZiehenOver.schedule(new ZiehenEnde(aktiverSpieler), DELAY_SPIELZUG);
+            timerZiehen = new Timer("TimerZiehen");
+            timerZiehen.schedule(new ZiehenEnde(aktiverSpieler), DELAY_SPIELZUG);
             timerWaiting = new Timer("TimerWaiting");
             timerWaiting.schedule(new Waiting(aktiverSpieler), DELAY_WAITING);
         }
-        return zahlGewuerfelt;
+        return 1;
     }
 
-    private void nextPlayer(int[] changed) {
-        aktiverSpieler = (aktiverSpieler + 1) % spielerAnzahl;
-
-        new Thread(() -> {
+    private void nextPlayer(boolean naechstenErzwingen) {
+        new Thread(()-> {
+            zahlGewuerfelt = -1;
             try {
-                if (anzahlFinished == spielerAnzahl) {
-                    System.out.println("Spiel zu Ende");
-                    aktiverSpieler = -1;
-                    zahlGewuerfelt = -1;
-                    anzahlWuerfeln = -1;
-                    Thread.currentThread().interrupt();
-                    return;
+                if (anzahlWuerfeln < 1 || naechstenErzwingen) {
+                    System.out.println("set next");
+                    aktiverSpieler = (aktiverSpieler + 1) % spielerAnzahl;
+
+                    if (anzahlFinished == spielerAnzahl) {
+                        System.out.println("Spiel zu Ende");
+                        aktiverSpieler = -1;
+                        zahlGewuerfelt = -1;
+                        anzahlWuerfeln = -1;
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException e) {
+                        System.err.println("schlafen unterbrochen");
+                    }
+                    while (finished[aktiverSpieler]) aktiverSpieler = (aktiverSpieler + 1) % spielerAnzahl;
+                    anzahlWuerfeln = getAnzahlWuerfelnNext(aktiverSpieler);
+                    displayNewStateAll(boardState, new int[]{}, names, aktiverSpieler);
                 }
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    System.err.println("schlafen unterbrochen");
+                if (clients[aktiverSpieler] == null) {
+                    doBotMove(aktiverSpieler, true);
+                } else {
+                    timerWuerfeln = new Timer("TimerWurf");
+                    timerWuerfeln.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
                 }
-                while (finished[aktiverSpieler]) aktiverSpieler = (aktiverSpieler + 1) % spielerAnzahl;
-                anzahlWuerfeln = getAnzahlWuerfelnNext(aktiverSpieler);
-                if (changed != null) displayNewStateAll(boardState, changed, names, aktiverSpieler);
-                if (clients[aktiverSpieler] != null) {
-                    timerWuerfelnOver = new Timer("TimerOverWurf");
-                    timerWuerfelnOver.schedule(new WuerfelnEnde(aktiverSpieler), DELAY_WUERFELN);
-                    sendYourTurn(aktiverSpieler);
-                } else doBotMove(aktiverSpieler, true);
             } catch (RuntimeException e) {
                 System.err.println("beendet");
             }
         }).start();
-
     }
 
     private int getAnzahlWuerfelnNext(int spielerNext) {
@@ -407,33 +407,30 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
             }
         }
         System.out.println("Spiel verlassen: " + lii);
-        if (aktiverSpieler == i) doBotMove(aktiverSpieler, false);
+        gameStatistics.setNames(names);
     }
 
-    @SuppressWarnings("BusyWait")
     private void doBotMove(int spieler, boolean sleep) {
         new Thread(() -> {
-            while (spieler == aktiverSpieler) {
-                if (zahlGewuerfelt < 1) { // schon gewürfelt, falls Spieler ersetzt / nicht gezogen
-                    try {
-                        if (sleep) sleep(BOT_WAIT_WUERFELN);
-                    } catch (InterruptedException e) {
-                        System.err.println("schlafen unterbrochen");
-                    }
-                    throwDiceIntern();
+            if (zahlGewuerfelt < 1 && spieler == aktiverSpieler) { // schon gewürfelt, falls Spieler ersetzt / nicht gezogen
+                try {
+                    if (sleep) sleep(BOT_WAIT_WUERFELN);
+                } catch (InterruptedException e) {
+                    System.err.println("schlafen unterbrochen");
                 }
-                if (zahlGewuerfelt == -1) break;
-                int[] move = getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt);
-                if (move[0] != -1) {
-                    try {
-                        if (sleep) sleep(BOT_WAIT_ZIEHEN);
-                    } catch (InterruptedException e) {
-                        System.err.println("schlafen unterbrochen");
-                    }
-                    int ret = submitMoveIntern(move[0], move[1]);
-                    if (ret == 1 && spieler != aktiverSpieler) break;
+                if (throwDiceIntern() == -3) return; // kein Zug möglich
+            }
+            int[] move = getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt);
+            if (move[0] != -1 && spieler == aktiverSpieler) {
+                try {
+                    if (sleep) sleep(BOT_WAIT_ZIEHEN);
+                } catch (InterruptedException e) {
+                    System.err.println("schlafen unterbrochen");
                 }
-                zahlGewuerfelt = -1;
+                submitMoveIntern(move[0], move[1]);
+            } else {
+                System.err.println("----------------test---------------");
+                //zahlGewuerfelt = -1;
             }
         }).start();
     }
@@ -482,21 +479,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         return -1;
     }
 
-    private void sendYourTurn(int spieler) {
-        new Thread(() -> {
-            try {
-                clientsUpdate[spieler].yourTurn();
-            } catch (RemoteException e) {
-                removePlayerIntern(clients[spieler]);
-            }
-        }).start();
-    }
-
     private class StartGame extends TimerTask {
         @Override
         public void run() {
             aktiverSpieler = spielerAnzahl - 1;
-            nextPlayer(new int[]{});
+            nextPlayer(true);
         }
     }
 
@@ -509,10 +496,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
         @Override
         public void run() {
+            System.out.println("wuerfeln vorbei: " + spieler);
             if (zahlGewuerfelt < 1 && spieler == aktiverSpieler) {
-                int wurf = throwDiceIntern();
+                doBotMove(spieler, false);
                 try {
-                    clientsUpdate[spieler].rollDiceOver(wurf);
+                    clientsUpdate[spieler].rollDiceOver();
                 } catch (RemoteException e) {
                     removePlayerIntern(clients[spieler]);
                 }
@@ -529,8 +517,8 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
         @Override
         public void run() {
+            System.out.println("ziehen vorbei: " + spieler);
             if (spieler == aktiverSpieler) {
-                System.out.println("Ziehen Ende fuer: " + spieler);
                 doBotMove(spieler, false);
                 try {
                     clientsUpdate[spieler].moveFigureOver();
@@ -550,6 +538,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
         @Override
         public void run() {
+            System.out.println("waiting vorbei: " + spieler);
             if (spieler == aktiverSpieler) {
                 try {
                     clientsUpdate[spieler].timesRunning();
@@ -581,12 +570,18 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         }
     }
 
-    private void boardWrite(String s) {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fBoard)); FileWriter fw = new FileWriter(fText, true)) {
-            os.writeObject(states);
+    private void boardWrite(String s, boolean writeBoard) {
+        try (FileWriter fw = new FileWriter(fText, true)) {
             fw.write(s);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        if (writeBoard) {
+            try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fBoard))) {
+                os.writeObject(states);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

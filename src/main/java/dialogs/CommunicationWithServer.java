@@ -1,8 +1,6 @@
 package dialogs;
 
 import dataAndMethods.BoardConfiguration;
-import dataAndMethods.Room;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import rmiInterfaces.LoggedInInterface;
 import rmiInterfaces.LoginInterface;
@@ -91,7 +89,7 @@ public class CommunicationWithServer {
         try {
             lii.logOut();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }
@@ -100,7 +98,7 @@ public class CommunicationWithServer {
         try {
             lii.unsubscribeFromRoomUpdates();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }
@@ -118,7 +116,7 @@ public class CommunicationWithServer {
             }
             ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return 1;
@@ -137,7 +135,7 @@ public class CommunicationWithServer {
             }
             ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return 1;
@@ -150,7 +148,7 @@ public class CommunicationWithServer {
         try {
             return lii.addBot();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return -1;
@@ -163,7 +161,7 @@ public class CommunicationWithServer {
         try {
             return lii.removeBot();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return -1;
@@ -176,7 +174,7 @@ public class CommunicationWithServer {
         try {
             return lii.spielStartenAnfragen();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return -1;
@@ -195,7 +193,7 @@ public class CommunicationWithServer {
             }
             gameLogic.showPane();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
         return 1;
@@ -208,7 +206,7 @@ public class CommunicationWithServer {
             lii.subscribeToRoomUpdates(new UpdateRoomsObject(pane));
             ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }
@@ -217,7 +215,7 @@ public class CommunicationWithServer {
         try {
             DesignPane.DesignPaneStart(lii.getDesignsList());
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }
@@ -226,7 +224,7 @@ public class CommunicationWithServer {
         try {
             lii.designBestaetigen(design);
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }
@@ -241,7 +239,7 @@ public class CommunicationWithServer {
             lii.subscribeToRoomUpdates(new UpdateRoomsObject(pane));
             ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
     }

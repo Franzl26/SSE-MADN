@@ -2,7 +2,6 @@ package dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,7 +13,7 @@ import static dialogs.CommunicationWithServer.tryToLogin;
 public class LoginPane extends AnchorPane {
     public LoginPane() {
         TextField serverTextField = new TextField("localhost");
-        serverTextField.setPromptText("server");
+        serverTextField.setPromptText("Server-IP-Adresse");
         serverTextField.setPrefWidth(280);
 
         TextField usernameTextField = new TextField("Frank");
@@ -39,9 +38,9 @@ public class LoginPane extends AnchorPane {
             if (ret == 1) {
                 ((Stage) getScene().getWindow()).close();
             } else if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Login-Daten fehlerhaft").showAndWait();
+                Meldungen.zeigeInformation("Login-Daten fehlerhaft", "Die Logindaten sind falsch.");
             } else {
-                new Alert(Alert.AlertType.INFORMATION, "Server nicht gefunden").showAndWait();
+                Meldungen.zeigeInformation("Server nicht gefunden", "Unter der angegebenen IP-Adresse konnte kein Server gefunden werden.");
             }
         });
 

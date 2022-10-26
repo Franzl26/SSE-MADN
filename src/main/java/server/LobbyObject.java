@@ -29,7 +29,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
         clients[bots + spieler] = lii;
         clientsUpdate[bots + spieler] = uli;
         spieler++;
-        System.out.println("Spieler ist Lobby beigetreten: " + lii);
         update();
     }
 
@@ -60,10 +59,8 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
 
     @Override
     public synchronized int spielStartenAnfragen(LoggedInInterface lii) throws RemoteException {
-        System.out.println("anzahl: "+(bots+spieler));
         if ((bots + spieler) < 2) return -1;
         if (!checkInLobby(lii)) return -1;
-        System.out.println("test");
         gameObject = new GameObject(clients, spieler + bots);
         Timer timer = new Timer("delete Lobby");
         raumauswahl.removeRoom(room);
@@ -102,10 +99,8 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
             }
         }
         if (spieler < 1) {
-            System.out.println("Lobby raum entfernen");
             raumauswahl.removeRoom(room);
         }
-        System.out.println("Spieler hat Lobby verlassen: " + lii);
         update();
     }
 
@@ -140,7 +135,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private synchronized void sendDesignToClient(int client) {
         new Thread(() -> {
             try {
-                System.out.println("update design: "+clients[client]);
                 clientsUpdate[client].updateDesign(boardDesign);
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[client]);
@@ -157,7 +151,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private synchronized void startGameClient(int client) {
         new Thread(() -> {
             try {
-                System.out.println("start game: "+clients[client]);
                 clientsUpdate[client].gameStarts();
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[client]);
@@ -183,7 +176,6 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     private synchronized void updateClient(String[] names, int client) {
         new Thread(() -> {
             try {
-                System.out.println("update lobby: "+clients[client]);
                 clientsUpdate[client].updateNames(names);
             } catch (RemoteException e) {
                 raumVerlassenPrivate(clients[client]);

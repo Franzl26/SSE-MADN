@@ -1,6 +1,10 @@
 package app;
 
 import dataAndMethods.BoardConfiguration;
+import dataAndMethods.GameStatistics;
+import dialogs.GameStatisticsPane;
+import dialogs.Meldungen;
+import dialogs.RoomSelectPane;
 import javafx.application.Application;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -30,24 +34,20 @@ public class Start extends Application {
         //ServerBoardStateDisplay.ServerBoardStateDisplayStart();
         //new Alert(Alert.AlertType.INFORMATION, "<Text>").show();
         //new Alert(Alert.AlertType.CONFIRMATION, "<Text>").show();
-        /*GameStatistics stats = new GameStatistics();
+        /*GameStatistics stats = new GameStatistics(true);
         GameStatisticsPane pane = GameStatisticsPane.GameStatisticsPaneStart();
         ((Stage)pane.getScene().getWindow()).show();
         pane.drawStatistics(stats);*/
+        //Meldungen.zeigeInformation("Passwort entspricht nicht den Richtlinien", "Das Passwort entspricht nicht den Richtlinien: 8-15 Zeichen\nmindestens ein Buchstabe\nmindestens eine Zahl\nmindestens eins der Sonderzeichen: !§$%&/()=?#");
         DebugPane.DebugPaneStart();
-        /*Canvas c = new Canvas(100,100);
-        GraphicsContext gc = c.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
-        gc.setFont(Font.font(40));
-        //gc.fillRect(0,0,10,10);
-        gc.fillText("Bild",5,60);
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText("Überschrift");
         alert.setContentText("Text");
-        alert.setTitle("Titel");
-        alert.setGraphic(c);
+        alert.setTitle("Information");
+        alert.setGraphic(null);
         alert.show();*/
+
     }
 
     public static void main(String[] args) {

@@ -1,7 +1,7 @@
 package dataAndMethods;
 
+import dialogs.Meldungen;
 import rmiInterfaces.LoggedInInterface;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -47,7 +47,7 @@ public class BoardConfiguration {
             try {
                 config = lii.getBoardConfigBytes(name);
             } catch (RemoteException e) {
-                new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+                Meldungen.kommunikationAbgebrochen();
                 System.exit(0);
             }
             config.saveConfiguration(file.getAbsolutePath());

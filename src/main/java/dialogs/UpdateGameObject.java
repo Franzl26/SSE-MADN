@@ -19,18 +19,13 @@ public class UpdateGameObject extends UnicastRemoteObject implements UpdateGameI
     }
 
     @Override
-    public void yourTurn() throws RemoteException {
-        logic.setTurn();
-    }
-
-    @Override
     public void displayDice(int number) throws RemoteException {
         logic.displayDice(number);
     }
 
     @Override
-    public void rollDiceOver(int wurf) throws RemoteException {
-        logic.rollDiceOver(wurf);
+    public void rollDiceOver() throws RemoteException {
+        logic.rollDiceOver();
     }
 
     @Override

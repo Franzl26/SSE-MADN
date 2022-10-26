@@ -14,11 +14,9 @@ public interface UpdateGameInterface extends Remote {
      */
     void displayNewState(BoardState state, int[] changed, String[] names, int turn) throws RemoteException;
 
-    void yourTurn() throws RemoteException;
-
     void displayDice(int number) throws RemoteException;
 
-    void rollDiceOver(int wurf) throws RemoteException;
+    void rollDiceOver() throws RemoteException;
 
     void timesRunning() throws RemoteException;
 

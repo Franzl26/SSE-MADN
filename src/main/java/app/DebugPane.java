@@ -7,10 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import static dataAndMethods.BoardDrawer.drawBoardAll;
 
@@ -26,6 +30,7 @@ public class DebugPane extends AnchorPane {
 
         boardStates = readBoardState();
         System.out.println(boardStates.length);
+        System.out.println(boardStates.length);
 
         Button vor = new Button("vor");
         vor.addEventHandler(ActionEvent.ACTION, e -> {
@@ -39,11 +44,23 @@ public class DebugPane extends AnchorPane {
             if (anzeige < 0) anzeige = 0;
             boardAnzeigen();
         });
+        TextField field = new TextField("0");
+        Button anzeigen = new Button("anzeigen");
+        anzeigen.addEventHandler(ActionEvent.ACTION, e -> {
+            anzeige = Integer.parseInt(field.getText());
+            if (boardStates[anzeige] != null) boardAnzeigen();
+        });
+
         AnchorPane.setBottomAnchor(vor, 10.0);
         AnchorPane.setBottomAnchor(zurueck, 10.0);
         AnchorPane.setLeftAnchor(zurueck, 10.0);
         AnchorPane.setRightAnchor(vor, 10.0);
-        getChildren().addAll(canvas, vor, zurueck);
+        AnchorPane.setLeftAnchor(field, 80.0);
+        AnchorPane.setBottomAnchor(field, 10.0);
+        AnchorPane.setBottomAnchor(anzeigen, 10.0);
+        AnchorPane.setRightAnchor(anzeigen, 80.0);
+
+        getChildren().addAll(canvas, vor, zurueck, field, anzeigen);
         boardAnzeigen();
     }
 

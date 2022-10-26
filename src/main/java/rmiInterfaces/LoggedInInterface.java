@@ -61,7 +61,7 @@ public interface LoggedInInterface extends Remote {
     int submitMove(int from, int to) throws RemoteException;
 
     /**
-     * @return -1 nicht dran, -2 schon gewürfelt, nicht gezogen, 1-6 Zahl
+     * @return -1 nicht dran, -2 schon gewürfelt, 1 erfolgreich gewürfelt
      */
     int throwDice() throws RemoteException;
 

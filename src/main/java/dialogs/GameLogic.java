@@ -4,7 +4,6 @@ import dataAndMethods.BoardConfiguration;
 import dataAndMethods.BoardState;
 import dataAndMethods.GameStatistics;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import rmiInterfaces.LoggedInInterface;
 
@@ -48,14 +47,14 @@ public class GameLogic {
                             pane.drawBoardSingleField(boardState.getField(highlightedField), highlightedField, false);
                             int ret = lii.submitMove(highlightedField, i);
                             if (ret == -1) {
-                                new Alert(Alert.AlertType.INFORMATION, "Fehlerhafter Zug, nochmal setzen").showAndWait();
+                                Meldungen.zeigeInformation("Fehlerhafter Zug","Fehlerhafter Zug. Bitte nochmal setzen.");
                             } else if (ret == -2) {
-                                new Alert(Alert.AlertType.INFORMATION, "Du hast einen PrioZug missachtet, die entsprechende Figur wurde geschlagen").showAndWait();
+                                Meldungen.zeigeInformation("Prio Zug missachtet","Du hast einen PrioZug missachtet, die entsprechende Figur wurde geschlagen");
                             } else if (ret == -3) {
-                                new Alert(Alert.AlertType.INFORMATION, "Du bist nicht dran du Pflaume").showAndWait();
+                                Meldungen.zeigeInformation("Nicht an der Reihe","Du bist nicht dran du Pflaume");
                             }
                         } catch (RemoteException e) {
-                            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+                            Meldungen.kommunikationAbgebrochen();
                             System.exit(0);
                         }
 
@@ -69,16 +68,14 @@ public class GameLogic {
     }
 
     public void onMouseClickedDice() {
-        //if (gewuerfelt != 0) return;
         try {
             int ret = lii.throwDice();
             if (ret == -2)
-                new Alert(Alert.AlertType.INFORMATION, "Du hast schon gewürfelt, erstmal ziehen").showAndWait();
+                Meldungen.zeigeInformation("Schon gewürfelt","Du hast schon gewürfelt, erstmal ziehen");
         } catch (RemoteException e) {
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
             System.exit(0);
         }
-
     }
 
     // rein kommenden Funktionen
@@ -94,19 +91,14 @@ public class GameLogic {
         });
     }
 
-    public void setTurn() {
-        //Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, "Du bist dran!").showAndWait());
-    }
-
     public void displayDice(int number) {
-        Platform.runLater(()->pane.drawDice(number));
+        Platform.runLater(() -> {
+            if (number > 0) pane.drawDice(number);
+        });
     }
 
-    public void rollDiceOver(int wurf) {
-        Platform.runLater(() -> {
-            pane.drawDice(wurf);
-            new Alert(Alert.AlertType.INFORMATION, "Deine Zeit zum Würfeln ist abgelaufen, der Server hat für dich gewürfelt.").showAndWait();
-        });
+    public void rollDiceOver() {
+        Platform.runLater(() -> Meldungen.zeigeInformation("Zeit abgelaufen","Deine Zeit zum Würfeln ist abgelaufen, der Server hat für dich gewürfelt und gezogen."));
     }
 
     public void displayGif() {
@@ -114,7 +106,7 @@ public class GameLogic {
     }
 
     public void moveFigureOver() {
-        Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, "Deine Zeit zum Ziehen ist abgelaufen, der Server hat für dich gezogen,").showAndWait());
+        Platform.runLater(() -> Meldungen.zeigeInformation("Zeit abgelaufen","Deine Zeit zum Ziehen ist abgelaufen, der Server hat für dich gezogen."));
     }
 
     public void showPane() {
@@ -133,8 +125,8 @@ public class GameLogic {
             pane.drawStatistics(stats);
             ((Stage) pane.getScene().getWindow()).show();
         } catch (RemoteException e) {
-            e.printStackTrace(System.out);
-            new Alert(Alert.AlertType.INFORMATION, "Kommunikation mit Server abgebrochen, beende Spiel").showAndWait();
+            Meldungen.kommunikationAbgebrochen();
+            System.exit(0);
         }
     }
 }

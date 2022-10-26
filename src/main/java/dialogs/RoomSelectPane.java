@@ -7,9 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -31,11 +29,11 @@ public class RoomSelectPane extends AnchorPane {
         roomsList = new ListView<>();
         roomsList.setPrefWidth(800);
 
-        Button newGameButton = new Button("Neues Spiel erstellen");
+        Button newGameButton = new Button("Neuen Warteraum erstellen");
         newGameButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.createNewRoom();
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Maximale Raumanzahl bereits erreicht").showAndWait();
+                Meldungen.zeigeInformation("Maximale Raumanzahl bereits erreicht", "Die maximale Anzahl an Warteräumen ist erreicht, es kann kein neuer erstellt werden.");
             } else {
                 CommunicationWithServer.unsubscribeUpdateRooms();
                 ((Stage) getScene().getWindow()).close();
@@ -68,7 +66,7 @@ public class RoomSelectPane extends AnchorPane {
             button.addEventHandler(ActionEvent.ACTION, e -> {
                 int ret = CommunicationWithServer.enterRoom(r.getId());
                 if (ret == -1) {
-                    new Alert(Alert.AlertType.INFORMATION, "Raum bereits voll").showAndWait();
+                    Meldungen.zeigeInformation("Warteraum ist voll", "Der Warteraum ist bereits voll, du kannst diesem leider nicht beitreten");
                 } else {
                     CommunicationWithServer.unsubscribeUpdateRooms();
                     ((Stage) getScene().getWindow()).close();
@@ -100,13 +98,11 @@ public class RoomSelectPane extends AnchorPane {
     }
 
     private void beenden() {
-        new Alert(Alert.AlertType.CONFIRMATION, "Willst du das Spiel wirklich beenden?").showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                CommunicationWithServer.unsubscribeUpdateRooms();
-                CommunicationWithServer.logout();
-                System.exit(0);
-            }
-        });
+        if (Meldungen.frageBestaetigung("Spiel beenden","Willst du das Spiel wirklich beenden?")) {
+            CommunicationWithServer.unsubscribeUpdateRooms();
+            CommunicationWithServer.logout();
+            System.exit(0);
+        }
     }
 
     public static RoomSelectPane RoomSelectPaneStart(String username) {
@@ -114,7 +110,7 @@ public class RoomSelectPane extends AnchorPane {
         Scene scene = new Scene(root, 820, 500);
         Stage stage = new Stage();
 
-        stage.setTitle("Raum Auswahl");
+        stage.setTitle("Raumauswahl");
         stage.setScene(scene);
         stage.setResizable(false);
         root.setOnClose();

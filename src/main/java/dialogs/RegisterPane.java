@@ -2,7 +2,6 @@ package dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 public class RegisterPane extends AnchorPane {
     public RegisterPane() {
         TextField serverTextField = new TextField("localhost");
-        serverTextField.setPromptText("server");
+        serverTextField.setPromptText("Server-IP-Adresse");
         serverTextField.setPrefWidth(280);
 
         TextField usernameTextField = new TextField();
@@ -32,17 +31,17 @@ public class RegisterPane extends AnchorPane {
         registrierenButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.tryToRegister(serverTextField.getText(), usernameTextField.getText(), passwordField.getText(), passwordField2.getText());
             if (ret == -1) {
-                new Alert(Alert.AlertType.INFORMATION, "Passwörter stimmen nicht überein").showAndWait();
+                Meldungen.zeigeInformation("Passwörter stimmen nicht überein","Die beiden eingegebenen Passwörter stimmen nicht überein.");
             } else if (ret == -2) {
-                new Alert(Alert.AlertType.INFORMATION, "Passwort entspricht nicht den Richtlinien").showAndWait();
+                Meldungen.zeigeInformation("Passwort entspricht nicht den Richtlinien", "Das Passwort entspricht nicht den Richtlinien:\n- 8-15 Zeichen\n- mindestens ein Buchstabe\n- mindestens eine Zahl\n- mindestens eins der Sonderzeichen: !§$%&/()=?#");
             } else if (ret == -3) {
-                new Alert(Alert.AlertType.INFORMATION, "Benutzername entspricht nicht den Richtlinien").showAndWait();
+                Meldungen.zeigeInformation("Benutzername entspricht nicht den Richtlinien", "Der Benutzername entspricht nicht den Richtlinien:\n- 3-8 Zeichen\n- nur Buchstaben");
             } else if (ret == -4) {
-                new Alert(Alert.AlertType.INFORMATION, "Server nicht gefunden").showAndWait();
+                Meldungen.zeigeInformation("Server nicht gefunden", "Unter der angegebenen IP-Adresse konnte kein Server gefunden werden.");
             } else if (ret == -5) {
-                new Alert(Alert.AlertType.INFORMATION, "Benutzername bereits vergeben").showAndWait();
+                Meldungen.zeigeInformation("Benutzername bereits vergeben", "Dieser Benutzername ist bereits vergeben, versuche es mit einem anderen nochmal");
             } else {
-                new Alert(Alert.AlertType.INFORMATION, "Registrierung erfolgreich!").showAndWait();
+                Meldungen.zeigeInformation("Registrierung erfolgreich!", "Die Registrierung war erfolgreich, du kannst dich jetzt anmelden");
                 ((Stage) getScene().getWindow()).close();
             }
         });
