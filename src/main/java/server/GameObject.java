@@ -158,10 +158,8 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         boardWrite("\nSubmit " + names[aktiverSpieler] + ": " + from + " -> " + to, true);
 
         displayNewStateAll(boardState, changed, names, aktiverSpieler);
-        //zahlGewuerfelt = -1;
-        nextPlayer(false);
+        nextMove(false);
         return (changed[2] == -1 ? 1 : -2);
-
     }
 
     private void checkFinished(FieldState fieldStateFrom) {
@@ -265,11 +263,10 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         if (zahlGewuerfelt == 6) {
             anzahlWuerfeln = 1;
         }
-        boardWrite("gewürfelt: " + names[aktiverSpieler] + " : " + zahlGewuerfelt, false);
+        boardWrite("\ngewürfelt: " + names[aktiverSpieler] + " : " + zahlGewuerfelt, false);
 
         if (getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] == -1) { // kein Zug möglich
-            //zahlGewuerfelt = -1;
-            nextPlayer(false);
+            nextMove(false);
             return -3;
         }
         if (clients[aktiverSpieler] != null) {
@@ -281,7 +278,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         return 1;
     }
 
-    private void nextPlayer(boolean naechstenErzwingen) {
+    private void nextMove(boolean naechstenErzwingen) {
         new Thread(()-> {
             zahlGewuerfelt = -1;
             try {
@@ -402,6 +399,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         for (int j = 0; j < spielerAnzahl; j++) {
             if (clients[j] != null) break;
             if (j == spielerAnzahl - 1) {
+                System.err.println("------------------beendet?-------------");
                 aktiverSpieler = -1;
                 break;
             }
@@ -428,9 +426,6 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
                     System.err.println("schlafen unterbrochen");
                 }
                 submitMoveIntern(move[0], move[1]);
-            } else {
-                System.err.println("----------------test---------------");
-                //zahlGewuerfelt = -1;
             }
         }).start();
     }
@@ -483,7 +478,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         @Override
         public void run() {
             aktiverSpieler = spielerAnzahl - 1;
-            nextPlayer(true);
+            nextMove(true);
         }
     }
 

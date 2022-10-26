@@ -3,8 +3,10 @@ package server;
 import dataAndMethods.Room;
 import rmiInterfaces.*;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -80,9 +82,14 @@ public class LobbyObject extends UnicastRemoteObject implements LobbyInterface {
     @Override
     public synchronized void designBestaetigen(LoggedInInterface lii, String design) throws RemoteException {
         if (!checkInLobby(lii)) return;
-        boardDesign = design;
-        System.out.println("neues design gesetzt: " + design);
-        sendDesignToEveryone();
+        File f = new File("./resources/Server/designs/");
+        for (String s: Objects.requireNonNull(f.list())) {
+            if (s.equals(design)) {
+                boardDesign = design;
+                System.out.println("neues design gesetzt: " + design);
+                sendDesignToEveryone();
+            }
+        }
     }
 
     @Override

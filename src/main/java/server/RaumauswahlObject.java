@@ -64,9 +64,10 @@ public class RaumauswahlObject extends UnicastRemoteObject implements Raumauswah
     public synchronized LobbyInterface enterRoom(LoggedInInterface lii, long roomId, UpdateLobbyInterface uli) throws RemoteException {
         if (lii == null || uli == null) return null;
         if (!clients.containsKey(lii)) return null;
-        unsubscribeFromRoomUpdatesPrivate(lii);
         Room room = roomIdRoomMap.get(roomId);
+        if (room == null) return null;
         if (room.getCount() == 4) return null;
+        unsubscribeFromRoomUpdatesPrivate(lii);
         room.addPlayer(lii.getUsername());
         LobbyObject lobbyObj = roomIdLobbyMap.get(roomId);
         lobbyObj.addUser(lii, uli);
