@@ -48,7 +48,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
     // todo entfernen
     //private final int[] wuerfel = new int[]{6, 4, 1, 6, 4, 1, 4, 3, 3};
-    private final int[] wuerfel = new int[]{6};
+    private final int[] wuerfel = new int[]{3,3,3,3,3,3,3,3};
     private int wuerfelCount = 0;
 
     private BoardState[] states = new BoardState[25];
@@ -198,23 +198,27 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     /**
      * @return [-1, -1] wenn keine Strafe, sonst Felder, die neu gezeichnet werden müssen
      */
-    private int[] checkBestrafen(FieldState fieldStateFrom, int from) {
+    private int[] checkBestrafen(FieldState aktuellerSpieler, int from) {
         int[] ret = new int[]{-1, -1};
         // bestrafen
         // abrücken
-        if (from != 32 && fieldStateFrom == FIELD_FIGURE0 && boardState.getField(32) == FIELD_FIGURE0 && boardState.getField(32 + zahlGewuerfelt) != FIELD_FIGURE0) {
+        if (from != 32 && aktuellerSpieler == FIELD_FIGURE0 && boardState.getField(32) == FIELD_FIGURE0 && boardState.getField(32 + zahlGewuerfelt) != FIELD_FIGURE0
+        && (boardState.getField(0) == FIELD_FIGURE0 || boardState.getField(1) == FIELD_FIGURE0 || boardState.getField(2) == FIELD_FIGURE0 || boardState.getField(3) == FIELD_FIGURE0)) {
             ret[0] = figurZurueckAufStartpositionen(32);
             ret[1] = 32;
         }
-        if (from != 42 && fieldStateFrom == FIELD_FIGURE1 && boardState.getField(42) == FIELD_FIGURE1 && boardState.getField(42 + zahlGewuerfelt) != FIELD_FIGURE1) {
+        if (from != 42 && aktuellerSpieler == FIELD_FIGURE1 && boardState.getField(42) == FIELD_FIGURE1 && boardState.getField(42 + zahlGewuerfelt) != FIELD_FIGURE1
+                && (boardState.getField(4) == FIELD_FIGURE1 || boardState.getField(5) == FIELD_FIGURE1 || boardState.getField(6) == FIELD_FIGURE1 || boardState.getField(7) == FIELD_FIGURE1)) {
             ret[0] = figurZurueckAufStartpositionen(42);
             ret[1] = 42;
         }
-        if (from != 52 && fieldStateFrom == FIELD_FIGURE2 && boardState.getField(52) == FIELD_FIGURE2 && boardState.getField(52 + zahlGewuerfelt) != FIELD_FIGURE2) {
+        if (from != 52 && aktuellerSpieler == FIELD_FIGURE2 && boardState.getField(52) == FIELD_FIGURE2 && boardState.getField(52 + zahlGewuerfelt) != FIELD_FIGURE2
+                && (boardState.getField(8) == FIELD_FIGURE2 || boardState.getField(9) == FIELD_FIGURE2 || boardState.getField(10) == FIELD_FIGURE2 || boardState.getField(11) == FIELD_FIGURE2)) {
             ret[0] = figurZurueckAufStartpositionen(52);
             ret[1] = 52;
         }
-        if (from != 62 && fieldStateFrom == FIELD_FIGURE3 && boardState.getField(62) == FIELD_FIGURE3 && boardState.getField(62 + zahlGewuerfelt) != FIELD_FIGURE3) {
+        if (from != 62 && aktuellerSpieler == FIELD_FIGURE3 && boardState.getField(62) == FIELD_FIGURE3 && boardState.getField(62 + zahlGewuerfelt) != FIELD_FIGURE3
+                && (boardState.getField(12) == FIELD_FIGURE3 || boardState.getField(13) == FIELD_FIGURE3 || boardState.getField(14) == FIELD_FIGURE3 || boardState.getField(15) == FIELD_FIGURE3)) {
             ret[0] = figurZurueckAufStartpositionen(62);
             ret[1] = 62;
         }
@@ -222,12 +226,12 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         if (from > 31 && ret[0] != -1) {
             for (int i = 39; i >= 0; i--) {
                 int intFieldTo = (i + zahlGewuerfelt) % 40 + 32;
-                if ((i + 32) != from && boardState.getField(i + 32) == fieldStateFrom && boardState.getField(intFieldTo) != fieldStateFrom && boardState.getField(intFieldTo) != FIELD_NONE) {
+                if ((i + 32) != from && boardState.getField(i + 32) == aktuellerSpieler && boardState.getField(intFieldTo) != aktuellerSpieler && boardState.getField(intFieldTo) != FIELD_NONE) {
                     // nicht über Start beachten
-                    if (fieldStateFrom == FIELD_FIGURE0 && (i + zahlGewuerfelt) >= 40) continue;
-                    if (fieldStateFrom == FIELD_FIGURE1 && (i + zahlGewuerfelt) >= 10 && i < 10) continue;
-                    if (fieldStateFrom == FIELD_FIGURE2 && (i + zahlGewuerfelt) >= 20 && i < 20) continue;
-                    if (fieldStateFrom == FIELD_FIGURE3 && (i + zahlGewuerfelt) >= 30 && i < 30) continue;
+                    if (aktuellerSpieler == FIELD_FIGURE0 && (i + zahlGewuerfelt) >= 40) continue;
+                    if (aktuellerSpieler == FIELD_FIGURE1 && (i + zahlGewuerfelt) >= 10 && i < 10) continue;
+                    if (aktuellerSpieler == FIELD_FIGURE2 && (i + zahlGewuerfelt) >= 20 && i < 20) continue;
+                    if (aktuellerSpieler == FIELD_FIGURE3 && (i + zahlGewuerfelt) >= 30 && i < 30) continue;
                     ret[0] = figurZurueckAufStartpositionen(i + 32);
                     ret[1] = i + 32;
                 }
@@ -460,7 +464,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private void displayNewStateIntern(LoggedInInterface lii, UpdateGameInterface ugi, BoardState state, int[] changed, String[] names, int turn) {
         new Thread(() -> {
             try {
-                ugi.displayNewState((state == null ? null : BoardState.copyOf(state)), changed, names, turn);
+                ugi.displayNewState((state == null ? null : BoardState.copyOf(state)), (changed==null?null:changed.clone()), names.clone(), turn);
             } catch (RemoteException e) {
                 removePlayerIntern(lii);
             }

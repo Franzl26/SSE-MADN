@@ -89,13 +89,17 @@ public class MiscMethods {
                 if (board[i] != FIELD_NONE && board[62] != FIELD_FIGURE3) return new int[]{i, 62};
         }
         // abrücken
-        if (player == FIELD_FIGURE0 && board[32] == FIELD_FIGURE0 && board[32 + dice] != FIELD_FIGURE0)
+        if (player == FIELD_FIGURE0 && board[32] == FIELD_FIGURE0 && board[32 + dice] != FIELD_FIGURE0
+                && (boardState.getField(0) == FIELD_FIGURE0 || boardState.getField(1) == FIELD_FIGURE0 || boardState.getField(2) == FIELD_FIGURE0 || boardState.getField(3) == FIELD_FIGURE0))
             return new int[]{32, 32 + dice};
-        if (player == FIELD_FIGURE1 && board[42] == FIELD_FIGURE1 && board[42 + dice] != FIELD_FIGURE1)
+        if (player == FIELD_FIGURE1 && board[42] == FIELD_FIGURE1 && board[42 + dice] != FIELD_FIGURE1
+                && (boardState.getField(4) == FIELD_FIGURE1 || boardState.getField(5) == FIELD_FIGURE1 || boardState.getField(6) == FIELD_FIGURE1 || boardState.getField(7) == FIELD_FIGURE1))
             return new int[]{42, 42 + dice};
-        if (player == FIELD_FIGURE2 && board[52] == FIELD_FIGURE2 && board[52 + dice] != FIELD_FIGURE2)
+        if (player == FIELD_FIGURE2 && board[52] == FIELD_FIGURE2 && board[52 + dice] != FIELD_FIGURE2
+                && (boardState.getField(8) == FIELD_FIGURE2 || boardState.getField(9) == FIELD_FIGURE2 || boardState.getField(10) == FIELD_FIGURE2 || boardState.getField(11) == FIELD_FIGURE2))
             return new int[]{52, 52 + dice};
-        if (player == FIELD_FIGURE3 && board[62] == FIELD_FIGURE3 && board[62 + dice] != FIELD_FIGURE3)
+        if (player == FIELD_FIGURE3 && board[62] == FIELD_FIGURE3 && board[62 + dice] != FIELD_FIGURE3
+                && (boardState.getField(12) == FIELD_FIGURE3 || boardState.getField(13) == FIELD_FIGURE3 || boardState.getField(14) == FIELD_FIGURE3 || boardState.getField(15) == FIELD_FIGURE3))
             return new int[]{62, 62 + dice};
         // schlagen
         for (int i = 39; i >= 0; i--) {
