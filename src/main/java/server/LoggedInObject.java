@@ -2,7 +2,6 @@ package server;
 
 import dataAndMethods.BoardConfigurationBytes;
 import dataAndMethods.GameStatistics;
-import dataAndMethods.Room;
 import rmiInterfaces.*;
 
 import java.rmi.RemoteException;

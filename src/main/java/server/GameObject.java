@@ -47,8 +47,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private Timer timerWaiting = new Timer();
 
     // todo entfernen
-    //private final int[] wuerfel = new int[]{6, 4, 1, 6, 4, 1, 4, 3, 3};
-    private final int[] wuerfel = new int[]{3,3,3,3,3,3,3,3};
+    private final int[] wuerfel = new int[]{1,2,3,1,3,2,4,6,5};
     private int wuerfelCount = 0;
 
     private BoardState[] states = new BoardState[25];
@@ -95,11 +94,11 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
 
 
         // todo entfernen
-        Platform.runLater(() -> {
+        /*Platform.runLater(() -> {
             display = ServerBoardStateDisplay.ServerBoardStateDisplayStart();
             Timer t2 = new Timer("boardZeichen");
             t2.schedule(new UpdateDisplay(), 0, 500);
-        });
+        });*/
         boardWriteInit();
     }
 
@@ -116,6 +115,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         int i = isInGame(lii);
         if (i == -1 || aktiverSpieler != i) return -3;
         FieldState field = fields[aktiverSpieler];
+        if (zahlGewuerfelt == -1) return -4;
         if (!checkMoveValid(boardState, field, from, to, zahlGewuerfelt)) return -1;
         int[] prio = checkForPrioMove(boardState, field, zahlGewuerfelt);
         if (prio != null && prio[0] < 16 && from > 15) return -1;
@@ -142,16 +142,16 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
             }
             changed[3] = figurZurueckAufStartpositionen(to);
         }
-
         int[] bestrafung = checkBestrafen(fieldStateFrom, from);
         changed[2] = bestrafung[0];
         changed[4] = bestrafung[1];
-
         if (changed[2] != -1) gameStatistics.incPrioZugIgnoriert(aktiverSpieler);
+
         boardState.setField(to, fieldStateFrom);
         boardState.setField(from, FIELD_NONE);
 
         checkFinished(fieldStateFrom);
+
         // todo entfernen
         states[boardAnzahl++] = BoardState.copyOf(boardState);
         if (boardAnzahl == states.length) states = Arrays.copyOf(states, states.length * 2);
@@ -250,6 +250,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
     private synchronized int throwDiceIntern() {
         timerWuerfeln.cancel();
         if (zahlGewuerfelt > 0) {
+            System.err.println("Die Prüfung findet doch statt?");
             if (getValidMove(boardState, fields[aktiverSpieler], zahlGewuerfelt)[0] != -1) return -2;
         }
         if (anzahlWuerfeln == 0) return -1;
@@ -286,18 +287,17 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         new Thread(()-> {
             zahlGewuerfelt = -1;
             try {
+                if (anzahlFinished == spielerAnzahl) {
+                    System.out.println("Spiel zu Ende");
+                    aktiverSpieler = -1;
+                    zahlGewuerfelt = -1;
+                    anzahlWuerfeln = -1;
+                    Thread.currentThread().interrupt();
+                    return;
+                }
                 if (anzahlWuerfeln < 1 || naechstenErzwingen) {
                     System.out.println("set next");
                     aktiverSpieler = (aktiverSpieler + 1) % spielerAnzahl;
-
-                    if (anzahlFinished == spielerAnzahl) {
-                        System.out.println("Spiel zu Ende");
-                        aktiverSpieler = -1;
-                        zahlGewuerfelt = -1;
-                        anzahlWuerfeln = -1;
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
                     try {
                         sleep(1000);
                     } catch (InterruptedException e) {
@@ -403,7 +403,7 @@ public class GameObject extends UnicastRemoteObject implements GameInterface {
         for (int j = 0; j < spielerAnzahl; j++) {
             if (clients[j] != null) break;
             if (j == spielerAnzahl - 1) {
-                System.err.println("------------------beendet?-------------");
+                System.err.println("beendet");
                 aktiverSpieler = -1;
                 break;
             }

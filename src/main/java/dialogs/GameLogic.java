@@ -52,6 +52,8 @@ public class GameLogic {
                                 Meldungen.zeigeInformation("Prio Zug missachtet","Du hast einen PrioZug missachtet, die entsprechende Figur wurde geschlagen");
                             } else if (ret == -3) {
                                 Meldungen.zeigeInformation("Nicht an der Reihe","Du bist nicht dran du Pflaume");
+                            } else if (ret == -4) {
+                                Meldungen.zeigeInformation("Nicht gewürfelt", "Du hast noch nicht gewürfelt");
                             }
                         } catch (RemoteException e) {
                             Meldungen.kommunikationAbgebrochen();

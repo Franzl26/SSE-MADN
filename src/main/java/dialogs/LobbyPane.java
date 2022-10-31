@@ -24,7 +24,7 @@ public class LobbyPane extends AnchorPane {
         botAddButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.addBot();
             if (ret == -1) {
-                Meldungen.zeigeInformation("Warteraum voll", "Der Warteraum ist bereits voll, du kannst nicht beitreten");
+                Meldungen.zeigeInformation("Warteraum voll", "Der Warteraum ist bereits voll, du kannst keinen Bot hinzufügen.");
             }
         });
         Button botRemoveButton = new Button("Bot entfernen");
@@ -43,7 +43,7 @@ public class LobbyPane extends AnchorPane {
         startButton.addEventHandler(ActionEvent.ACTION, e -> {
             int ret = CommunicationWithServer.spielStartenAnfragen();
             if (ret == -1) {
-                Meldungen.zeigeInformation("Nicht genug Spieler im Warteraum", "Es sind weniger als 2 Spieler im Warteraum, dass Spiel kann nicht gestartet werden");
+                Meldungen.zeigeInformation("Nicht genug Spieler im Warteraum", "Es sind weniger als 2 Spieler im Warteraum, dass Spiel kann nicht gestartet werden.");
             } else {
                 ((Stage) getScene().getWindow()).close();
             }
